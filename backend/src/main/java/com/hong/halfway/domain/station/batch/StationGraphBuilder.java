@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -51,6 +52,14 @@ public class StationGraphBuilder {
             "당고개", "불암산",
             "뚝섬유원지", "자양");
 
+    // 서울 열린데이터광장 역간 소요시간 API는 지선이 있는 노선에서 분기 구조를 반영 안 하고 한 줄로 나열해서 줌
+    // (예: 5호선 응답이 ...하남시청,하남검단산(하남지선 끝),둔촌동(마천지선 시작)... 순서로 와서, 실제로는 강동을
+    // 거쳐야 하는데 "바로 다음 행"이라는 이유로 가짜 지름길 엣지가 생김 - 키 형식은 "노선:이전역:다음역"
+    private static final Set<String> BRANCH_BOUNDARY_SKIP = Set.of(
+            "5호선:하남검단산:둔촌동", // 하남지선 끝 -> 마천지선 시작 (실제로는 강동 경유)
+            "2호선:시청:용답", // 순환선 완주 -> 성수지선 시작 (실제로는 성수에서 분기)
+            "2호선:신설동:도림천"); // 성수지선 끝 -> 신정지선 시작 (실제로는 신도림에서 분기)
+
     /**
      * 전체 역 그래프 생성 (운행 엣지 + 환승 엣지). 다익스트라 계산 입력으로 사용
      */
@@ -86,6 +95,10 @@ public class StationGraphBuilder {
             for (int i = 1; i < lineRows.size(); i++) {
                 SeoulStationTimeResponse.Row prev = lineRows.get(i - 1);
                 SeoulStationTimeResponse.Row curr = lineRows.get(i);
+                String boundaryKey = normalizeLine(curr.line()) + ":" + prev.stationName() + ":" + curr.stationName();
+                if (BRANCH_BOUNDARY_SKIP.contains(boundaryKey)) {
+                    continue;
+                }
                 // "자양(뚝섬한강공원)"처럼 부기역명이 붙거나 "미아사거리 "처럼 끝에 공백이 붙은 행이 있어 baseName으로 맞춰야 매칭됨
                 Station from = byNameAndLine.get(key(normalizeSeoulStationName(prev.stationName()), normalizeLine(prev.line())));
                 Station to = byNameAndLine.get(key(normalizeSeoulStationName(curr.stationName()), normalizeLine(curr.line())));

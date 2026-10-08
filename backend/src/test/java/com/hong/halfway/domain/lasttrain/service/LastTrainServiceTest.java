@@ -249,6 +249,24 @@ class LastTrainServiceTest {
     }
 
     @Test
+    void 토요일_시간표가_없는_구간은_휴일_시간표로_대체해서_계산한다() {
+        Station s = createStation("S테스트역sh", "2호선", "916");
+        Station h = createStation("H테스트역sh", "2호선", "917");
+        stationTravelTimeRepository.save(StationTravelTime.create(s, h, (short) 5, (short) 0, s));
+
+        // 토요일(weekTag=2) 시간표는 아예 없고, 휴일(weekTag=3) 시간표만 심어둠 (TAGO 노선 흔한 패턴)
+        saveTrain(s, "HOL1", (short) 3, (short) 1420, null);
+        saveTrain(h, "HOL1", (short) 3, null, (short) 1430);
+
+        Room room = createFixedRoom("sh", "S테스트역sh");
+
+        LastTrainResponse response = lastTrainService.calculate(room.getCode(), "H테스트역sh", LastTrainDayType.SATURDAY);
+
+        assertThat(response.isUnsupported()).isFalse();
+        assertThat(response.getLastDepartureTime()).isEqualTo("23:40");
+    }
+
+    @Test
     void 가장_빠른_경로에_그_요일_시간표가_없으면_차선_경로로_계산한다() {
         // 같은 이름의 역이 두 노선에 걸쳐 있는 환승역(S) 상황을 흉내냄: 9호선 쪽이 더 빠르지만 시간표가 비어있고,
         // 1호선 쪽은 더 느리지만 실제로 탈 수 있는 열차가 있는 경우

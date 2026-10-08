@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 구간마다 실제 열차 시간표로 "S에서 몇 시까지 출발해야 귀가역까지 갈 수 있는지" 뒤에서부터 계산
  * 가장 빠른 경로가 해당 요일 시간표 데이터 공백(TAGO 일부 노선의 토요일 데이터 누락 등)으로 막히면
  * 그다음으로 빠른 경로를 차례로 시도함 (환승역처럼 같은 역 이름이 여러 노선에 걸쳐 있을 때만 해당)
+ * 구간 단위로도 토요일 시간표가 없으면 휴일 시간표로 대체함 (지하철은 보통 토/휴일 다이어가 거의 같음)
  */
 @Service
 @RequiredArgsConstructor
@@ -160,6 +161,12 @@ public class LastTrainService {
 
             List<LatestTrainHopProjection> hops = trainTimetableRepository
                     .findHopsArrivingBefore(from.getId(), to.getId(), weekTag, deadline);
+            // TAGO 상당수 노선은 토요일 시간표를 아예 안 줘서(평일·휴일만 있음) 토요일 조회가 전부 비는 경우가 많음.
+            // 지하철은 보통 토요일·휴일 다이어가 거의 같으므로(1~8호선 데이터로 실측 확인), 휴일 시간표로 대체 조회
+            if (hops.isEmpty() && weekTag == LastTrainDayType.SATURDAY.getWeekTag()) {
+                hops = trainTimetableRepository
+                        .findHopsArrivingBefore(from.getId(), to.getId(), LastTrainDayType.HOLIDAY.getWeekTag(), deadline);
+            }
             if (hops.isEmpty()) {
                 return null;
             }
