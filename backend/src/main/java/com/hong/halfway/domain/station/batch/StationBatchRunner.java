@@ -48,6 +48,12 @@ public class StationBatchRunner implements CommandLineRunner {
             Map.entry("경강선", "경강"),
             Map.entry("김포도시철도", "김포골드라인"));
 
+    // TAGO가 노선에 따라 역명에 "역"을 붙이거나 안 붙이는 게 일관되지 않아서, 다른 노선은 "역" 없이 저장된
+    // 같은 환승역이 이름이 안 맞아 환승 엣지(StationGraphBuilder.addTransferEdges)에서 누락되는 걸 방지
+    private static final Map<String, String> STATION_NAME_ALIAS = Map.of(
+            "김포공항역", "김포공항",
+            "부천종합운동장역", "부천종합운동장");
+
     private final SeoulOpenDataClient seoulOpenDataClient;
     private final TagoClient tagoClient;
     private final StationRepository stationRepository;
@@ -121,8 +127,10 @@ public class StationBatchRunner implements CommandLineRunner {
     }
 
     // TAGO는 "양재(서초구청)"처럼 부기역명을 붙여 같은 역을 중복 제공하는 경우가 있어 제거하고 저장
+    // STATION_NAME_ALIAS로 "역" 접미사 불일치도 같이 정리
     private String baseName(String name) {
         int parenIndex = name.indexOf('(');
-        return parenIndex >= 0 ? name.substring(0, parenIndex).trim() : name;
+        String stripped = parenIndex >= 0 ? name.substring(0, parenIndex).trim() : name;
+        return STATION_NAME_ALIAS.getOrDefault(stripped, stripped);
     }
 }
