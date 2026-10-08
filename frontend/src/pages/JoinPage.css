@@ -890,18 +890,20 @@
 
 .join-place-search-input {
   flex: 1;
+  min-width: 0;
   height: 44px;
   box-sizing: border-box;
   border: var(--border-width) solid var(--color-ink);
   border-radius: var(--radius-sm);
   padding: 0 14px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--color-ink);
   background: var(--color-surface);
 }
 
 .join-place-search-btn {
+  flex-shrink: 0;
   height: 44px;
   padding: 0 16px;
   border: var(--border-width) solid var(--color-ink);
@@ -910,6 +912,7 @@
   color: var(--color-ink);
   font-size: 13px;
   font-weight: 700;
+  white-space: nowrap;
   transition: filter 0.12s ease;
 }
 
@@ -961,7 +964,7 @@
   border: 2px solid var(--color-ink);
   border-radius: var(--radius-sm);
   padding: 0 10px;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--color-ink);
   background: var(--color-bg);
