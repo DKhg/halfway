@@ -58,6 +58,26 @@ services:
     ports:
       # 호스트(EC2)의 80번 포트로 들어온 요청을 컨테이너의 80번(Nginx)으로 연결 → 외부에 실제로 열리는 건 이 포트뿐
       - "80:80"
+      # HTTPS. nginx.conf에 443 서버 블록 추가하기 전까진 아직 안 쓰이지만 미리 열어둠
+      - "443:443"
+    volumes:
+      # Let's Encrypt가 발급한 인증서 파일 (certbot 컨테이너가 쓰고, Nginx는 읽기만 함)
+      - certbot-conf:/etc/letsencrypt:ro
+      # 도메인 소유 확인용 임시 파일을 certbot과 공유하는 경로
+      - certbot-webroot:/var/www/certbot
+
+  # Let's Encrypt 인증서 발급·자동 갱신 전용 컨테이너
+  # 최초 발급은 수동으로 한 번 실행: docker compose -f docker-compose.prod.yml run --rm certbot certonly --webroot -w /var/www/certbot -d 도메인 --email 이메일 --agree-tos --no-eff-email
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot-conf:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
+    # 평소엔 12시간마다 갱신 필요 여부만 확인(이미 유효기간 많이 남았으면 그냥 넘어감). 인증서는 90일마다 만료되므로 이렇게 자동 갱신
+    entrypoint: >
+      sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $$!; done"
 
 volumes:
   pgdata:
+  certbot-conf:
+  certbot-webroot:
