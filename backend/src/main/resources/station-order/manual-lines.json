@@ -193,7 +193,7 @@
   {
     "line": "서해선",
     "stations": [
-      {"name": "김포공항역"}, {"name": "원종", "distanceKm": 4.3}, {"name": "부천종합운동장역", "distanceKm": 2.7},
+      {"name": "김포공항"}, {"name": "원종", "distanceKm": 4.3}, {"name": "부천종합운동장", "distanceKm": 2.7},
       {"name": "소사", "distanceKm": 2.7}, {"name": "소새울", "distanceKm": 1.7}, {"name": "시흥대야", "distanceKm": 2.1},
       {"name": "신천", "distanceKm": 1.4}, {"name": "신현", "distanceKm": 3.3}, {"name": "시흥시청", "distanceKm": 3.6},
       {"name": "시흥능곡", "distanceKm": 1.3}, {"name": "달미", "distanceKm": 2.4}, {"name": "선부", "distanceKm": 1.6},
