@@ -1,0 +1,57 @@
+# 배포용 조합 — 로컬 docker-compose.yml(Postgres 하나)과 다르게 Nginx·API·Postgres 세 컨테이너를 전부 묶음
+# 실제 값은 여기 안 적고 .env 파일(EC2에만 존재, git에는 안 올림)에서 ${변수명}으로 끌어다 씀
+services:
+  postgres:
+    image: postgres:16
+    # EC2가 재부팅되거나 컨테이너가 죽어도 자동으로 다시 뜨게 함 (수동 재시작 불필요)
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: halfway
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      # 컨테이너를 지워도 DB 데이터는 이 볼륨에 남아있음 (컨테이너 재생성 시 데이터 날아가는 거 방지)
+      - pgdata:/var/lib/postgresql/data
+    # api가 뜨기 전에 postgres가 "연결 받을 준비"까지 끝났는지 주기적으로 확인
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d halfway"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      # 단순히 "컨테이너가 시작됐는지"가 아니라 "healthcheck를 통과했는지"까지 기다림
+      # (Postgres 컨테이너가 떴어도 아직 접속을 못 받는 짧은 순간에 api가 먼저 붙어서 실패하는 걸 방지)
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      # 서비스 이름 "postgres"가 Docker 내장 DNS로 해당 컨테이너의 내부 IP로 풀림
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/halfway
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      # 배포 도메인/IP를 넣어야 프론트에서 보내는 요청이 CORS에 안 막힘 (application.yml의 app.cors.allowed-origins)
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS}
+      # 운영 환경에선 API 구조가 외부에 그대로 노출되면 안 돼서 Swagger·api-docs 둘 다 꺼둠
+      SPRINGDOC_API_DOCS_ENABLED: false
+      SPRINGDOC_SWAGGER_UI_ENABLED: false
+      # 외부 API 키들 (전부 application.yml에서 ${환경변수명:기본값} 형태로 이미 외부화돼 있어서 여기만 채우면 됨)
+      SEOUL_OPEN_DATA_GENERAL_KEY: ${SEOUL_OPEN_DATA_GENERAL_KEY}
+      SEOUL_OPEN_DATA_SUBWAY_KEY: ${SEOUL_OPEN_DATA_SUBWAY_KEY}
+      TAGO_SERVICE_KEY: ${TAGO_SERVICE_KEY}
+      KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY}
+
+  web:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      # 호스트(EC2)의 80번 포트로 들어온 요청을 컨테이너의 80번(Nginx)으로 연결 → 외부에 실제로 열리는 건 이 포트뿐
+      - "80:80"
+
+volumes:
+  pgdata:

@@ -1,0 +1,290 @@
+.create-room-page {
+  min-height: 100svh;
+  box-sizing: border-box;
+  padding: var(--space-lg) 22px var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.create-room-header {
+  display: flex;
+  align-items: center;
+}
+
+.create-room-back-btn {
+  width: 44px;
+  height: 44px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 0.12s ease;
+}
+
+@media (hover: hover) {
+  .create-room-back-btn:hover {
+    filter: brightness(0.92);
+  }
+}
+
+.create-room-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.1;
+  white-space: pre-line;
+}
+
+.create-room-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-room-field-label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.create-room-name-input {
+  height: 52px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--color-ink);
+  background: var(--color-surface);
+}
+
+.create-room-date-btn {
+  height: 52px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: filter 0.12s ease;
+}
+
+@media (hover: hover) {
+  .create-room-date-btn:hover {
+    filter: brightness(0.92);
+  }
+}
+
+.create-room-mode-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-room-fairness-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.create-room-fairness-btn {
+  height: 52px;
+  padding: 8px 10px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 0.12s ease;
+}
+
+.create-room-fairness-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.create-room-fairness-btn[aria-pressed='true'] {
+  background: var(--color-ink);
+}
+
+.create-room-fairness-btn[aria-pressed='true'] .create-room-fairness-title {
+  color: var(--color-accent-yellow);
+}
+
+@media (hover: hover) {
+  .create-room-fairness-btn:hover {
+    filter: brightness(0.92);
+  }
+}
+
+.create-room-category-row {
+  display: flex;
+  gap: 10px;
+}
+
+.create-room-category-chip {
+  flex: 1;
+  height: 48px;
+  padding: 0 14px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.create-room-category-chip-check {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink);
+}
+
+.create-room-category-chip--food[aria-pressed='true'] {
+  background: var(--color-accent-green);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.create-room-category-chip--cafe[aria-pressed='true'] {
+  background: var(--color-accent-pink);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.create-room-category-chip[aria-pressed='true'] .create-room-category-chip-check {
+  background: var(--color-ink);
+  color: var(--color-accent-yellow);
+}
+
+@media (hover: hover) {
+  .create-room-category-chip:hover {
+    transform: translate(2px, 2px);
+  }
+}
+
+.create-room-error {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.create-room-submit-cta {
+  margin-top: auto;
+  height: 62px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-yellow);
+  box-shadow: var(--shadow-hard-lg);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 22px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.create-room-submit-cta:disabled {
+  background: var(--color-surface);
+  color: var(--color-ink-soft);
+  box-shadow: none;
+}
+
+@media (hover: hover) {
+  .create-room-submit-cta:not(:disabled):hover {
+    transform: translate(5px, 5px);
+    box-shadow: none;
+  }
+}
+
+.create-room-success-card {
+  margin-top: 40px;
+  padding: 20px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-green);
+  box-shadow: var(--shadow-hard-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.create-room-success-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+}
+
+.create-room-success-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.create-room-link-row {
+  padding: 12px 14px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.create-room-link-text {
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.create-room-success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-room-share-btn,
+.create-room-enter-btn {
+  height: 52px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-hard-sm);
+  color: var(--color-ink);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.create-room-share-btn {
+  background: var(--color-accent-blue);
+}
+
+.create-room-enter-btn {
+  background: var(--color-accent-yellow);
+}
+
+@media (hover: hover) {
+  .create-room-share-btn:hover,
+  .create-room-enter-btn:hover {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+}

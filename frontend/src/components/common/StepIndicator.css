@@ -1,0 +1,52 @@
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.step-indicator-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-indicator-pill {
+  height: 34px;
+  padding: 0 14px;
+  border: 2px solid var(--color-ink-soft);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-ink-soft);
+  font-size: 12px;
+  font-weight: 700;
+  transition: filter 0.12s ease;
+}
+
+.step-indicator-pill[data-status='current'] {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-accent-yellow);
+}
+
+.step-indicator-pill[data-status='done'] {
+  border-color: var(--color-ink);
+  background: var(--color-accent-green);
+  color: var(--color-ink);
+}
+
+.step-indicator-pill:not(:disabled) {
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .step-indicator-pill:not(:disabled):hover {
+    filter: brightness(0.92);
+  }
+}
+
+.step-indicator-arrow {
+  font-size: 13px;
+  color: var(--color-ink-soft);
+}

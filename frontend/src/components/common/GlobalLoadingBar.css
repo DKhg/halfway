@@ -1,0 +1,32 @@
+.global-loading-bar {
+  position: fixed;
+  /* 노치·상태바가 있는 기기에서 그 아래에 그려지게 함 (미지원 기기에선 0이라 영향 없음) */
+  top: env(safe-area-inset-top, 0px);
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-bg);
+  overflow: hidden;
+  z-index: 999;
+  /* 화면 맨 위를 가로지르는 레이어라 터치를 가로채지 않게 */
+  pointer-events: none;
+}
+
+.global-loading-bar-fill {
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+  background: var(--color-ink);
+  animation: global-loading-slide 1s ease-in-out infinite;
+}
+
+@keyframes global-loading-slide {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}

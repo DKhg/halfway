@@ -1,0 +1,33 @@
+:root {
+  --color-bg: #f4f1e8;
+  --color-surface: #ffffff;
+  --color-ink: #111111;
+  --color-ink-soft: #3a3a3a;
+
+  --color-accent-yellow: #ffe14d;
+  --color-accent-pink: #ff8cc6;
+  --color-accent-blue: #8fb2ff;
+  --color-accent-green: #c5f27a;
+  --color-accent-red: #ff5252;
+  --color-accent-red-soft: #ffb3b3;
+
+  --font-display: 'Black Han Sans', sans-serif;
+  --font-sans: 'IBM Plex Sans KR', system-ui, sans-serif;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  --border-width: 2.5px;
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --shadow-hard-sm: 3px 3px 0 var(--color-ink);
+  --shadow-hard-md: 4px 4px 0 var(--color-ink);
+  --shadow-hard-lg: 5px 5px 0 var(--color-ink);
+  --shadow-hard-xl: 6px 6px 0 var(--color-ink);
+}

@@ -1,0 +1,12 @@
+COMMENT ON COLUMN station.id IS '역(노선 단위 노드) 식별자';
+COMMENT ON COLUMN station_travel_time.id IS '역간 최단시간 레코드 식별자';
+COMMENT ON COLUMN place_candidate.id IS '중간지점 후보 식별자';
+COMMENT ON COLUMN place_candidate_time.id IS '후보별 참여자 소요시간 식별자';
+COMMENT ON COLUMN place_vote.id IS '후보 체크 식별자';
+COMMENT ON COLUMN place_option_vote.id IS '가게 후보 체크 식별자';
+COMMENT ON COLUMN settlement.id IS '정산 식별자';
+COMMENT ON COLUMN settlement_item.id IS '정산 항목 식별자';
+COMMENT ON COLUMN settlement_item_member.id IS '정산 항목 분담자 식별자';
+COMMENT ON COLUMN place_custom_option.id IS '직접 추가한 가게 후보 식별자';
+COMMENT ON COLUMN holiday.id IS '공휴일 레코드 식별자';
+COMMENT ON COLUMN train_timetable.id IS '시간표 한 줄(역x열차 기록) 식별자';

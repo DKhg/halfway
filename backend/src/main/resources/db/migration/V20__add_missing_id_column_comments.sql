@@ -1,0 +1,12 @@
+COMMENT ON COLUMN station.id IS '내부 식별자';
+COMMENT ON COLUMN station_travel_time.id IS '내부 식별자';
+COMMENT ON COLUMN place_candidate.id IS '내부 식별자';
+COMMENT ON COLUMN place_candidate_time.id IS '내부 식별자';
+COMMENT ON COLUMN place_vote.id IS '내부 식별자';
+COMMENT ON COLUMN place_option_vote.id IS '내부 식별자';
+COMMENT ON COLUMN settlement.id IS '내부 식별자';
+COMMENT ON COLUMN settlement_item.id IS '내부 식별자';
+COMMENT ON COLUMN settlement_item_member.id IS '내부 식별자';
+COMMENT ON COLUMN place_custom_option.id IS '내부 식별자';
+COMMENT ON COLUMN holiday.id IS '내부 식별자';
+COMMENT ON COLUMN train_timetable.id IS '내부 식별자';

@@ -1,0 +1,34 @@
+import { Route, Routes } from 'react-router-dom'
+import { useAnonymousUser } from './hooks/useAnonymousUser'
+import GlobalLoadingBar from './components/common/GlobalLoadingBar'
+import HomePage from './pages/HomePage'
+import JoinPage from './pages/JoinPage'
+import CreateRoomPage from './pages/CreateRoomPage'
+import SettlementPage from './pages/SettlementPage'
+
+function App() {
+  const { isReady, error } = useAnonymousUser()
+
+  if (error) {
+    return <div>{error}</div>
+  }
+
+  // 방 생성 등 인증이 필요한 API를 부르기 전에 익명 사용자 토큰부터 준비
+  if (!isReady) {
+    return null
+  }
+
+  return (
+    <>
+      <GlobalLoadingBar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/rooms/new" element={<CreateRoomPage />} />
+        <Route path="/rooms/:code" element={<JoinPage />} />
+        <Route path="/rooms/:code/settlement" element={<SettlementPage />} />
+      </Routes>
+    </>
+  )
+}
+
+export default App

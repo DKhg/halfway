@@ -1,0 +1,20 @@
+package com.hong.halfway.domain.participant.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class ParticipantJoinRequest {
+
+    @NotBlank
+    @Size(max = 20)
+    private String nickname;
+}

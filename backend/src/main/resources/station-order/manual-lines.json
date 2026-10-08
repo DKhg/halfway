@@ -1,0 +1,312 @@
+[
+  {
+    "line": "9호선",
+    "stations": [
+      {"name": "개화"}, {"name": "김포공항"}, {"name": "공항시장"}, {"name": "신방화"},
+      {"name": "마곡나루"}, {"name": "양천향교"}, {"name": "가양"}, {"name": "증미"},
+      {"name": "등촌"}, {"name": "염창"}, {"name": "신목동"}, {"name": "선유도"},
+      {"name": "당산"}, {"name": "국회의사당"}, {"name": "여의도"}, {"name": "샛강"},
+      {"name": "노량진"}, {"name": "노들"}, {"name": "흑석"}, {"name": "동작"},
+      {"name": "구반포"}, {"name": "신반포"}, {"name": "고속터미널"}, {"name": "사평"},
+      {"name": "신논현"}, {"name": "언주"}, {"name": "선정릉"}, {"name": "삼성중앙"},
+      {"name": "봉은사"}, {"name": "종합운동장"}, {"name": "삼전"}, {"name": "석촌고분"},
+      {"name": "석촌"}, {"name": "송파나루"}, {"name": "한성백제"}, {"name": "올림픽공원"},
+      {"name": "둔촌오륜"}, {"name": "중앙보훈병원"}
+    ]
+  },
+  {
+    "line": "신분당",
+    "stations": [
+      {"name": "신사"}, {"name": "논현", "distanceKm": 0.7}, {"name": "신논현", "distanceKm": 0.8},
+      {"name": "강남", "distanceKm": 0.9}, {"name": "양재", "distanceKm": 1.5}, {"name": "양재시민의숲", "distanceKm": 1.6},
+      {"name": "청계산입구", "distanceKm": 2.9}, {"name": "판교", "distanceKm": 8.2}, {"name": "정자", "distanceKm": 3.1},
+      {"name": "미금", "distanceKm": 1.9}, {"name": "동천", "distanceKm": 1.6}, {"name": "수지구청", "distanceKm": 2.1},
+      {"name": "성복", "distanceKm": 1.7}, {"name": "상현", "distanceKm": 2.1}, {"name": "광교중앙", "distanceKm": 2.4},
+      {"name": "광교", "distanceKm": 1.9}
+    ]
+  },
+  {
+    "line": "공항",
+    "stations": [
+      {"name": "서울역"}, {"name": "공덕", "distanceKm": 3.3}, {"name": "홍대입구", "distanceKm": 2.8},
+      {"name": "디지털미디어시티", "distanceKm": 3.4}, {"name": "마곡나루", "distanceKm": 8.6}, {"name": "김포공항", "distanceKm": 2.3},
+      {"name": "계양", "distanceKm": 6.6}, {"name": "검암", "distanceKm": 5.5}, {"name": "청라국제도시", "distanceKm": 4.8},
+      {"name": "영종", "distanceKm": 10.3}, {"name": "운서", "distanceKm": 3.5}, {"name": "공항화물청사", "distanceKm": 4.3},
+      {"name": "인천공항1터미널", "distanceKm": 2.6}, {"name": "인천공항2터미널", "distanceKm": 5.8}
+    ]
+  },
+  {
+    "line": "경의중앙",
+    "stations": [
+      {"name": "문산"}, {"name": "운천", "distanceKm": 3.7}, {"name": "임진강", "distanceKm": 3.7},
+      {"name": "파주", "distanceKm": 4.3}, {"name": "월롱", "distanceKm": 2.2}, {"name": "금촌", "distanceKm": 4.1},
+      {"name": "금릉", "distanceKm": 2.1}, {"name": "운정", "distanceKm": 3.1}, {"name": "야당", "distanceKm": 1.5},
+      {"name": "탄현", "distanceKm": 2.1}, {"name": "일산", "distanceKm": 1.7}, {"name": "풍산", "distanceKm": 1.9},
+      {"name": "백마", "distanceKm": 1.7}, {"name": "곡산", "distanceKm": 1.6}, {"name": "대곡", "distanceKm": 1.7},
+      {"name": "능곡", "distanceKm": 1.8}, {"name": "행신", "distanceKm": 1.5}, {"name": "강매", "distanceKm": 1.0},
+      {"name": "한국항공대", "distanceKm": 2.4}, {"name": "수색", "distanceKm": 3.4}, {"name": "디지털미디어시티", "distanceKm": 0.6},
+      {"name": "가좌", "distanceKm": 1.7}, {"name": "홍대입구", "distanceKm": 1.7}, {"name": "서강대", "distanceKm": 1.0},
+      {"name": "공덕", "distanceKm": 2.0}, {"name": "효창공원앞", "distanceKm": 1.0}, {"name": "용산", "distanceKm": 1.5},
+      {"name": "이촌", "distanceKm": 1.9}, {"name": "서빙고", "distanceKm": 1.7}, {"name": "한남", "distanceKm": 2.0},
+      {"name": "옥수", "distanceKm": 1.6}, {"name": "응봉", "distanceKm": 1.8}, {"name": "왕십리", "distanceKm": 1.4},
+      {"name": "청량리", "distanceKm": 2.4}, {"name": "회기", "distanceKm": 1.8}, {"name": "중랑", "distanceKm": 1.8},
+      {"name": "상봉", "distanceKm": 0.8}, {"name": "망우", "distanceKm": 2.1}, {"name": "양원", "distanceKm": 1.7},
+      {"name": "구리", "distanceKm": 3.2}, {"name": "도농", "distanceKm": 1.8}, {"name": "양정", "distanceKm": 3.7},
+      {"name": "덕소", "distanceKm": 2.3}, {"name": "도심", "distanceKm": 1.5}, {"name": "팔당", "distanceKm": 4.2},
+      {"name": "운길산", "distanceKm": 6.4}, {"name": "양수", "distanceKm": 1.9}, {"name": "신원", "distanceKm": 4.8},
+      {"name": "국수", "distanceKm": 3.9}, {"name": "아신", "distanceKm": 4.1}, {"name": "오빈", "distanceKm": 2.8},
+      {"name": "양평", "distanceKm": 2.2}, {"name": "원덕", "distanceKm": 5.8}, {"name": "용문", "distanceKm": 4.8},
+      {"name": "지평", "distanceKm": 3.6}
+    ]
+  },
+  {
+    "line": "수인분당",
+    "stations": [
+      {"name": "청량리"}, {"name": "왕십리", "distanceKm": 2.4}, {"name": "서울숲", "distanceKm": 2.2},
+      {"name": "압구정로데오", "distanceKm": 1.9}, {"name": "강남구청", "distanceKm": 1.2}, {"name": "선정릉", "distanceKm": 0.7},
+      {"name": "선릉", "distanceKm": 0.7}, {"name": "한티", "distanceKm": 1.0}, {"name": "도곡", "distanceKm": 0.7},
+      {"name": "구룡", "distanceKm": 0.6}, {"name": "개포동", "distanceKm": 0.7}, {"name": "대모산입구", "distanceKm": 0.6},
+      {"name": "수서", "distanceKm": 3.0}, {"name": "복정", "distanceKm": 3.2}, {"name": "가천대", "distanceKm": 2.4},
+      {"name": "태평", "distanceKm": 1.0}, {"name": "모란", "distanceKm": 0.9}, {"name": "야탑", "distanceKm": 2.3},
+      {"name": "이매", "distanceKm": 1.7}, {"name": "서현", "distanceKm": 1.4}, {"name": "수내", "distanceKm": 1.1},
+      {"name": "정자", "distanceKm": 1.6}, {"name": "미금", "distanceKm": 1.8}, {"name": "오리", "distanceKm": 1.1},
+      {"name": "죽전", "distanceKm": 1.8}, {"name": "보정", "distanceKm": 1.3}, {"name": "구성", "distanceKm": 1.6},
+      {"name": "신갈", "distanceKm": 1.6}, {"name": "기흥", "distanceKm": 1.4}, {"name": "상갈", "distanceKm": 1.9},
+      {"name": "청명", "distanceKm": 2.8}, {"name": "영통", "distanceKm": 1.1}, {"name": "망포", "distanceKm": 1.5},
+      {"name": "매탄권선", "distanceKm": 1.8}, {"name": "수원시청", "distanceKm": 1.4}, {"name": "매교", "distanceKm": 1.4},
+      {"name": "수원", "distanceKm": 1.5}, {"name": "고색", "distanceKm": 2.7}, {"name": "오목천", "distanceKm": 1.6},
+      {"name": "어천", "distanceKm": 5.1}, {"name": "야목", "distanceKm": 2.6}, {"name": "사리", "distanceKm": 4.7},
+      {"name": "한대앞", "distanceKm": 2.2}, {"name": "중앙", "distanceKm": 1.6}, {"name": "고잔", "distanceKm": 1.5},
+      {"name": "초지", "distanceKm": 1.5}, {"name": "안산", "distanceKm": 1.8}, {"name": "신길온천", "distanceKm": 2.2},
+      {"name": "정왕", "distanceKm": 2.9}, {"name": "오이도", "distanceKm": 1.4}, {"name": "달월", "distanceKm": 2.1},
+      {"name": "월곶", "distanceKm": 1.5}, {"name": "소래포구", "distanceKm": 1.3}, {"name": "인천논현", "distanceKm": 1.0},
+      {"name": "호구포", "distanceKm": 1.3}, {"name": "남동인더스파크", "distanceKm": 1.3}, {"name": "원인재", "distanceKm": 1.0},
+      {"name": "연수", "distanceKm": 0.9}, {"name": "송도", "distanceKm": 2.7}, {"name": "인하대", "distanceKm": 2.4},
+      {"name": "숭의", "distanceKm": 1.8}, {"name": "신포", "distanceKm": 1.5}, {"name": "인천", "distanceKm": 1.1}
+    ]
+  },
+  {
+    "line": "7호선",
+    "stations": [
+      {"name": "건대입구"}, {"name": "자양"}, {"name": "청담"}
+    ]
+  },
+  {
+    "line": "1호선",
+    "stations": [
+      {"name": "연천"}, {"name": "전곡", "distanceKm": 3.3}, {"name": "청산", "distanceKm": 5.8},
+      {"name": "소요산", "distanceKm": 2.4}, {"name": "동두천", "distanceKm": 1.6}, {"name": "보산", "distanceKm": 1.4},
+      {"name": "동두천중앙", "distanceKm": 1.0}, {"name": "지행", "distanceKm": 5.6}, {"name": "덕정", "distanceKm": 2.9},
+      {"name": "덕계", "distanceKm": 5.3}, {"name": "양주", "distanceKm": 1.6}, {"name": "녹양", "distanceKm": 1.3},
+      {"name": "가능", "distanceKm": 1.2}, {"name": "의정부", "distanceKm": 1.6}, {"name": "회룡", "distanceKm": 1.4},
+      {"name": "망월사", "distanceKm": 2.3}, {"name": "도봉산", "distanceKm": 1.2}, {"name": "도봉", "distanceKm": 1.3},
+      {"name": "방학", "distanceKm": 1.7}, {"name": "창동", "distanceKm": 1.0}, {"name": "녹천", "distanceKm": 1.4},
+      {"name": "월계", "distanceKm": 1.1}, {"name": "광운대", "distanceKm": 1.1}, {"name": "석계", "distanceKm": 1.4},
+      {"name": "신이문", "distanceKm": 0.8}, {"name": "외대앞", "distanceKm": 0.8}, {"name": "회기", "distanceKm": 1.4}
+    ]
+  },
+  {
+    "line": "1호선",
+    "stations": [
+      {"name": "남영"}, {"name": "용산", "distanceKm": 1.5}, {"name": "노량진", "distanceKm": 2.6},
+      {"name": "대방", "distanceKm": 1.5}, {"name": "신길", "distanceKm": 0.8}, {"name": "영등포", "distanceKm": 1.0},
+      {"name": "신도림", "distanceKm": 1.5}, {"name": "구로", "distanceKm": 1.1}, {"name": "가산디지털단지", "distanceKm": 2.4},
+      {"name": "독산", "distanceKm": 2.0}, {"name": "금천구청", "distanceKm": 1.2}, {"name": "석수", "distanceKm": 1.9},
+      {"name": "관악", "distanceKm": 1.9}, {"name": "안양", "distanceKm": 2.4}, {"name": "명학", "distanceKm": 2.2},
+      {"name": "금정", "distanceKm": 1.4}, {"name": "군포", "distanceKm": 2.2}, {"name": "당정", "distanceKm": 1.6},
+      {"name": "의왕", "distanceKm": 2.6}, {"name": "성균관대", "distanceKm": 2.9}, {"name": "화서", "distanceKm": 2.6},
+      {"name": "수원", "distanceKm": 2.1}, {"name": "세류", "distanceKm": 2.9}, {"name": "병점", "distanceKm": 4.3},
+      {"name": "세마", "distanceKm": 2.4}, {"name": "오산대", "distanceKm": 2.7}, {"name": "오산", "distanceKm": 2.7},
+      {"name": "진위", "distanceKm": 4.0}, {"name": "송탄", "distanceKm": 3.8}, {"name": "서정리", "distanceKm": 2.2},
+      {"name": "평택지제", "distanceKm": 4.8}, {"name": "평택", "distanceKm": 3.7}, {"name": "성환", "distanceKm": 9.4},
+      {"name": "직산", "distanceKm": 5.4}, {"name": "두정", "distanceKm": 3.8}, {"name": "천안", "distanceKm": 3.1},
+      {"name": "봉명", "distanceKm": 1.3}, {"name": "쌍용", "distanceKm": 1.6}, {"name": "아산", "distanceKm": 1.6},
+      {"name": "탕정", "distanceKm": 1.8}, {"name": "배방", "distanceKm": 3.1}, {"name": "온양온천", "distanceKm": 4.9},
+      {"name": "신창", "distanceKm": 5.1}
+    ]
+  },
+  {
+    "line": "1호선",
+    "stations": [
+      {"name": "구로"}, {"name": "구일", "distanceKm": 1.4}, {"name": "개봉", "distanceKm": 1.0},
+      {"name": "오류동", "distanceKm": 1.3}, {"name": "온수", "distanceKm": 1.9}, {"name": "역곡", "distanceKm": 1.3},
+      {"name": "소사", "distanceKm": 1.5}, {"name": "부천", "distanceKm": 1.1}, {"name": "중동", "distanceKm": 1.7},
+      {"name": "송내", "distanceKm": 1.0}, {"name": "부개", "distanceKm": 1.2}, {"name": "부평", "distanceKm": 1.5},
+      {"name": "백운", "distanceKm": 1.7}, {"name": "동암", "distanceKm": 1.5}, {"name": "간석", "distanceKm": 1.2},
+      {"name": "주안", "distanceKm": 1.2}, {"name": "도화", "distanceKm": 1.0}, {"name": "제물포", "distanceKm": 1.0},
+      {"name": "도원", "distanceKm": 1.4}, {"name": "동인천", "distanceKm": 1.2}, {"name": "인천", "distanceKm": 1.9}
+    ]
+  },
+  {
+    "line": "1호선",
+    "stations": [
+      {"name": "금천구청"}, {"name": "광명", "distanceKm": 4.7}
+    ]
+  },
+  {
+    "line": "1호선",
+    "stations": [
+      {"name": "병점"}, {"name": "서동탄", "distanceKm": 2.2}
+    ]
+  },
+  {
+    "line": "인천2호선",
+    "stations": [
+      {"name": "검단오류"}, {"name": "왕길", "distanceKm": 1.4}, {"name": "검단사거리", "distanceKm": 1.1},
+      {"name": "마전", "distanceKm": 0.8}, {"name": "완정", "distanceKm": 0.9}, {"name": "독정", "distanceKm": 1.8},
+      {"name": "검암", "distanceKm": 0.9}, {"name": "검바위", "distanceKm": 1.1}, {"name": "아시아드경기장", "distanceKm": 0.8},
+      {"name": "서해구청", "distanceKm": 2.2}, {"name": "가정", "distanceKm": 0.8}, {"name": "가정중앙시장", "distanceKm": 1.2},
+      {"name": "석남", "distanceKm": 0.8}, {"name": "서부여성회관", "distanceKm": 1.1}, {"name": "인천가좌", "distanceKm": 1.1},
+      {"name": "가재울", "distanceKm": 1.4}, {"name": "주안국가산단", "distanceKm": 1.0}, {"name": "주안", "distanceKm": 1.0},
+      {"name": "시민공원", "distanceKm": 1.0}, {"name": "석바위시장", "distanceKm": 0.7}, {"name": "인천시청", "distanceKm": 0.8},
+      {"name": "석천사거리", "distanceKm": 0.8}, {"name": "모래내시장", "distanceKm": 1.1}, {"name": "만수", "distanceKm": 1.2},
+      {"name": "남동구청", "distanceKm": 1.5}, {"name": "인천대공원", "distanceKm": 1.3}, {"name": "운연"}
+    ]
+  },
+  {
+    "line": "4호선",
+    "stations": [
+      {"name": "진접"}, {"name": "오남", "distanceKm": 7.7}, {"name": "별내별가람", "distanceKm": 4.4},
+      {"name": "불암산", "distanceKm": 1.2}, {"name": "상계", "distanceKm": 1.0}
+    ]
+  },
+  {
+    "line": "4호선",
+    "stations": [
+      {"name": "남태령"}, {"name": "선바위", "distanceKm": 0.9}, {"name": "경마공원", "distanceKm": 1.0},
+      {"name": "대공원", "distanceKm": 1.0}, {"name": "과천", "distanceKm": 1.0}, {"name": "정부과천청사", "distanceKm": 3.0},
+      {"name": "인덕원", "distanceKm": 1.6}, {"name": "평촌", "distanceKm": 1.3}, {"name": "범계", "distanceKm": 2.6},
+      {"name": "금정", "distanceKm": 2.3}, {"name": "산본", "distanceKm": 1.1}, {"name": "수리산", "distanceKm": 2.6},
+      {"name": "대야미", "distanceKm": 2.0}, {"name": "반월", "distanceKm": 3.7}, {"name": "상록수", "distanceKm": 1.5},
+      {"name": "한대앞", "distanceKm": 1.6}
+    ]
+  },
+  {
+    "line": "3호선",
+    "stations": [
+      {"name": "대화"}, {"name": "주엽", "distanceKm": 1.6}, {"name": "정발산", "distanceKm": 0.9},
+      {"name": "마두", "distanceKm": 1.4}, {"name": "백석", "distanceKm": 2.5}, {"name": "대곡", "distanceKm": 2.1},
+      {"name": "화정", "distanceKm": 2.6}, {"name": "원당", "distanceKm": 2.9}, {"name": "원흥", "distanceKm": 2.1},
+      {"name": "삼송", "distanceKm": 1.7}
+    ]
+  },
+  {
+    "line": "서해선",
+    "stations": [
+      {"name": "김포공항역"}, {"name": "원종", "distanceKm": 4.3}, {"name": "부천종합운동장역", "distanceKm": 2.7},
+      {"name": "소사", "distanceKm": 2.7}, {"name": "소새울", "distanceKm": 1.7}, {"name": "시흥대야", "distanceKm": 2.1},
+      {"name": "신천", "distanceKm": 1.4}, {"name": "신현", "distanceKm": 3.3}, {"name": "시흥시청", "distanceKm": 3.6},
+      {"name": "시흥능곡", "distanceKm": 1.3}, {"name": "달미", "distanceKm": 2.4}, {"name": "선부", "distanceKm": 1.6},
+      {"name": "초지", "distanceKm": 1.7}, {"name": "시우", "distanceKm": 1.4}, {"name": "원시", "distanceKm": 1.5}
+    ]
+  },
+  {
+    "line": "경의중앙",
+    "stations": [
+      {"name": "임진강"}, {"name": "도라산", "distanceKm": 2.3}
+    ]
+  },
+  {
+    "line": "수인분당",
+    "stations": [
+      {"name": "안산"}, {"name": "능길", "distanceKm": 2.9}
+    ]
+  },
+  {
+    "line": "7호선",
+    "stations": [
+      {"name": "온수"}, {"name": "까치울", "distanceKm": 1.5}, {"name": "춘의", "distanceKm": 0.8},
+      {"name": "신중동", "distanceKm": 1.0}, {"name": "부천시청", "distanceKm": 1.1}, {"name": "상동", "distanceKm": 0.9},
+      {"name": "삼산체육관", "distanceKm": 1.1}, {"name": "굴포천", "distanceKm": 0.9}, {"name": "부평구청", "distanceKm": 0.9},
+      {"name": "산곡", "distanceKm": 1.6}, {"name": "석남", "distanceKm": 2.6}
+    ]
+  },
+  {
+    "line": "8호선",
+    "stations": [
+      {"name": "별내"}, {"name": "다산", "distanceKm": 3.1}, {"name": "동구릉", "distanceKm": 1.8},
+      {"name": "구리", "distanceKm": 1.1}, {"name": "장자호수공원", "distanceKm": 1.9}, {"name": "암사역사공원", "distanceKm": 3.5},
+      {"name": "암사", "distanceKm": 1.4}
+    ]
+  },
+  {
+    "line": "신림선",
+    "stations": [
+      {"name": "샛강"}, {"name": "대방", "distanceKm": 0.6}, {"name": "서울지방병무청", "distanceKm": 0.9},
+      {"name": "보라매", "distanceKm": 0.6}, {"name": "보라매공원", "distanceKm": 0.6}, {"name": "보라매병원", "distanceKm": 0.8},
+      {"name": "당곡", "distanceKm": 0.5}, {"name": "신림", "distanceKm": 0.7}, {"name": "서원", "distanceKm": 0.7},
+      {"name": "서울대벤처타운", "distanceKm": 1.1}, {"name": "관악산", "distanceKm": 1.1}
+    ]
+  },
+  {
+    "line": "GTX-A",
+    "stations": [
+      {"name": "운정중앙"}, {"name": "킨텍스", "minutes": 4}, {"name": "대곡", "minutes": 5},
+      {"name": "연신내", "minutes": 6}, {"name": "서울역", "minutes": 6}, {"name": "수서", "minutes": 10},
+      {"name": "성남", "minutes": 7}, {"name": "구성", "minutes": 7}, {"name": "동탄", "minutes": 7}
+    ]
+  },
+  {
+    "line": "우이신설",
+    "stations": [
+      {"name": "신설동"}, {"name": "보문", "distanceKm": 1.0}, {"name": "성신여대입구", "distanceKm": 0.9},
+      {"name": "정릉", "distanceKm": 1.2}, {"name": "북한산보국문", "distanceKm": 1.2}, {"name": "솔샘", "distanceKm": 0.8},
+      {"name": "삼양사거리", "distanceKm": 0.7}, {"name": "삼양", "distanceKm": 0.8}, {"name": "화계", "distanceKm": 0.8},
+      {"name": "가오리", "distanceKm": 0.9}, {"name": "4.19민주묘지", "distanceKm": 0.7}, {"name": "솔밭공원", "distanceKm": 0.8},
+      {"name": "북한산우이", "distanceKm": 0.8}
+    ]
+  },
+  {
+    "line": "인천1호선",
+    "stations": [
+      {"name": "검단호수공원"}, {"name": "신검단중앙"}, {"name": "아라"}, {"name": "계양"}, {"name": "귤현"},
+      {"name": "박촌"}, {"name": "임학"}, {"name": "계산"}, {"name": "경인교대입구"}, {"name": "작전"},
+      {"name": "갈산"}, {"name": "부평구청"}, {"name": "부평시장"}, {"name": "부평"}, {"name": "동수"},
+      {"name": "부평삼거리"}, {"name": "간석오거리"}, {"name": "인천시청"}, {"name": "예술회관"}, {"name": "인천터미널"},
+      {"name": "문학경기장"}, {"name": "선학"}, {"name": "신연수"}, {"name": "원인재"}, {"name": "동춘"},
+      {"name": "동막"}, {"name": "캠퍼스타운"}, {"name": "테크노파크"}, {"name": "지식정보단지"}, {"name": "인천대입구"},
+      {"name": "센트럴파크"}, {"name": "국제업무지구"}, {"name": "송도달빛축제공원"}
+    ]
+  },
+  {
+    "line": "경춘",
+    "stations": [
+      {"name": "광운대"}, {"name": "청량리"}, {"name": "회기"}, {"name": "중랑"}, {"name": "상봉"},
+      {"name": "망우"}, {"name": "신내"}, {"name": "갈매"}, {"name": "별내"}, {"name": "퇴계원"},
+      {"name": "사릉"}, {"name": "금곡"}, {"name": "평내호평"}, {"name": "천마산"}, {"name": "마석"},
+      {"name": "대성리"}, {"name": "청평"}, {"name": "상천"}, {"name": "가평"}, {"name": "굴봉산"},
+      {"name": "백양리"}, {"name": "강촌"}, {"name": "김유정"}, {"name": "남춘천"}, {"name": "춘천"}
+    ]
+  },
+  {
+    "line": "의정부",
+    "stations": [
+      {"name": "발곡"}, {"name": "회룡"}, {"name": "범골"}, {"name": "경전철의정부"}, {"name": "의정부시청"},
+      {"name": "흥선"}, {"name": "의정부중앙"}, {"name": "동오"}, {"name": "새말"}, {"name": "경기도청북부청사"},
+      {"name": "효자"}, {"name": "곤제"}, {"name": "어룡"}, {"name": "송산"}, {"name": "탑석"}
+    ]
+  },
+  {
+    "line": "에버라인",
+    "stations": [
+      {"name": "기흥"}, {"name": "강남대"}, {"name": "지석"}, {"name": "어정"}, {"name": "동백"},
+      {"name": "초당"}, {"name": "삼가"}, {"name": "시청.용인대"}, {"name": "명지대"}, {"name": "김량장"},
+      {"name": "용인중앙시장"}, {"name": "고진"}, {"name": "보평"}, {"name": "둔전"}, {"name": "전대.에버랜드"}
+    ]
+  },
+  {
+    "line": "경강",
+    "stations": [
+      {"name": "판교"}, {"name": "성남"}, {"name": "이매"}, {"name": "삼동"}, {"name": "경기광주"},
+      {"name": "초월"}, {"name": "곤지암"}, {"name": "신둔도예촌"}, {"name": "이천"}, {"name": "부발"},
+      {"name": "세종대왕릉"}, {"name": "여주"}
+    ]
+  },
+  {
+    "line": "김포골드라인",
+    "stations": [
+      {"name": "양촌"}, {"name": "구래"}, {"name": "마산"}, {"name": "장기"}, {"name": "운양"},
+      {"name": "걸포북변"}, {"name": "사우"}, {"name": "풍무"}, {"name": "고촌"}, {"name": "김포공항"}
+    ]
+  }
+]
