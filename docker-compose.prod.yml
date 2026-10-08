@@ -61,23 +61,12 @@ services:
       # HTTPS. nginx.conf에 443 서버 블록 추가하기 전까진 아직 안 쓰이지만 미리 열어둠
       - "443:443"
     volumes:
-      # Let's Encrypt가 발급한 인증서 파일 (certbot 컨테이너가 쓰고, Nginx는 읽기만 함)
-      - certbot-conf:/etc/letsencrypt:ro
-      # 도메인 소유 확인용 임시 파일을 certbot과 공유하는 경로
-      - certbot-webroot:/var/www/certbot
-
-  # Let's Encrypt 인증서 발급·자동 갱신 전용 컨테이너
-  # 최초 발급은 수동으로 한 번 실행: docker compose -f docker-compose.prod.yml run --rm certbot certonly --webroot -w /var/www/certbot -d 도메인 --email 이메일 --agree-tos --no-eff-email
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - certbot-conf:/etc/letsencrypt
-      - certbot-webroot:/var/www/certbot
-    # 평소엔 12시간마다 갱신 필요 여부만 확인(이미 유효기간 많이 남았으면 그냥 넘어감). 인증서는 90일마다 만료되므로 이렇게 자동 갱신
-    entrypoint: >
-      sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $$!; done"
+      # Let's Encrypt 인증서는 EC2 호스트에 직접 설치한 Certbot이 관리 (컨테이너로 안 돌림 - systemd 타이머로
+      # 자동 갱신되는 표준 패키지를 그대로 씀). Nginx는 호스트의 인증서 파일을 읽기 전용으로 그대로 바라봄
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # 도메인 소유 확인용 임시 파일 경로. 호스트의 /home/ec2-user/certbot-webroot와 공유
+      # (docker-compose는 "~" 홈 디렉토리 축약을 못 읽어서 절대경로로 명시)
+      - /home/ec2-user/certbot-webroot:/var/www/certbot
 
 volumes:
   pgdata:
-  certbot-conf:
-  certbot-webroot:
