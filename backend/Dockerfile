@@ -47,4 +47,6 @@ EXPOSE 8080
 # 컨테이너 시작 시 실행되는 명령
 # -Dfile.encoding=UTF-8: 베이스 이미지의 기본 로케일에 따라 로그의 한글이 깨질 수 있어서 명시적으로 고정
 #   (이 프로젝트 로그 컨벤션이 전부 한글이라 특히 중요 — backend/CLAUDE.md 로깅 규칙 참고)
-ENTRYPOINT ["java", "-Dfile.encoding=UTF-8", "-jar", "app.jar"]
+# -Duser.timezone=Asia/Seoul: 컨테이너 기본 타임존이 UTC일 수 있어서, 막차·약속 당일 계산이
+#   엉뚱한 시각 기준으로 돌지 않게 JVM 타임존을 명시적으로 고정 (CLAUDE.md: 시간은 Asia/Seoul 기준)
+ENTRYPOINT ["java", "-Dfile.encoding=UTF-8", "-Duser.timezone=Asia/Seoul", "-jar", "app.jar"]
