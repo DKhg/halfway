@@ -247,4 +247,27 @@ class LastTrainServiceTest {
         assertThat(response.isUnsupported()).isFalse();
         assertThat(response.getLastDepartureTime()).isEqualTo("23:30");
     }
+
+    @Test
+    void 가장_빠른_경로에_그_요일_시간표가_없으면_차선_경로로_계산한다() {
+        // 같은 이름의 역이 두 노선에 걸쳐 있는 환승역(S) 상황을 흉내냄: 9호선 쪽이 더 빠르지만 시간표가 비어있고,
+        // 1호선 쪽은 더 느리지만 실제로 탈 수 있는 열차가 있는 경우
+        Station sFast = createTagoStation("S테스트역fb", "9호선", "T901");
+        Station sSlow = createStation("S테스트역fb", "1호선", "914");
+        Station h = createStation("H테스트역fb", "9호선", "915");
+
+        stationTravelTimeRepository.save(StationTravelTime.create(sFast, h, (short) 5, (short) 0, sFast));
+        stationTravelTimeRepository.save(StationTravelTime.create(sSlow, h, (short) 10, (short) 0, sSlow));
+
+        // 더 느린 1호선 쪽에만 실제 열차를 심어둠 (9호선 쪽은 데이터 자체가 없는 상황)
+        saveTrain(sSlow, "W1", (short) 1, (short) 1420, null);
+        saveTrain(h, "W1", (short) 1, null, (short) 1430);
+
+        Room room = createFixedRoom("fb", "S테스트역fb");
+
+        LastTrainResponse response = lastTrainService.calculate(room.getCode(), "H테스트역fb", LastTrainDayType.WEEKDAY);
+
+        assertThat(response.isUnsupported()).isFalse();
+        assertThat(response.getLastDepartureTime()).isEqualTo("23:40");
+    }
 }

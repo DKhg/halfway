@@ -25,7 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 막차 역산 계산. 약속역(S)과 참여자가 입력한 귀가역(H) 사이 최단경로(predecessor 체인)를 복원해
  * 구간마다 실제 열차 시간표로 "S에서 몇 시까지 출발해야 귀가역까지 갈 수 있는지" 뒤에서부터 계산
- * (대체 환승경로 비교 없이 최단경로 1개만 역산하는 1차 버전)
+ * 가장 빠른 경로가 해당 요일 시간표 데이터 공백(TAGO 일부 노선의 토요일 데이터 누락 등)으로 막히면
+ * 그다음으로 빠른 경로를 차례로 시도함 (환승역처럼 같은 역 이름이 여러 노선에 걸쳐 있을 때만 해당)
  */
 @Service
 @RequiredArgsConstructor
@@ -61,18 +62,25 @@ public class LastTrainService {
             return LastTrainResponse.of(null);
         }
 
-        StationTravelTime bestPair = findBestPair(fromCandidates, toCandidates);
-        if (bestPair == null) {
+        List<StationTravelTime> candidatePairs = findCandidatePairs(fromCandidates, toCandidates);
+        if (candidatePairs.isEmpty()) {
             return LastTrainResponse.of(null);
         }
 
-        List<Station> path = reconstructPath(bestPair);
-        if (!isFullySupported(path)) {
-            return LastTrainResponse.unsupported();
+        // 가장 빠른 경로부터 순서대로 시도, 그 요일에 탈 수 있는 열차가 없으면(데이터 공백) 다음으로 빠른 경로로 넘어감
+        boolean anySupported = false;
+        for (StationTravelTime pair : candidatePairs) {
+            List<Station> path = reconstructPath(pair);
+            if (!isFullySupported(path)) {
+                continue;
+            }
+            anySupported = true;
+            Integer departureMinute = reverseCalculate(path, dayType.getWeekTag());
+            if (departureMinute != null) {
+                return LastTrainResponse.of(formatMinute(departureMinute));
+            }
         }
-
-        Integer departureMinute = reverseCalculate(path, dayType.getWeekTag());
-        return LastTrainResponse.of(departureMinute == null ? null : formatMinute(departureMinute));
+        return anySupported ? LastTrainResponse.of(null) : LastTrainResponse.unsupported();
     }
 
     // 같은 역(물리적으로 동일 노드)이면 이미 귀가역에 있는 것 - 막차 계산 자체가 필요 없음
@@ -81,13 +89,14 @@ public class LastTrainService {
                 .anyMatch(id -> toCandidates.stream().anyMatch(to -> to.getId().equals(id)));
     }
 
-    // S 후보들과 H 후보들의 모든 조합 중 최단시간 쌍 선택 (환승역처럼 같은 이름이 여러 노선에 걸쳐 있을 수 있어서)
-    private StationTravelTime findBestPair(List<Station> fromCandidates, List<Station> toCandidates) {
+    // S 후보들과 H 후보들의 모든 조합을 최단시간 오름차순으로 정렬 (환승역처럼 같은 이름이 여러 노선에 걸쳐 있을 수 있어서)
+    // 가장 빠른 쌍 하나만 쓰지 않고 순서대로 반환해서, 그 경로가 데이터 공백으로 막히면 다음 후보를 시도할 수 있게 함
+    private List<StationTravelTime> findCandidatePairs(List<Station> fromCandidates, List<Station> toCandidates) {
         List<Long> fromIds = fromCandidates.stream().map(Station::getId).toList();
         List<Long> toIds = toCandidates.stream().map(Station::getId).toList();
         return stationTravelTimeRepository.findByFromStation_IdInAndToStation_IdIn(fromIds, toIds).stream()
-                .min(Comparator.comparing(StationTravelTime::getMinutes))
-                .orElse(null);
+                .sorted(Comparator.comparing(StationTravelTime::getMinutes))
+                .toList();
     }
 
     // predecessor 체인을 S까지 한 칸씩 따라가며 실제 경유역 순서([S, ..., H]) 복원
