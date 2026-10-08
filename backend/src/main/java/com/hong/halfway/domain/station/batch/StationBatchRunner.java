@@ -54,6 +54,11 @@ public class StationBatchRunner implements CommandLineRunner {
             "김포공항역", "김포공항",
             "부천종합운동장역", "부천종합운동장");
 
+    // 서울 열린데이터광장 역 목록 API가 역명 개정을 반영 안 해서 옛 이름을 그대로 주는 경우
+    // (4호선 신길온천 -> 능길, 2021-01-20 개정. 수인분당선과 물리적으로 같은 역이라 이름이 안 맞으면 환승 연결이 끊김)
+    private static final Map<String, String> SEOUL_METRO_STATION_NAME_ALIAS = Map.of(
+            "신길온천", "능길");
+
     private final SeoulOpenDataClient seoulOpenDataClient;
     private final TagoClient tagoClient;
     private final StationRepository stationRepository;
@@ -78,9 +83,10 @@ public class StationBatchRunner implements CommandLineRunner {
             if (!SEOUL_METRO_LINES.contains(line)) {
                 continue;
             }
-            Station station = stationRepository.findByNameAndLine(row.name(), line).orElse(null);
+            String name = SEOUL_METRO_STATION_NAME_ALIAS.getOrDefault(row.name(), row.name());
+            Station station = stationRepository.findByNameAndLine(name, line).orElse(null);
             if (station == null) {
-                station = Station.create(row.name(), line);
+                station = Station.create(name, line);
                 station.updateFrCode(row.frCode());
                 stationRepository.save(station);
                 saved++;
