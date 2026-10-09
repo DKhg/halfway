@@ -26,11 +26,21 @@ function StationAutocompleteInput({ id, value, onChange, stationOptions, placeho
   }
 
   // 역 검색창이 모달(overflow:auto) 안에 있으면 드롭다운이 잘려서 document.body에 직접 그리고 위치만 계산
+  // getBoundingClientRect는 visualViewport(화면에 실제 보이는 영역) 기준인데, position:fixed는
+  // layoutViewport 기준이라 모바일에서 키보드 뜬 동안 둘이 어긋날 수 있어 그 차이(offset)를 보정
   const updateDropdownRect = () => {
-    if (wrapperRef.current) {
-      const rect = wrapperRef.current.getBoundingClientRect()
-      setDropdownRect({ top: rect.bottom + 6, left: rect.left, width: rect.width })
+    if (!wrapperRef.current) {
+      return
     }
+    const rect = wrapperRef.current.getBoundingClientRect()
+    const visualViewport = window.visualViewport
+    const offsetLeft = visualViewport?.offsetLeft ?? 0
+    const offsetTop = visualViewport?.offsetTop ?? 0
+    setDropdownRect({
+      top: rect.bottom + offsetTop + 6,
+      left: rect.left + offsetLeft,
+      width: rect.width,
+    })
   }
 
   const openDropdown = () => {
@@ -54,9 +64,18 @@ function StationAutocompleteInput({ id, value, onChange, stationOptions, placeho
     }
     window.addEventListener('scroll', handleScroll, true)
     window.addEventListener('resize', updateDropdownRect)
+
+    // 모바일 키보드가 레이아웃을 줄이지 않고 화면 위에 덮어씌우기만 하는 경우(iOS Safari 등),
+    // window.innerHeight가 안 바뀌어서 위 리스너가 전혀 안 울림 - 이 경우엔 visualViewport만 반응함
+    const visualViewport = window.visualViewport
+    visualViewport?.addEventListener('resize', updateDropdownRect)
+    visualViewport?.addEventListener('scroll', updateDropdownRect)
+
     return () => {
       window.removeEventListener('scroll', handleScroll, true)
       window.removeEventListener('resize', updateDropdownRect)
+      visualViewport?.removeEventListener('resize', updateDropdownRect)
+      visualViewport?.removeEventListener('scroll', updateDropdownRect)
     }
   }, [isOpen])
 
