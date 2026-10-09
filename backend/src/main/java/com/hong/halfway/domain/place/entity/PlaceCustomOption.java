@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 참여자가 추천 5개 외에 직접 검색해서 추가한 가게 후보. 카카오 로컬 API는 장소 단건 재조회가 없어 추가 시점 정보를 스냅샷으로 저장
+ * 참여자가 추천 목록 외에 직접 검색해서 추가한 가게 후보. 카카오 로컬 API는 장소 단건 재조회가 없어 추가 시점 정보를 스냅샷으로 저장
  * UNIQUE(room_id, category, place_id)
  */
 @Entity

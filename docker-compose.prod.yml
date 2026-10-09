@@ -49,6 +49,7 @@ services:
       SEOUL_OPEN_DATA_SUBWAY_KEY: ${SEOUL_OPEN_DATA_SUBWAY_KEY}
       TAGO_SERVICE_KEY: ${TAGO_SERVICE_KEY}
       KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
 
   web:
     image: khongg/halfway-frontend:${IMAGE_TAG:-latest}

@@ -15,7 +15,4 @@ public class ParticipantUpdateRequest {
 
     @NotBlank
     private String startStationName;
-
-    // 안 정하면 출발역과 동일하게 처리 (docs/PRD.md: "비우면 출발역")
-    private String homeStationName;
 }

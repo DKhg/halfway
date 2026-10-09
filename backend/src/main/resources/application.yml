@@ -13,6 +13,11 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+  servlet:
+    multipart:
+      # 휴대폰으로 찍은 영수증 사진 업로드용. 이미지는 저장 안 하고 Gemini 호출 한 번에만 씀
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 app:
   cors:
@@ -26,3 +31,6 @@ external:
     key: ${TAGO_SERVICE_KEY:}
   kakao:
     rest-api-key: ${KAKAO_REST_API_KEY:}
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-3.1-flash-lite}

@@ -39,6 +39,10 @@ public class User extends BaseTimeEntity {
     @Column(name = "last_nickname", length = 20)
     private String lastNickname;
 
+    // 귀가역. 방마다 따로가 아니라 계정(익명 ID) 전체에 하나, 막차 계산 모달에 미리 채워주는 용도
+    @Column(name = "home_station_name")
+    private String homeStationName;
+
     private User(String tokenHash) {
         this.tokenHash = tokenHash;
     }
@@ -55,5 +59,12 @@ public class User extends BaseTimeEntity {
      */
     public void updateLastNickname(String nickname) {
         this.lastNickname = nickname;
+    }
+
+    /**
+     * 귀가역 설정·수정
+     */
+    public void updateHomeStation(String homeStationName) {
+        this.homeStationName = homeStationName;
     }
 }

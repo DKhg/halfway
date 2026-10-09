@@ -53,16 +53,12 @@ public class ParticipantService {
     }
 
     /**
-     * 출발역·귀가역 입력 또는 수정. 귀가역을 안 정하면 출발역과 동일하게 처리
+     * 출발역 입력 또는 수정
      */
     @Transactional
     public Participant updateMyInfo(String code, UUID userId, ParticipantUpdateRequest request) {
         Participant participant = findMyParticipant(code, userId);
-        String homeStationName = request.getHomeStationName() != null && !request.getHomeStationName().isBlank()
-                ? request.getHomeStationName()
-                : request.getStartStationName();
-
-        participant.updateStations(request.getStartStationName(), homeStationName);
+        participant.updateStartStation(request.getStartStationName());
         log.info("[완료] 참여 정보 수정 - code: {}", code);
         return participant;
     }

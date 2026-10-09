@@ -88,21 +88,6 @@ class ParticipantServiceTest {
     }
 
     @Test
-    void 귀가역을_안_정하면_출발역과_같아진다() {
-        Room room = createRoom("code-4");
-        User participantUser = userRepository.save(User.createAnonymous("p-hash-4"));
-        participantService.join(room.getCode(), participantUser.getId(), "지우");
-        ParticipantUpdateRequest request = ParticipantUpdateRequest.builder()
-                .startStationName("강남역")
-                .homeStationName(null)
-                .build();
-
-        Participant participant = participantService.updateMyInfo(room.getCode(), participantUser.getId(), request);
-
-        assertThat(participant.getHomeStationName()).isEqualTo("강남역");
-    }
-
-    @Test
     void 방의_참여자_목록을_조회한다() {
         Room room = createRoom("code-6");
         User participant1 = userRepository.save(User.createAnonymous("p-hash-6-1"));

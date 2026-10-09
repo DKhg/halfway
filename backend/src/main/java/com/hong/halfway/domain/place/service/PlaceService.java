@@ -51,8 +51,8 @@ public class PlaceService {
     // 자유 키워드 직접 검색은 특정 가게를 찾는 용도라 추천보다 넓게 잡음(m)
     private static final int CUSTOM_SEARCH_RADIUS_METERS = 2000;
 
-    // 카테고리(세부 카테고리)별 추천 후보 최대 수
-    private static final int MAX_RESULTS = 5;
+    // 카테고리(세부 카테고리)별 추천 후보 최대 수 (프론트에서 5개씩 "더보기"로 공개, 카카오 로컬 API 한 페이지 최대치)
+    private static final int MAX_RESULTS = 15;
 
     // 자유 키워드 직접 검색 결과 최대 수 (카카오 로컬 API가 한 번에 주는 최대치)
     private static final int CUSTOM_SEARCH_MAX_RESULTS = 15;
@@ -82,7 +82,7 @@ public class PlaceService {
     private final KakaoLocalClient kakaoLocalClient;
 
     /**
-     * 확정된 역 주변 가게 후보와 득표 현황을 함께 조회. customOnly가 false면 세부 카테고리 추천 5개(카카오 로컬 API 즉석 검색),
+     * 확정된 역 주변 가게 후보와 득표 현황을 함께 조회. customOnly가 false면 세부 카테고리 추천 최대 15개(카카오 로컬 API 즉석 검색),
      * true면 참여자가 직접 검색해서 추가한 곳만 반환 ("직접추가" 탭). 직접 추가한 곳은 세부 카테고리가 없어 추천 목록과
      * 섞으면 모든 세부 카테고리 탭에 중복으로 보이므로 항상 분리해서 조회
      */
@@ -119,7 +119,7 @@ public class PlaceService {
     }
 
     /**
-     * 자유 키워드로 가게를 검색 (추천 5개와 별개, 직접 추가 전 미리보기).
+     * 자유 키워드로 가게를 검색 (추천 목록과 별개, 직접 추가 전 미리보기).
      * 이미 이 방에 추가됐거나 역 풀("다른 모임에서 추가" 탭)에 있는 곳은 결과에서 제외(두 탭에 같은 곳이 중복으로 안 뜨게), 득표는 항상 0으로 내려감
      */
     public List<PlaceOptionResponse> searchCustomPlaces(String code, PlaceCategory category, String keyword,

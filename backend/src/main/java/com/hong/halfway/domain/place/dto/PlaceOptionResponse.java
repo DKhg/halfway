@@ -36,7 +36,7 @@ public class PlaceOptionResponse {
     // 요청자 본인이 체크했는지 여부
     private final boolean votedByMe;
 
-    // 추천 5개가 아니라 참여자가 직접 검색해서 추가한 곳인지 여부
+    // 추천 목록이 아니라 참여자가 직접 검색해서 추가한 곳인지 여부
     private final boolean custom;
 
     // 추가한 사람이 남긴 짧은 한줄평 (선택, 최대 20자). 없으면 null

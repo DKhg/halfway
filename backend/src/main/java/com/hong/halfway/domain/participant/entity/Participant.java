@@ -43,10 +43,6 @@ public class Participant extends BaseTimeEntity {
     @Column(name = "start_station_name")
     private String startStationName;
 
-    // 귀가역. 본인에게만 노출, 다른 참여자에겐 막차 시각만 표시
-    @Column(name = "home_station_name")
-    private String homeStationName;
-
     private Participant(Room room, User user, String nickname) {
         this.room = room;
         this.user = user;
@@ -54,17 +50,16 @@ public class Participant extends BaseTimeEntity {
     }
 
     /**
-     * 방 참여. 출발역 등 상세 정보는 이후 updateStations로 입력
+     * 방 참여. 출발역 등 상세 정보는 이후 updateStartStation으로 입력
      */
     public static Participant join(Room room, User user, String nickname) {
         return new Participant(room, user, nickname);
     }
 
     /**
-     * 출발역·귀가역 입력 또는 수정
+     * 출발역 입력 또는 수정
      */
-    public void updateStations(String startStationName, String homeStationName) {
+    public void updateStartStation(String startStationName) {
         this.startStationName = startStationName;
-        this.homeStationName = homeStationName;
     }
 }

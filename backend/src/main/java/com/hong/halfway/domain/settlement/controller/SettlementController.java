@@ -1,10 +1,12 @@
 package com.hong.halfway.domain.settlement.controller;
 
+import com.hong.halfway.domain.settlement.dto.ReceiptItemDraft;
 import com.hong.halfway.domain.settlement.dto.SettlementAccountRequest;
 import com.hong.halfway.domain.settlement.dto.SettlementItemRequest;
 import com.hong.halfway.domain.settlement.dto.SettlementResponse;
 import com.hong.halfway.domain.settlement.service.SettlementService;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -70,6 +74,17 @@ public class SettlementController {
             @AuthenticationPrincipal UUID requesterId) {
         settlementService.addItem(code, request, requesterId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 영수증 사진에서 상호명·합계 금액 초안 추출 (결제자만 가능)
+     */
+    @PostMapping("/items/receipt-scan")
+    public ResponseEntity<ReceiptItemDraft> scanReceipt(@PathVariable String code,
+            @RequestParam("image") MultipartFile image, @AuthenticationPrincipal UUID requesterId) throws IOException {
+        ReceiptItemDraft draft = settlementService.scanReceipt(code, image.getBytes(), image.getContentType(),
+                requesterId);
+        return ResponseEntity.ok(draft);
     }
 
     /**

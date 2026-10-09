@@ -42,7 +42,7 @@ public class PlaceController {
     }
 
     /**
-     * 자유 키워드로 가게 검색 (추천 5개와 별개, 직접 추가 전 미리보기)
+     * 자유 키워드로 가게 검색 (추천 목록과 별개, 직접 추가 전 미리보기)
      */
     @GetMapping("/search")
     public ResponseEntity<List<PlaceOptionResponse>> searchCustomPlaces(@PathVariable String code,

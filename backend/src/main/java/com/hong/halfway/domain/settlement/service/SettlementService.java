@@ -7,7 +7,9 @@ import com.hong.halfway.domain.room.entity.Room;
 import com.hong.halfway.domain.room.entity.RoomMode;
 import com.hong.halfway.domain.room.entity.RoomStatus;
 import com.hong.halfway.domain.room.repository.RoomRepository;
+import com.hong.halfway.domain.settlement.client.GeminiReceiptClient;
 import com.hong.halfway.domain.settlement.dto.ParticipantTotalResponse;
+import com.hong.halfway.domain.settlement.dto.ReceiptItemDraft;
 import com.hong.halfway.domain.settlement.dto.SettlementItemRequest;
 import com.hong.halfway.domain.settlement.dto.SettlementItemResponse;
 import com.hong.halfway.domain.settlement.dto.SettlementResponse;
@@ -45,6 +47,7 @@ public class SettlementService {
     private final SettlementRepository settlementRepository;
     private final SettlementItemRepository settlementItemRepository;
     private final SettlementItemMemberRepository settlementItemMemberRepository;
+    private final GeminiReceiptClient geminiReceiptClient;
 
     /**
      * 이 방에 정산이 이미 시작됐는지(결제자가 선점됐는지) 여부. 방 상세 조회에서 "정산" 탭 이동 가능 여부 판단에 사용
@@ -132,6 +135,21 @@ public class SettlementService {
                 SettlementItem.create(settlement, request.getName(), request.getAmount()));
         saveMembers(item, members);
         log.info("[완료] 정산 항목 추가 - code: {}, amount: {}", code, request.getAmount());
+    }
+
+    /**
+     * 영수증 사진에서 상호명·합계 금액을 추출 (결제자만 가능). 이미지는 Gemini 호출 한 번에만 쓰고 저장하지 않음
+     */
+    public ReceiptItemDraft scanReceipt(String code, byte[] imageBytes, String contentType, UUID requesterId) {
+        Settlement settlement = findSettlementByRoom(findRoomByCode(code));
+        requirePayer(settlement, requesterId);
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new CustomException(ErrorCode.INVALID_RECEIPT_IMAGE);
+        }
+
+        ReceiptItemDraft draft = geminiReceiptClient.extractReceipt(imageBytes, contentType);
+        log.info("[완료] 영수증 인식 - code: {}, 인식됨: {}", code, draft.name() != null);
+        return draft;
     }
 
     /**
