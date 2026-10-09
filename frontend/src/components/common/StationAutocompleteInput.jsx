@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { matchesStationQuery } from '../../utils/hangul'
 import { getLineColor, getLineLabel } from '../../utils/subwayLine'
@@ -25,13 +25,31 @@ function StationAutocompleteInput({ id, value, onChange, stationOptions, placeho
   }
 
   // 역 검색창이 모달(overflow:auto) 안에 있으면 드롭다운이 잘려서 document.body에 직접 그리고 위치만 계산
-  const openDropdown = () => {
-    setIsOpen(true)
+  const updateDropdownRect = () => {
     if (wrapperRef.current) {
       const rect = wrapperRef.current.getBoundingClientRect()
       setDropdownRect({ top: rect.bottom + 6, left: rect.left, width: rect.width })
     }
   }
+
+  const openDropdown = () => {
+    setIsOpen(true)
+    updateDropdownRect()
+  }
+
+  // 모바일에서 포커스 직후 키보드가 올라오며 화면이 자동 스크롤되면 입력칸 위치가 바뀌는데,
+  // 열려있는 동안 스크롤·리사이즈를 다시 들어서 위치를 따라가게 함 (안 그러면 포커스 시점 위치에 고정돼버림)
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+    window.addEventListener('scroll', updateDropdownRect, true)
+    window.addEventListener('resize', updateDropdownRect)
+    return () => {
+      window.removeEventListener('scroll', updateDropdownRect, true)
+      window.removeEventListener('resize', updateDropdownRect)
+    }
+  }, [isOpen])
 
   return (
     <div className="station-autocomplete" ref={wrapperRef}>
