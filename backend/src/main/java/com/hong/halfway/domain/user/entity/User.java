@@ -67,11 +67,4 @@ public class User extends BaseTimeEntity {
     public void updateHomeStation(String homeStationName) {
         this.homeStationName = homeStationName;
     }
-
-    /**
-     * 페어링 코드 교환 시 새 인증 토큰으로 교체 (기존 토큰은 무효화됨)
-     */
-    public void reissueTokenHash(String tokenHash) {
-        this.tokenHash = tokenHash;
-    }
 }
