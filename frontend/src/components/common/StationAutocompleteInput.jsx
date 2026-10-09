@@ -8,6 +8,7 @@ function StationAutocompleteInput({ id, value, onChange, stationOptions, placeho
   const [isOpen, setIsOpen] = useState(false)
   const [dropdownRect, setDropdownRect] = useState(null)
   const wrapperRef = useRef(null)
+  const dropdownRef = useRef(null)
 
   const trimmed = value.trim()
   const suggestions = trimmed
@@ -43,10 +44,18 @@ function StationAutocompleteInput({ id, value, onChange, stationOptions, placeho
     if (!isOpen) {
       return
     }
-    window.addEventListener('scroll', updateDropdownRect, true)
+    // 드롭다운 목록 자체를 스크롤하는 것도 capture 단계에선 window까지 올라와서 잡힘 -
+    // 그건 입력칸 위치가 안 바뀐 거니까 무시하고, 그 외(페이지·모달 스크롤)만 위치 재계산
+    const handleScroll = (e) => {
+      if (dropdownRef.current && dropdownRef.current.contains(e.target)) {
+        return
+      }
+      updateDropdownRect()
+    }
+    window.addEventListener('scroll', handleScroll, true)
     window.addEventListener('resize', updateDropdownRect)
     return () => {
-      window.removeEventListener('scroll', updateDropdownRect, true)
+      window.removeEventListener('scroll', handleScroll, true)
       window.removeEventListener('resize', updateDropdownRect)
     }
   }, [isOpen])
@@ -69,6 +78,7 @@ function StationAutocompleteInput({ id, value, onChange, stationOptions, placeho
       />
       {isOpen && suggestions.length > 0 && dropdownRect && createPortal(
         <ul
+          ref={dropdownRef}
           className="station-autocomplete-suggestions station-autocomplete-suggestions--portal"
           style={{ top: dropdownRect.top, left: dropdownRect.left, width: dropdownRect.width }}
         >
