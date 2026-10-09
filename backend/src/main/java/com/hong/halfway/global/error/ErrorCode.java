@@ -33,6 +33,8 @@ public enum ErrorCode {
     NOT_CUSTOM_PLACE_ADDER(HttpStatus.FORBIDDEN, "직접 추가한 사람이나 방장만 지울 수 있어요."),
     INVALID_RECEIPT_IMAGE(HttpStatus.BAD_REQUEST, "이미지 파일만 올릴 수 있어요."),
     RECEIPT_IMAGE_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, "사진 용량이 너무 커요. 10MB 이하로 올려주세요."),
+    PAIRING_CODE_INVALID(HttpStatus.BAD_REQUEST, "코드가 올바르지 않거나 만료됐어요."),
+    PAIRING_CODE_RATE_LIMITED(HttpStatus.TOO_MANY_REQUESTS, "너무 많이 시도했어요. 잠시 후 다시 시도해 주세요."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 
     private final HttpStatus status;

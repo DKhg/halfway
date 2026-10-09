@@ -3,9 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getRoom } from '../api/roomApi'
 import { getMe, updateHomeStation } from '../api/userApi'
 import { getAllStationNames } from '../api/stationApi'
+import { useInstallPrompt } from '../hooks/useInstallPrompt'
+import { isIOS, isStandalone } from '../utils/platform'
 import Modal from '../components/common/Modal'
 import MyRoomsModal from '../components/common/MyRoomsModal'
 import StationAutocompleteInput from '../components/common/StationAutocompleteInput'
+import IosInstallModal from '../components/common/IosInstallModal'
 import './HomePage.css'
 
 const STEPS = [
@@ -23,6 +26,8 @@ function extractRoomCode(input) {
 
 function HomePage() {
   const navigate = useNavigate()
+  const { canInstall, promptInstall } = useInstallPrompt()
+  const [isIosInstallOpen, setIsIosInstallOpen] = useState(false)
   const [isMyRoomsOpen, setIsMyRoomsOpen] = useState(false)
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const [inviteInput, setInviteInput] = useState('')
@@ -101,6 +106,16 @@ function HomePage() {
           <button type="button" className="home-my-rooms-btn home-set-station-btn" onClick={handleOpenHomeStationModal}>
             귀가역 설정
           </button>
+          {!isStandalone() && canInstall && (
+            <button type="button" className="home-my-rooms-btn home-install-btn" onClick={promptInstall}>
+              앱 설치하기
+            </button>
+          )}
+          {!isStandalone() && !canInstall && isIOS() && (
+            <button type="button" className="home-my-rooms-btn home-install-btn" onClick={() => setIsIosInstallOpen(true)}>
+              홈 화면에 추가
+            </button>
+          )}
         </div>
       </header>
 
@@ -135,6 +150,8 @@ function HomePage() {
       </div>
 
       {isMyRoomsOpen && <MyRoomsModal onClose={() => setIsMyRoomsOpen(false)} />}
+
+      {isIosInstallOpen && <IosInstallModal onClose={() => setIsIosInstallOpen(false)} />}
 
       {isInviteModalOpen && (
         <Modal title="초대 링크로 참여" onClose={() => setIsInviteModalOpen(false)}>

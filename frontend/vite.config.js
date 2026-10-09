@@ -7,8 +7,13 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      // 새 버전 배포되면 사용자가 다음에 앱을 열 때 별도 확인 없이 자동으로 최신 버전으로 교체
-      registerType: 'autoUpdate',
+      // 새 서비스워커는 설치 후 곧바로 활성화하지 않고 "대기" 상태로 둠(skipWaiting 미적용).
+      // usePwaUpdate 훅이 주기적으로 체크해서 대기 중인 버전을 찾으면 배너를 띄우고,
+      // 사용자가 새로고침을 누른 시점에만 활성화시켜 입력 중인 데이터 유실을 방지
+      registerType: 'prompt',
+      // index.html에 등록 스크립트를 자동 주입하지 않음 — usePwaUpdate 훅에서 virtual:pwa-register를
+      // 직접 호출해 업데이트 체크 주기·배너 노출을 제어하기 위함
+      injectRegister: false,
       includeAssets: ['favicon.png', 'apple-touch-icon.png'],
       manifest: {
         name: '어디서봄',

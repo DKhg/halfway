@@ -1,0 +1,32 @@
+.pairing-restore-page {
+  min-height: 100svh;
+  box-sizing: border-box;
+  padding: var(--space-lg) 22px var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.pairing-restore-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+}
+
+.pairing-restore-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 30px;
+}
+
+.pairing-restore-code-input {
+  text-align: center;
+  letter-spacing: 8px;
+  font-size: 22px;
+  font-weight: 700;
+}

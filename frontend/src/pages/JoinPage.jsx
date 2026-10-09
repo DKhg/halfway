@@ -58,8 +58,10 @@ const FOOD_SUB_CATEGORY_TABS = [
   { key: 'CHINESE', label: '중식', emoji: '🍜' },
   { key: 'JAPANESE', label: '일식', emoji: '🍣' },
   { key: 'WESTERN', label: '양식', emoji: '🍝' },
-  { key: 'PUB', label: '주점', emoji: '🍺' },
 ]
+
+// 음식점 탭에서만 쓰는 주점: 한식·중식 등 요리 종류 줄이 아니라 아래 관리용 탭 줄에 붙여서 보여줌
+const FOOD_PUB_TAB = { key: 'PUB', label: '주점', emoji: '🍺' }
 
 const CAFE_SUB_CATEGORY_TABS = [
   { key: 'RECOMMEND', label: '추천', emoji: '☕' },
@@ -822,9 +824,10 @@ function JoinPage() {
           <div className="join-place-category-frame">
             <span className="join-place-category-label">카테고리</span>
 
-            {subCategoryTabs && (
+            {category === 'CAFE' ? (
+              // 카페는 하위 카테고리가 "추천" 하나뿐이라 관리용 탭까지 한 줄에 붙임
               <div className="join-place-tabs join-place-sub-tabs">
-                {subCategoryTabs.map((tab) => (
+                {[...subCategoryTabs, ...PLACE_MANAGE_TABS].map((tab) => (
                   <button
                     key={tab.key}
                     type="button"
@@ -836,21 +839,38 @@ function JoinPage() {
                   </button>
                 ))}
               </div>
-            )}
+            ) : (
+              <>
+                <div className="join-place-tabs join-place-sub-tabs">
+                  {subCategoryTabs.map((tab) => (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      aria-pressed={tab.key === activeSubCategory}
+                      className="join-place-sub-tab-btn"
+                      onClick={() => onSubCategoryChange(tab.key)}
+                    >
+                      {tab.emoji} {tab.label}
+                    </button>
+                  ))}
+                </div>
 
-            <div className="join-place-tabs join-place-sub-tabs">
-              {PLACE_MANAGE_TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  aria-pressed={tab.key === activeSubCategory}
-                  className="join-place-sub-tab-btn"
-                  onClick={() => onSubCategoryChange(tab.key)}
-                >
-                  {tab.emoji} {tab.label}
-                </button>
-              ))}
-            </div>
+                <div className="join-place-tabs join-place-sub-tabs">
+                  {/* 음식점 탭에서만 주점을 직접추가·다른 모임에서 추가와 같은 줄에 붙임 */}
+                  {[FOOD_PUB_TAB, ...PLACE_MANAGE_TABS].map((tab) => (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      aria-pressed={tab.key === activeSubCategory}
+                      className="join-place-sub-tab-btn"
+                      onClick={() => onSubCategoryChange(tab.key)}
+                    >
+                      {tab.emoji} {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {isOptionsLoading && <div className="join-progress-hint">불러오는 중...</div>}

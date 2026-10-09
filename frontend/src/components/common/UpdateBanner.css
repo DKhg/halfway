@@ -1,0 +1,47 @@
+.update-banner {
+  position: fixed;
+  left: var(--space-md);
+  right: var(--space-md);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-md));
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-hard-md);
+}
+
+.update-banner-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.update-banner-btn {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 var(--space-md);
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-green);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-ink);
+  box-shadow: var(--shadow-hard-sm);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+@media (hover: hover) {
+  .update-banner-btn:hover {
+    filter: brightness(0.95);
+  }
+}
+
+.update-banner-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}

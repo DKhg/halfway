@@ -33,6 +33,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 익명 사용자 생성은 토큰이 없는 상태에서 호출하는 API라 인증 불필요
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                        // 페어링 코드 교환도 홈 화면 PWA 최초 실행(토큰 없음) 상태에서 호출됨
+                        .requestMatchers(HttpMethod.POST, "/api/users/pairing-code/redeem").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling.authenticationEntryPoint(authenticationEntryPoint))
