@@ -59,6 +59,10 @@
   }
 }
 
+.modal-close-btn:active {
+  filter: brightness(0.87);
+}
+
 .modal-body {
   display: flex;
   flex-direction: column;

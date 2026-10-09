@@ -13,6 +13,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+}
+
+.home-header-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .home-logo {
@@ -31,16 +40,27 @@
   border: var(--border-width) solid var(--color-ink);
   border-radius: var(--radius-sm);
   background: var(--color-surface);
+  box-shadow: var(--shadow-hard-sm);
   color: var(--color-ink);
   font-size: 14px;
   font-weight: 700;
-  transition: filter 0.12s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 @media (hover: hover) {
   .home-my-rooms-btn:hover {
-    filter: brightness(0.92);
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
+}
+
+.home-set-station-btn {
+  background: var(--color-accent-blue);
+}
+
+.home-my-rooms-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .home-hero {
@@ -199,6 +219,22 @@
   }
 }
 
+.home-cta-primary:active {
+  transform: translate(5px, 5px);
+  box-shadow: none;
+}
+
+.home-cta-secondary:active {
+  filter: brightness(0.87);
+}
+
+.home-invite-lead {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+}
+
 .home-invite-input {
   height: 52px;
   box-sizing: border-box;
@@ -235,4 +271,8 @@
   .home-invite-submit-btn:not(:disabled):hover {
     filter: brightness(0.92);
   }
+}
+
+.home-invite-submit-btn:not(:disabled):active {
+  filter: brightness(0.87);
 }

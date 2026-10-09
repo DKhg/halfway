@@ -65,3 +65,7 @@
     background: var(--color-accent-blue);
   }
 }
+
+.bank-select-option-btn:active {
+  background: var(--color-accent-blue);
+}

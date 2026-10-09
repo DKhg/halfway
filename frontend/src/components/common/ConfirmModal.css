@@ -78,3 +78,12 @@
     box-shadow: none;
   }
 }
+
+.confirm-modal-cancel-btn:active {
+  filter: brightness(0.87);
+}
+
+.confirm-modal-confirm-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}

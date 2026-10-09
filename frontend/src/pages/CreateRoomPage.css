@@ -33,6 +33,10 @@
   }
 }
 
+.create-room-back-btn:active {
+  filter: brightness(0.87);
+}
+
 .create-room-title {
   margin: 0;
   font-family: var(--font-display);
@@ -85,6 +89,10 @@
   }
 }
 
+.create-room-date-btn:active {
+  filter: brightness(0.87);
+}
+
 .create-room-mode-stack {
   display: flex;
   flex-direction: column;
@@ -127,6 +135,10 @@
   .create-room-fairness-btn:hover {
     filter: brightness(0.92);
   }
+}
+
+.create-room-fairness-btn:active {
+  filter: brightness(0.87);
 }
 
 .create-room-category-row {
@@ -185,6 +197,10 @@
   }
 }
 
+.create-room-category-chip:active {
+  transform: translate(2px, 2px);
+}
+
 .create-room-error {
   font-size: 14px;
   font-weight: 700;
@@ -215,6 +231,11 @@
     transform: translate(5px, 5px);
     box-shadow: none;
   }
+}
+
+.create-room-submit-cta:not(:disabled):active {
+  transform: translate(5px, 5px);
+  box-shadow: none;
 }
 
 .create-room-success-card {
@@ -287,4 +308,10 @@
     transform: translate(3px, 3px);
     box-shadow: none;
   }
+}
+
+.create-room-share-btn:active,
+.create-room-enter-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
 }

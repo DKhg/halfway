@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { deleteRoom, getRoom, updateRoomFairness, updateRoomMeetingDate } from '../api/roomApi'
 import { joinRoom, updateMyStation } from '../api/participantApi'
 import { getAllStationNames } from '../api/stationApi'
+import { getMe } from '../api/userApi'
 import { getMidpoint } from '../api/midpointApi'
 import {
   cancelVoting,
@@ -39,6 +40,12 @@ import './JoinPage.css'
 
 const AUTO_REFRESH_INTERVAL_MS = 10000
 
+// 가게 후보 목록 한 번에 보여주는 개수, "더보기" 클릭마다 이만큼씩 더 공개
+const PLACE_PAGE_SIZE = 5
+
+// "맨 위로" 버튼을 보여주기 시작하는 스크롤 위치(px)
+const SCROLL_TOP_BUTTON_THRESHOLD = 400
+
 // 막차 계산 모달의 요일 구분 선택지 (날짜투표가 아직 없어 날짜 대신 요일 종류를 직접 고름)
 const LAST_TRAIN_DAY_TYPES = [
   { value: 'WEEKDAY', label: '평일' },
@@ -47,26 +54,26 @@ const LAST_TRAIN_DAY_TYPES = [
 ]
 
 const FOOD_SUB_CATEGORY_TABS = [
-  { key: 'KOREAN', label: '한식' },
-  { key: 'CHINESE', label: '중식' },
-  { key: 'JAPANESE', label: '일식' },
-  { key: 'WESTERN', label: '양식' },
-  { key: 'PUB', label: '주점' },
+  { key: 'KOREAN', label: '한식', emoji: '🍚' },
+  { key: 'CHINESE', label: '중식', emoji: '🍜' },
+  { key: 'JAPANESE', label: '일식', emoji: '🍣' },
+  { key: 'WESTERN', label: '양식', emoji: '🍝' },
+  { key: 'PUB', label: '주점', emoji: '🍺' },
 ]
 
 const CAFE_SUB_CATEGORY_TABS = [
-  { key: 'RECOMMEND', label: '추천' },
+  { key: 'RECOMMEND', label: '추천', emoji: '☕' },
 ]
 
 // 카테고리 추천 탭과 분리해서 항상 같은 줄에 붙여두는 관리용 탭
 const PLACE_MANAGE_TABS = [
-  { key: 'CUSTOM', label: '직접추가' },
-  { key: 'POOL', label: '다른 모임에서 추가' },
+  { key: 'CUSTOM', label: '직접추가', emoji: '🔍' },
+  { key: 'POOL', label: '다른 모임에서 추가', emoji: '📍' },
 ]
 
 const PLACE_MAIN_CATEGORY_TABS = [
-  { key: 'FOOD', label: '음식점' },
-  { key: 'CAFE', label: '카페' },
+  { key: 'FOOD', label: '음식점', emoji: '🍴' },
+  { key: 'CAFE', label: '카페', emoji: '☕' },
 ]
 
 function JoinPage() {
@@ -98,6 +105,8 @@ function JoinPage() {
   const [cafeSubCategory, setCafeSubCategory] = useState('RECOMMEND')
   const [foodOptions, setFoodOptions] = useState([])
   const [cafeOptions, setCafeOptions] = useState([])
+  const [placeVisibleCounts, setPlaceVisibleCounts] = useState({})
+  const [showScrollTop, setShowScrollTop] = useState(false)
   const [isFoodLoading, setIsFoodLoading] = useState(false)
   const [isCafeLoading, setIsCafeLoading] = useState(false)
   const [placesError, setPlacesError] = useState(null)
@@ -202,6 +211,13 @@ function JoinPage() {
       document.removeEventListener('visibilitychange', tick)
     }
   }, [refresh])
+
+  // 가게 후보 목록이 길어질 때만 "맨 위로" 버튼을 보여줌
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > SCROLL_TOP_BUTTON_THRESHOLD)
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   // 음식점 탭을 보고 있고 아직 안 골랐으면 선택된 세부 카테고리의 실제 장소 목록을 불러옴
   // room 전체가 아니라 필요한 값만 의존성으로 둬서, 10초 자동 조회마다 카카오 API를 다시 부르지 않게 함
@@ -618,6 +634,19 @@ function JoinPage() {
     }
   }
 
+  // 계정에 저장해둔 귀가역이 있으면 미리 채워줌 (사용자가 입력칸을 직접 건드리면 그 값을 그대로 둠)
+  const handleOpenLastTrainModal = async () => {
+    setIsLastTrainModalOpen(true)
+    try {
+      const me = await getMe()
+      if (me.homeStationName) {
+        setLastTrainStation(me.homeStationName)
+      }
+    } catch {
+      // 귀가역 조회 실패해도 수동 입력으로 계속 쓸 수 있어서 조용히 무시
+    }
+  }
+
   const handleCloseLastTrainModal = () => {
     setIsLastTrainModalOpen(false)
     setLastTrainStation('')
@@ -766,7 +795,7 @@ function JoinPage() {
               disabled={isClearingPlace}
               onClick={() => handleClearPlace(category)}
             >
-              다른 곳
+              확정 취소
             </button>
           )}
         </div>
@@ -780,15 +809,37 @@ function JoinPage() {
     const isCustomTab = activeSubCategory === 'CUSTOM'
     const isPoolTab = activeSubCategory === 'POOL'
     const displayedOptions = isPoolTab ? poolSuggestions : options
+    const pageKey = `${category}:${activeSubCategory}`
+    const visibleCount = placeVisibleCounts[pageKey] ?? PLACE_PAGE_SIZE
+    const pagedOptions = displayedOptions.slice(0, visibleCount)
+    const hasMoreOptions = displayedOptions.length > visibleCount
     return (
     <div className="join-confirmed-place-section">
       {confirmedName ? (
         renderConfirmedSummaryCard(category, category === 'FOOD' ? '음식점' : '카페', confirmedName)
       ) : (
         <div className="join-place-picker">
-          {subCategoryTabs && (
+          <div className="join-place-category-frame">
+            <span className="join-place-category-label">카테고리</span>
+
+            {subCategoryTabs && (
+              <div className="join-place-tabs join-place-sub-tabs">
+                {subCategoryTabs.map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    aria-pressed={tab.key === activeSubCategory}
+                    className="join-place-sub-tab-btn"
+                    onClick={() => onSubCategoryChange(tab.key)}
+                  >
+                    {tab.emoji} {tab.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="join-place-tabs join-place-sub-tabs">
-              {subCategoryTabs.map((tab) => (
+              {PLACE_MANAGE_TABS.map((tab) => (
                 <button
                   key={tab.key}
                   type="button"
@@ -796,24 +847,10 @@ function JoinPage() {
                   className="join-place-sub-tab-btn"
                   onClick={() => onSubCategoryChange(tab.key)}
                 >
-                  {tab.label}
+                  {tab.emoji} {tab.label}
                 </button>
               ))}
             </div>
-          )}
-
-          <div className="join-place-tabs join-place-sub-tabs join-place-manage-tabs">
-            {PLACE_MANAGE_TABS.map((tab) => (
-              <button
-                key={tab.key}
-                type="button"
-                aria-pressed={tab.key === activeSubCategory}
-                className="join-place-sub-tab-btn"
-                onClick={() => onSubCategoryChange(tab.key)}
-              >
-                {tab.label}
-              </button>
-            ))}
           </div>
 
           {isOptionsLoading && <div className="join-progress-hint">불러오는 중...</div>}
@@ -826,7 +863,7 @@ function JoinPage() {
           )}
 
           <div className="join-place-list">
-            {displayedOptions.map((place) => {
+            {pagedOptions.map((place) => {
               const key = `${category}:${place.id}`
               const meta = [place.roadAddressName, place.walkMinutes ? `도보 약 ${place.walkMinutes}분` : null]
                 .filter(Boolean)
@@ -905,6 +942,16 @@ function JoinPage() {
               )
             })}
           </div>
+
+          {hasMoreOptions && (
+            <button
+              type="button"
+              className="join-place-more-btn"
+              onClick={() => setPlaceVisibleCounts((prev) => ({ ...prev, [pageKey]: visibleCount + PLACE_PAGE_SIZE }))}
+            >
+              + 더보기
+            </button>
+          )}
 
           {isCustomTab && (
             <div className="join-place-search">
@@ -1017,7 +1064,7 @@ function JoinPage() {
           <button
             type="button"
             className="join-lasttrain-btn"
-            onClick={() => setIsLastTrainModalOpen(true)}
+            onClick={handleOpenLastTrainModal}
           >
             막차 계산
           </button>
@@ -1114,11 +1161,19 @@ function JoinPage() {
           <StepIndicator
             steps={ROOM_FLOW_STEPS}
             currentKey="PLACE"
-            disabledKeys={room.settlementStarted ? [] : ['SETTLEMENT']}
-            onStepClick={(key) => key === 'SETTLEMENT' && navigate(`/rooms/${code}/settlement`)}
+            disabledKeys={[
+              ...(room.settlementStarted ? [] : ['SETTLEMENT']),
+              ...(room.owner ? [] : ['STATION']),
+            ]}
+            onStepClick={(key) => {
+              if (key === 'SETTLEMENT') {
+                navigate(`/rooms/${code}/settlement`)
+              } else if (key === 'STATION') {
+                document.getElementById('join-unconfirm-zone')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }
+            }}
           />
 
-          <div className="join-confirmed-badge">역 확정!</div>
           <h1 className="join-confirmed-station">{room.confirmedStationName}</h1>
 
           {!me && isFixed && (
@@ -1168,7 +1223,7 @@ function JoinPage() {
                       className="join-place-main-tab-btn"
                       onClick={() => setActivePlaceCategory(tab.key)}
                     >
-                      {tab.label}
+                      {tab.emoji} {tab.label}
                     </button>
                   ))}
                 </div>
@@ -1186,7 +1241,7 @@ function JoinPage() {
           {placesError && <div className="join-error">{placesError}</div>}
 
           {room.owner && isFixed && (
-            <div className="join-unconfirm-zone">
+            <div className="join-unconfirm-zone" id="join-unconfirm-zone">
               {isEditingFixedStation ? (
                 <>
                   <StationAutocompleteInput
@@ -1226,14 +1281,14 @@ function JoinPage() {
               )}
               <p className="join-unconfirm-hint">
                 {isPlaceStillConfirmed
-                  ? "확정된 음식점·카페에서 '다른 곳' 버튼을 눌러 확정취소해주세요."
+                  ? "확정된 음식점·카페에서 '확정 취소' 버튼을 눌러주세요."
                   : '장소를 바로 정한 방이라 투표 없이 역만 바로 수정돼요.'}
               </p>
             </div>
           )}
 
           {room.owner && !isFixed && (
-            <div className="join-unconfirm-zone">
+            <div className="join-unconfirm-zone" id="join-unconfirm-zone">
               <button
                 type="button"
                 className="join-unconfirm-btn"
@@ -1244,7 +1299,7 @@ function JoinPage() {
               </button>
               <p className="join-unconfirm-hint">
                 {isPlaceStillConfirmed
-                  ? "확정된 음식점·카페에서 '다른 곳' 버튼을 눌러 확정취소해주세요."
+                  ? "확정된 음식점·카페에서 '확정 취소' 버튼을 눌러주세요."
                   : '역 확정이 취소되고 다시 투표할 수 있어요.'}
               </p>
             </div>
@@ -1380,6 +1435,19 @@ function JoinPage() {
             )}
             <p className="join-lasttrain-caption">지하철 기준이에요. 운행 사정에 따라 달라질 수 있어요.</p>
           </Modal>
+        )}
+
+        {showScrollTop && (
+          <button
+            type="button"
+            aria-label="맨 위로"
+            className="join-scroll-top-btn"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </button>
         )}
       </div>
     )

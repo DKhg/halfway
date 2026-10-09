@@ -165,7 +165,7 @@ function CreateRoomPage() {
             className="create-room-fairness-btn"
             onClick={() => setMode('FIXED')}
           >
-            <span className="create-room-fairness-title">장소를 이미 정했어요</span>
+            <span className="create-room-fairness-title">만날 역은 이미 정했어요</span>
           </button>
           <button
             type="button"

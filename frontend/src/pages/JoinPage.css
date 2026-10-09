@@ -34,6 +34,10 @@
   }
 }
 
+.join-back-btn:active {
+  filter: brightness(0.87);
+}
+
 .join-header-actions {
   display: flex;
   align-items: center;
@@ -91,6 +95,17 @@
     transform: translate(3px, 3px);
     box-shadow: none;
   }
+}
+
+.join-refresh-btn:not(:disabled):active,
+.join-delete-btn:active {
+  filter: brightness(0.87);
+}
+
+.join-copy-btn:active,
+.join-lasttrain-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
 }
 
 .join-refresh-icon--spinning {
@@ -185,6 +200,10 @@
   }
 }
 
+.join-meeting-date-edit-btn:active {
+  filter: brightness(0.87);
+}
+
 .join-fairness-row {
   display: flex;
   align-items: center;
@@ -228,6 +247,10 @@
   .join-fairness-btn:not(:disabled):hover {
     filter: brightness(0.92);
   }
+}
+
+.join-fairness-btn:not(:disabled):active {
+  filter: brightness(0.87);
 }
 
 .join-participant-scroll {
@@ -334,6 +357,11 @@
     transform: translate(5px, 5px);
     box-shadow: none;
   }
+}
+
+.join-submit-cta:not(:disabled):active {
+  transform: translate(5px, 5px);
+  box-shadow: none;
 }
 
 .join-midpoint-list {
@@ -487,6 +515,11 @@
   }
 }
 
+.join-edit-station-btn:active,
+.join-edit-cancel-btn:active {
+  filter: brightness(0.87);
+}
+
 .join-vote-start-btn {
   height: 52px;
   border: var(--border-width) solid var(--color-ink);
@@ -512,6 +545,11 @@
   }
 }
 
+.join-vote-start-btn:not(:disabled):active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
 .join-vote-owner-row {
   display: flex;
   align-items: center;
@@ -526,16 +564,23 @@
   border: var(--border-width) solid var(--color-ink);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
+  box-shadow: var(--shadow-hard-sm);
   color: var(--color-ink);
   font-size: 13px;
   font-weight: 700;
-  transition: filter 0.12s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 @media (hover: hover) {
   .join-vote-cancel-btn:not(:disabled):hover {
-    filter: brightness(0.92);
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
+}
+
+.join-vote-cancel-btn:not(:disabled):active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .join-vote-card--winner {
@@ -566,6 +611,10 @@
   }
 }
 
+.join-vote-confirm-btn:active {
+  filter: brightness(0.87);
+}
+
 .join-vote-check-btn {
   display: flex;
   align-items: center;
@@ -593,6 +642,10 @@
   }
 }
 
+.join-vote-check-btn:not(:disabled):active {
+  filter: brightness(0.87);
+}
+
 .join-confirmed-block {
   margin-top: 24px;
   display: flex;
@@ -600,15 +653,6 @@
   align-items: center;
   gap: 16px;
   text-align: center;
-}
-
-.join-confirmed-badge {
-  padding: 6px 14px;
-  border: 2px solid var(--color-ink);
-  border-radius: var(--radius-pill);
-  background: var(--color-accent-green);
-  font-size: 14px;
-  font-weight: 700;
 }
 
 .join-confirmed-station {
@@ -636,16 +680,23 @@
   border: var(--border-width) solid var(--color-ink);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
+  box-shadow: var(--shadow-hard-sm);
   color: var(--color-ink);
   font-size: 13px;
   font-weight: 700;
-  transition: filter 0.12s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 @media (hover: hover) {
   .join-unconfirm-btn:not(:disabled):hover {
-    filter: brightness(0.92);
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
+}
+
+.join-unconfirm-btn:not(:disabled):active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .join-fixed-station-actions {
@@ -674,21 +725,30 @@
   border: var(--border-width) solid var(--color-ink);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
+  box-shadow: var(--shadow-hard-sm);
   color: var(--color-ink);
   font-size: 14px;
   font-weight: 700;
-  transition: filter 0.12s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .join-place-main-tab-btn[aria-pressed='true'] {
   background: var(--color-ink);
   color: var(--color-accent-yellow);
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 @media (hover: hover) {
   .join-place-main-tab-btn:not([aria-pressed='true']):hover {
-    filter: brightness(0.92);
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
+}
+
+.join-place-main-tab-btn:not([aria-pressed='true']):active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .join-place-picker {
@@ -696,6 +756,31 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.join-place-category-frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 20px 12px 14px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.join-place-category-label {
+  position: absolute;
+  top: -14px;
+  left: 14px;
+  padding: 3px 10px;
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-yellow);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .join-place-tabs {
@@ -709,32 +794,37 @@
   padding-top: 2px;
 }
 
-.join-place-manage-tabs {
-  margin-top: 4px;
-}
-
 .join-place-sub-tab-btn {
   height: 32px;
   padding: 0 12px;
   border: 2px solid var(--color-ink-soft);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
+  box-shadow: var(--shadow-hard-sm);
   color: var(--color-ink-soft);
   font-size: 12px;
   font-weight: 700;
-  transition: filter 0.12s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .join-place-sub-tab-btn[aria-pressed='true'] {
   border-color: var(--color-ink);
   background: var(--color-accent-green);
   color: var(--color-ink);
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 @media (hover: hover) {
   .join-place-sub-tab-btn:not([aria-pressed='true']):hover {
-    filter: brightness(0.92);
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
+}
+
+.join-place-sub-tab-btn:not([aria-pressed='true']):active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .join-place-list {
@@ -742,6 +832,62 @@
   flex-direction: column;
   gap: 10px;
   text-align: left;
+}
+
+.join-place-more-btn {
+  align-self: center;
+  height: 36px;
+  padding: 0 20px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-hard-sm);
+  color: var(--color-ink);
+  font-size: 13px;
+  font-weight: 700;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+@media (hover: hover) {
+  .join-place-more-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+}
+
+.join-place-more-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.join-scroll-top-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-yellow);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-hard-sm);
+  z-index: 10;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+@media (hover: hover) {
+  .join-scroll-top-btn:hover {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+}
+
+.join-scroll-top-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
 }
 
 .join-place-card {
@@ -769,16 +915,23 @@
   border: 2px solid var(--color-ink);
   border-radius: var(--radius-pill);
   background: var(--color-accent-red);
+  box-shadow: var(--shadow-hard-sm);
   color: var(--color-ink);
   font-size: 11px;
   font-weight: 700;
-  transition: filter 0.12s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 @media (hover: hover) {
   .join-place-delete-btn:not(:disabled):hover {
-    filter: brightness(0.92);
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
+}
+
+.join-place-delete-btn:not(:disabled):active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .join-place-name {
@@ -834,6 +987,10 @@
   }
 }
 
+.join-place-like-btn:not(:disabled):active {
+  filter: brightness(0.87);
+}
+
 .join-place-kakao-link {
   display: flex;
   align-items: center;
@@ -855,6 +1012,10 @@
   }
 }
 
+.join-place-kakao-link:active {
+  filter: brightness(0.87);
+}
+
 .join-place-choose-btn {
   flex: 1 1 100%;
   height: 36px;
@@ -872,6 +1033,10 @@
   .join-place-choose-btn:not(:disabled):hover {
     filter: brightness(0.92);
   }
+}
+
+.join-place-choose-btn:not(:disabled):active {
+  filter: brightness(0.87);
 }
 
 .join-place-search {
@@ -920,6 +1085,10 @@
   .join-place-search-btn:not(:disabled):hover {
     filter: brightness(0.92);
   }
+}
+
+.join-place-search-btn:not(:disabled):active {
+  filter: brightness(0.87);
 }
 
 .join-place-search-btn:disabled {
@@ -993,6 +1162,10 @@
   }
 }
 
+.join-add-comment-confirm-btn:not(:disabled):active {
+  filter: brightness(0.87);
+}
+
 .join-place-search-add-btn {
   height: 34px;
   padding: 0 12px;
@@ -1009,6 +1182,10 @@
   .join-place-search-add-btn:not(:disabled):hover {
     filter: brightness(0.92);
   }
+}
+
+.join-place-search-add-btn:not(:disabled):active {
+  filter: brightness(0.87);
 }
 
 .join-settlement-link-btn {
@@ -1030,6 +1207,11 @@
     transform: translate(3px, 3px);
     box-shadow: none;
   }
+}
+
+.join-settlement-link-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
 }
 
 .join-confirmed-summary {
@@ -1139,6 +1321,11 @@
   }
 }
 
+.join-confirmed-summary-link:active,
+.join-confirmed-summary-clear:not(:disabled):active {
+  filter: brightness(0.87);
+}
+
 .join-lasttrain-field {
   display: flex;
   flex-direction: column;
@@ -1217,6 +1404,10 @@
   }
 }
 
+.join-lasttrain-daytype-btn:not(.join-lasttrain-daytype-btn--active):active {
+  filter: brightness(0.91);
+}
+
 .join-lasttrain-calc-btn {
   height: 44px;
   padding: 0 18px;
@@ -1238,6 +1429,10 @@
   .join-lasttrain-calc-btn:not(:disabled):hover {
     filter: brightness(0.92);
   }
+}
+
+.join-lasttrain-calc-btn:not(:disabled):active {
+  filter: brightness(0.87);
 }
 
 .join-lasttrain-result {

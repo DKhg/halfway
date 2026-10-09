@@ -27,3 +27,14 @@ export function updateSettlementItem(code, itemId, { name, amount, participantId
 export function deleteSettlementItem(code, itemId) {
   return api.delete(`/rooms/${code}/settlement/items/${itemId}`)
 }
+
+// 영수증 사진에서 상호명·합계 금액 초안 추출
+export function scanSettlementReceipt(code, imageFile) {
+  const formData = new FormData()
+  formData.append('image', imageFile)
+  return api
+    .post(`/rooms/${code}/settlement/items/receipt-scan`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    .then((response) => response.data)
+}

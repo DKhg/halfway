@@ -36,6 +36,10 @@
   }
 }
 
+.settlement-back-btn:active {
+  filter: brightness(0.87);
+}
+
 .settlement-status {
   margin-top: 40px;
   font-size: 15px;
@@ -90,6 +94,10 @@
   }
 }
 
+.settlement-start-btn:not(:disabled):active {
+  filter: brightness(0.87);
+}
+
 .settlement-panel {
   width: 100%;
   display: flex;
@@ -120,16 +128,23 @@
   border: 2px solid var(--color-ink);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
+  box-shadow: var(--shadow-hard-sm);
   color: var(--color-ink);
   font-size: 11px;
   font-weight: 700;
-  transition: filter 0.12s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 @media (hover: hover) {
   .settlement-cancel-btn:not(:disabled):hover {
-    filter: brightness(0.92);
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
+}
+
+.settlement-cancel-btn:not(:disabled):active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .settlement-items {
@@ -228,6 +243,11 @@
   }
 }
 
+.settlement-add-item-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
 .settlement-account-form {
   display: flex;
   flex-direction: column;
@@ -248,6 +268,44 @@
   font-size: 16px;
   color: var(--color-ink);
   background: var(--color-bg);
+}
+
+.settlement-receipt-input {
+  display: none;
+}
+
+.settlement-receipt-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 16px;
+  border: 2px dashed var(--color-ink-soft);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  transition: filter 0.08s ease;
+}
+
+.settlement-receipt-tile-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.settlement-receipt-tile-subtitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+}
+
+@media (hover: hover) {
+  .settlement-receipt-tile:not(:disabled):hover {
+    filter: brightness(0.96);
+  }
+}
+
+.settlement-receipt-tile:not(:disabled):active {
+  filter: brightness(0.92);
 }
 
 .settlement-modal-input {
@@ -298,9 +356,25 @@
   border: var(--border-width) solid var(--color-ink);
   border-radius: var(--radius-pill);
   background: var(--color-accent-yellow);
+  box-shadow: var(--shadow-hard-sm);
   color: var(--color-ink);
   font-size: 15px;
   font-weight: 700;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+@media (hover: hover) {
+  .settlement-modal-save-btn:not(:disabled):hover,
+  .settlement-account-form > button:not(:disabled):hover {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+}
+
+.settlement-modal-save-btn:not(:disabled):active,
+.settlement-account-form > button:not(:disabled):active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .settlement-totals {
@@ -365,4 +439,9 @@
     transform: translate(2px, 2px);
     box-shadow: none;
   }
+}
+
+.settlement-pay-link:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }

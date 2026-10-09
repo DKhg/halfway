@@ -65,6 +65,10 @@
   }
 }
 
+.station-autocomplete-suggestion-btn:active {
+  background: var(--color-accent-yellow);
+}
+
 .station-autocomplete-suggestion-lines {
   display: flex;
   flex-shrink: 0;

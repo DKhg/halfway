@@ -21,7 +21,7 @@
   color: var(--color-ink-soft);
   font-size: 12px;
   font-weight: 700;
-  transition: filter 0.12s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .step-indicator-pill[data-status='current'] {
@@ -38,12 +38,19 @@
 
 .step-indicator-pill:not(:disabled) {
   cursor: pointer;
+  box-shadow: var(--shadow-hard-sm);
 }
 
 @media (hover: hover) {
   .step-indicator-pill:not(:disabled):hover {
-    filter: brightness(0.92);
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
+}
+
+.step-indicator-pill:not(:disabled):active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .step-indicator-arrow {

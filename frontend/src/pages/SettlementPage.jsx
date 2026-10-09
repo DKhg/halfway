@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getRoom } from '../api/roomApi'
 import {
@@ -6,6 +6,7 @@ import {
   cancelSettlement,
   deleteSettlementItem,
   getSettlement,
+  scanSettlementReceipt,
   startSettlement,
   updateSettlementAccount,
   updateSettlementItem,
@@ -53,6 +54,8 @@ function SettlementPage() {
   const [isItemModalOpen, setIsItemModalOpen] = useState(false)
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
+  const [isScanningReceipt, setIsScanningReceipt] = useState(false)
+  const receiptInputRef = useRef(null)
 
   const fetchRoom = useCallback(() => {
     return getRoom(code)
@@ -210,6 +213,32 @@ function SettlementPage() {
       setSettlementError(error.response?.data?.message || '항목을 저장하지 못했어요. 다시 시도해 주세요.')
     } finally {
       setIsSavingItem(false)
+    }
+  }
+
+  const handleReceiptFileChange = async (e) => {
+    const file = e.target.files[0]
+    e.target.value = ''
+    if (!file || isScanningReceipt) {
+      return
+    }
+    setIsScanningReceipt(true)
+    setSettlementError(null)
+    try {
+      const draft = await scanSettlementReceipt(code, file)
+      if (draft.name) {
+        setItemName(draft.name)
+      }
+      if (draft.amount) {
+        setItemAmount(String(draft.amount))
+      }
+      if (!draft.name && !draft.amount) {
+        setSettlementError('영수증을 인식하지 못했어요. 직접 입력해 주세요.')
+      }
+    } catch {
+      setSettlementError('영수증을 읽지 못했어요. 다시 시도해 주세요.')
+    } finally {
+      setIsScanningReceipt(false)
     }
   }
 
@@ -435,10 +464,36 @@ function SettlementPage() {
         </div>
       )}
 
-      {settlementError && <div className="settlement-error">{settlementError}</div>}
+      {!isItemModalOpen && settlementError && <div className="settlement-error">{settlementError}</div>}
 
       {isItemModalOpen && (
         <Modal title={editingItemId ? '항목 수정' : '항목 추가'} onClose={handleCloseItemModal}>
+          <input
+            type="file"
+            accept="image/*"
+            ref={receiptInputRef}
+            className="settlement-receipt-input"
+            onChange={handleReceiptFileChange}
+          />
+          <button
+            type="button"
+            className="settlement-receipt-tile"
+            disabled={isScanningReceipt}
+            onClick={() => receiptInputRef.current?.click()}
+          >
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 2v6h6" />
+              <path d="M9 13h6M9 17h6" />
+            </svg>
+            <span className="settlement-receipt-tile-title">영수증으로 자동 채우기</span>
+            <span className="settlement-receipt-tile-subtitle">
+              {isScanningReceipt ? '영수증 읽는 중...' : '탭하여 촬영 또는 업로드 (선택)'}
+            </span>
+          </button>
+
+          {settlementError && <div className="settlement-error">{settlementError}</div>}
+
           <input
             type="text"
             placeholder="항목 이름 (예: 1차 고기·식사)"
