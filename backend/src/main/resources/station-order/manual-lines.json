@@ -178,7 +178,9 @@
       {"name": "인덕원", "distanceKm": 1.6}, {"name": "평촌", "distanceKm": 1.3}, {"name": "범계", "distanceKm": 2.6},
       {"name": "금정", "distanceKm": 2.3}, {"name": "산본", "distanceKm": 1.1}, {"name": "수리산", "distanceKm": 2.6},
       {"name": "대야미", "distanceKm": 2.0}, {"name": "반월", "distanceKm": 3.7}, {"name": "상록수", "distanceKm": 1.5},
-      {"name": "한대앞", "distanceKm": 1.6}
+      {"name": "한대앞", "distanceKm": 1.6}, {"name": "중앙", "distanceKm": 1.6}, {"name": "고잔", "distanceKm": 1.5},
+      {"name": "초지", "distanceKm": 1.5}, {"name": "안산", "distanceKm": 1.8}, {"name": "능길", "distanceKm": 2.2},
+      {"name": "정왕", "distanceKm": 2.9}, {"name": "오이도", "distanceKm": 1.4}
     ]
   },
   {

@@ -59,6 +59,12 @@ public class StationBatchRunner implements CommandLineRunner {
     private static final Map<String, String> SEOUL_METRO_STATION_NAME_ALIAS = Map.of(
             "신길온천", "능길");
 
+    // TAGO가 "서해선" 노선에 경의중앙선 구간(대곡 인근 공용 선로)의 역까지 그대로 포함해서 줘서,
+    // manual-lines.json 기준 서해선 범위(김포공항~원시)엔 없는 이 역들이 자기 노선 안에서 고립된 유령 노드가 됨
+    // (이미 "경의중앙" line으로 정상 적재되는 같은 역이라 여기서는 제외)
+    private static final Set<String> SEOHAE_LINE_DUPLICATE_STATIONS = Set.of(
+            "일산", "풍산", "백마", "곡산", "대곡", "능곡");
+
     private final SeoulOpenDataClient seoulOpenDataClient;
     private final TagoClient tagoClient;
     private final StationRepository stationRepository;
@@ -113,6 +119,9 @@ public class StationBatchRunner implements CommandLineRunner {
                 continue;
             }
             String name = baseName(item.subwayStationName());
+            if ("서해선".equals(line) && SEOHAE_LINE_DUPLICATE_STATIONS.contains(name)) {
+                continue;
+            }
             Station station = stationRepository.findByNameAndLine(name, line).orElse(null);
             if (station == null) {
                 station = Station.create(name, line);
