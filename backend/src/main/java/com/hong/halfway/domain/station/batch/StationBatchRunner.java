@@ -65,6 +65,13 @@ public class StationBatchRunner implements CommandLineRunner {
     private static final Set<String> SEOHAE_LINE_DUPLICATE_STATIONS = Set.of(
             "일산", "풍산", "백마", "곡산", "대곡", "능곡");
 
+    // TAGO의 "경의중앙" 데이터에 2014년 경의·중앙선 통합 전 옛 "경의선"(서울역 종착) 체계의 잔재로 보이는
+    // 역이 섞여 있음. tago_station_id가 정상 역들(...K312=공덕, K313=서강대, K314=홍대입구...)과
+    // 같은 번호대를 접두어만 다르게(K4P) 중복 사용하고 있어(서울역=K4P313, 신촌=K4P314), 현재 운행 노선엔
+    // 없는 역으로 판단해 제외. 자기 노선 안에서 고립된 유령 노드였음
+    private static final Set<String> GYEONGUI_JUNGANG_LEGACY_STATIONS = Set.of(
+            "서울역", "신촌");
+
     private final SeoulOpenDataClient seoulOpenDataClient;
     private final TagoClient tagoClient;
     private final StationRepository stationRepository;
@@ -120,6 +127,9 @@ public class StationBatchRunner implements CommandLineRunner {
             }
             String name = baseName(item.subwayStationName());
             if ("서해선".equals(line) && SEOHAE_LINE_DUPLICATE_STATIONS.contains(name)) {
+                continue;
+            }
+            if ("경의중앙".equals(line) && GYEONGUI_JUNGANG_LEGACY_STATIONS.contains(name)) {
                 continue;
             }
             Station station = stationRepository.findByNameAndLine(name, line).orElse(null);

@@ -211,7 +211,7 @@
   {
     "line": "7호선",
     "stations": [
-      {"name": "온수"}, {"name": "까치울", "distanceKm": 1.5}, {"name": "춘의", "distanceKm": 0.8},
+      {"name": "온수"}, {"name": "까치울", "distanceKm": 1.5}, {"name": "부천종합운동장"}, {"name": "춘의"},
       {"name": "신중동", "distanceKm": 1.0}, {"name": "부천시청", "distanceKm": 1.1}, {"name": "상동", "distanceKm": 0.9},
       {"name": "삼산체육관", "distanceKm": 1.1}, {"name": "굴포천", "distanceKm": 0.9}, {"name": "부평구청", "distanceKm": 0.9},
       {"name": "산곡", "distanceKm": 1.6}, {"name": "석남", "distanceKm": 2.6}
