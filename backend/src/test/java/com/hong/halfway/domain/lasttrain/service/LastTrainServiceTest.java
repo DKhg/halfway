@@ -288,4 +288,27 @@ class LastTrainServiceTest {
         assertThat(response.isUnsupported()).isFalse();
         assertThat(response.getLastDepartureTime()).isEqualTo("23:40");
     }
+
+    @Test
+    void 더_오래걸리는_경로의_막차가_더_늦으면_그_경로를_채택한다() {
+        // 가장 빠른 경로(5분)는 막차가 일찍 끊기고, 더 오래 걸리는 경로(8분)가 실제로는 더 늦게까지 있는 상황.
+        // "제일 빠른 경로에서 값이 나오면 그걸로 끝"이었다면 20:00이 잘못 채택됐을 상황
+        Station sFast = createStation("S테스트역lt", "9호선", "930");
+        Station sSlow = createStation("S테스트역lt", "4호선", "931");
+        Station h = createStation("H테스트역lt", "9호선", "932");
+        stationTravelTimeRepository.save(StationTravelTime.create(sFast, h, (short) 5, (short) 0, sFast));
+        stationTravelTimeRepository.save(StationTravelTime.create(sSlow, h, (short) 8, (short) 0, sSlow));
+
+        saveTrain(sFast, "F1", (short) 1, (short) 1200, null);
+        saveTrain(h, "F1", (short) 1, null, (short) 1210);
+        saveTrain(sSlow, "SL1", (short) 1, (short) 1420, null);
+        saveTrain(h, "SL1", (short) 1, null, (short) 1430);
+
+        Room room = createFixedRoom("lt", "S테스트역lt");
+
+        LastTrainResponse response = lastTrainService.calculate(room.getCode(), "H테스트역lt", LastTrainDayType.WEEKDAY);
+
+        assertThat(response.isUnsupported()).isFalse();
+        assertThat(response.getLastDepartureTime()).isEqualTo("23:40");
+    }
 }

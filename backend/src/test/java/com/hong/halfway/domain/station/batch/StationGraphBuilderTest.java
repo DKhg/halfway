@@ -7,6 +7,7 @@ import com.hong.halfway.domain.station.entity.Station;
 import com.hong.halfway.domain.station.repository.StationRepository;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,7 +49,8 @@ class StationGraphBuilderTest {
                 row("5", "올림픽공원", "1:40"));
 
         Map<Long, List<Edge>> graph = stationGraphBuilder.build(
-                List.of(hasimcheong, hanam, dunchon, olympic), rows, List.of());
+                List.of(hasimcheong, hanam, dunchon, olympic), rows, List.of(),
+                new GtfsAdjacentTimeLoader.Result(List.of(), Set.of()));
 
         boolean hasBogusShortcut = graph.get(hanam.getId()).stream()
                 .anyMatch(edge -> edge.targetStationId().equals(dunchon.getId()));

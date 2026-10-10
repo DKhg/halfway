@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,10 +62,11 @@ public class StationGraphBuilder {
             "2호선:신설동:도림천"); // 성수지선 끝 -> 신정지선 시작 (실제로는 신도림에서 분기)
 
     /**
-     * 전체 역 그래프 생성 (운행 엣지 + 환승 엣지). 다익스트라 계산 입력으로 사용
+     * 전체 역 그래프 생성 (운행 엣지 + 환승 엣지). 다익스트라 계산 입력으로 사용.
+     * gtfsResult가 없으면(GTFS 미설정) 그 노선들은 manual-lines.json 값으로 대체됨
      */
     public Map<Long, List<Edge>> build(List<Station> allStations, List<SeoulStationTimeResponse.Row> seoulRows,
-            List<ManualLineOrder> manualLines) {
+            List<ManualLineOrder> manualLines, GtfsAdjacentTimeLoader.Result gtfsResult) {
         // TAGO는 "양재(서초구청)"처럼 부기역명을 붙여서 주는 경우가 많아 기본 역명 기준으로 매칭
         Map<String, Station> byNameAndLine = new HashMap<>();
         for (Station station : allStations) {
@@ -77,9 +79,39 @@ public class StationGraphBuilder {
         }
 
         addSeoulEdges(graph, byNameAndLine, seoulRows);
-        addManualEdges(graph, byNameAndLine, manualLines);
+        addGtfsEdges(graph, gtfsResult.runningTimes());
+        addManualEdges(graph, byNameAndLine, manualLines, gtfsCoveredPairKeys(gtfsResult.runningTimes()));
         addTransferEdges(graph, allStations);
         return graph;
+    }
+
+    // GTFS가 실제로 커버한 "역 쌍"만 모음 (노선 전체가 아니라 구간 단위로 수동 백업을 건너뛰기 위함 —
+    // 노선 하나를 통째로 건너뛰면, GTFS 원본에 빠진 구간(예: 공항철도 서울역~공덕처럼 정류장 자체가 없는 경우)이
+    // manual-lines.json 안전망도 같이 잃어서 엉뚱하게 먼 길로 돌아가는 경로가 나옴
+    private Set<String> gtfsCoveredPairKeys(List<GtfsAdjacentTimeLoader.RunningTime> runningTimes) {
+        Set<String> keys = new HashSet<>();
+        for (GtfsAdjacentTimeLoader.RunningTime rt : runningTimes) {
+            keys.add(pairKey(rt.fromStationId(), rt.toStationId()));
+        }
+        return keys;
+    }
+
+    private String pairKey(Long a, Long b) {
+        return a < b ? a + ":" + b : b + ":" + a;
+    }
+
+    // GTFS 실측 역간 소요시간(1800만 행 stop_times.txt에서 계산된 값)으로 운행 엣지 추가.
+    // 서울 열린데이터광장이 없는 노선·9호선의 그래프 정확도를 끌어올리기 위함(manual-lines.json 값보다 우선)
+    private void addGtfsEdges(Map<Long, List<Edge>> graph, List<GtfsAdjacentTimeLoader.RunningTime> runningTimes) {
+        int added = 0;
+        for (GtfsAdjacentTimeLoader.RunningTime rt : runningTimes) {
+            if (!graph.containsKey(rt.fromStationId()) || !graph.containsKey(rt.toStationId())) {
+                continue;
+            }
+            addBidirectionalEdge(graph, rt.fromStationId(), rt.toStationId(), rt.seconds(), false);
+            added++;
+        }
+        log.info("[완료] GTFS 실측 운행 엣지 생성 - {}건", added);
     }
 
     // 서울 열린데이터광장 인접역 운행시간을 노선별로 묶어 순서대로 엣지 생성
@@ -115,9 +147,12 @@ public class StationGraphBuilder {
     }
 
     // 수동 입력 노선 순서(manual-lines.json)로 엣지 생성. 실측 분(minutes) 있으면 그걸 쓰고, 없으면 거리를 평균속도로 환산, 둘 다 없으면 기본값
+    // GTFS가 이미 실측값을 준 "그 구간"만 건너뜀(노선 전체 단위가 아님 - GTFS 원본이 일부 구간만 비어도
+    // manual-lines.json이 그 구간의 안전망으로 남아있어야 함)
     private void addManualEdges(Map<Long, List<Edge>> graph, Map<String, Station> byNameAndLine,
-            List<ManualLineOrder> manualLines) {
+            List<ManualLineOrder> manualLines, Set<String> gtfsCoveredPairKeys) {
         int added = 0;
+        int skippedByGtfs = 0;
         for (ManualLineOrder lineOrder : manualLines) {
             List<ManualLineOrder.StationEntry> stations = lineOrder.stations();
             for (int i = 1; i < stations.size(); i++) {
@@ -127,6 +162,10 @@ public class StationGraphBuilder {
                     log.error("[에러] 수동 노선 역을 찾을 수 없음 - line: {}", lineOrder.line());
                     continue;
                 }
+                if (gtfsCoveredPairKeys.contains(pairKey(from.getId(), to.getId()))) {
+                    skippedByGtfs++;
+                    continue;
+                }
                 ManualLineOrder.StationEntry entry = stations.get(i);
                 int minutes = segmentMinutes(entry);
                 int runningSeconds = Math.max(minutes, 1) * 60;
@@ -134,7 +173,7 @@ public class StationGraphBuilder {
                 added++;
             }
         }
-        log.info("[완료] 수동 입력 운행 엣지 생성 - {}건", added);
+        log.info("[완료] 수동 입력 운행 엣지 생성 - {}건 (GTFS로 대체돼 건너뜀 {}구간)", added, skippedByGtfs);
     }
 
     // GTX-A처럼 지하철 평균속도로 환산하면 안 맞는 노선은 실측 분을 직접 넣어두므로 그게 있으면 최우선 사용

@@ -23,11 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 막차 역산 계산. 약속역(S)과 참여자가 입력한 귀가역(H) 사이 최단경로(predecessor 체인)를 복원해
- * 구간마다 실제 열차 시간표로 "S에서 몇 시까지 출발해야 귀가역까지 갈 수 있는지" 뒤에서부터 계산
- * 가장 빠른 경로가 해당 요일 시간표 데이터 공백(TAGO 일부 노선의 토요일 데이터 누락 등)으로 막히면
- * 그다음으로 빠른 경로를 차례로 시도함 (환승역처럼 같은 역 이름이 여러 노선에 걸쳐 있을 때만 해당)
- * 구간 단위로도 토요일 시간표가 없으면 휴일 시간표로 대체함 (지하철은 보통 토/휴일 다이어가 거의 같음)
+ * 막차 역산 계산. 약속역(S)과 참여자가 입력한 귀가역(H) 사이에 존재하는 모든 경로 후보(환승역처럼
+ * 같은 역 이름이 여러 노선에 걸쳐 있을 때 생기는 조합)를 전부 역산해서, 그중 가장 늦게 출발해도 되는
+ * 시각을 막차로 채택함. "막차"는 제일 빠른 경로의 막차가 아니라 집에 갈 수 있는 가장 늦은 출발
+ * 시각을 뜻하므로, 이동시간이 조금 더 걸려도 더 늦게까지 운행하는 경로가 있으면 그걸 써야 함
+ * 구간 단위로 토요일 시간표가 없으면 휴일 시간표로 대체함 (지하철은 보통 토/휴일 다이어가 거의 같음)
  */
 @Service
 @RequiredArgsConstructor
@@ -68,8 +68,11 @@ public class LastTrainService {
             return LastTrainResponse.of(null);
         }
 
-        // 가장 빠른 경로부터 순서대로 시도, 그 요일에 탈 수 있는 열차가 없으면(데이터 공백) 다음으로 빠른 경로로 넘어감
+        // 후보 전부를 역산해서, 그중 가장 늦게 출발해도 되는 시각을 막차로 채택
+        // (제일 빠른 경로가 하필 데이터가 부실한 노선을 거치면 실제보다 훨씬 이른 시각이 나올 수 있어서,
+        // "일단 값이 나오면 멈춘다"가 아니라 모든 후보를 비교해야 함)
         boolean anySupported = false;
+        Integer latestDepartureMinute = null;
         for (StationTravelTime pair : candidatePairs) {
             List<Station> path = reconstructPath(pair);
             if (!isFullySupported(path)) {
@@ -77,9 +80,12 @@ public class LastTrainService {
             }
             anySupported = true;
             Integer departureMinute = reverseCalculate(path, dayType.getWeekTag());
-            if (departureMinute != null) {
-                return LastTrainResponse.of(formatMinute(departureMinute));
+            if (departureMinute != null && (latestDepartureMinute == null || departureMinute > latestDepartureMinute)) {
+                latestDepartureMinute = departureMinute;
             }
+        }
+        if (latestDepartureMinute != null) {
+            return LastTrainResponse.of(formatMinute(latestDepartureMinute));
         }
         return anySupported ? LastTrainResponse.of(null) : LastTrainResponse.unsupported();
     }
@@ -90,8 +96,8 @@ public class LastTrainService {
                 .anyMatch(id -> toCandidates.stream().anyMatch(to -> to.getId().equals(id)));
     }
 
-    // S 후보들과 H 후보들의 모든 조합을 최단시간 오름차순으로 정렬 (환승역처럼 같은 이름이 여러 노선에 걸쳐 있을 수 있어서)
-    // 가장 빠른 쌍 하나만 쓰지 않고 순서대로 반환해서, 그 경로가 데이터 공백으로 막히면 다음 후보를 시도할 수 있게 함
+    // S 후보들과 H 후보들의 모든 조합 반환 (환승역처럼 같은 이름이 여러 노선에 걸쳐 있을 수 있어서)
+    // calculate()가 전부 역산해서 가장 늦은 deadline을 고르므로 정렬 자체는 결과에 영향 없음
     private List<StationTravelTime> findCandidatePairs(List<Station> fromCandidates, List<Station> toCandidates) {
         List<Long> fromIds = fromCandidates.stream().map(Station::getId).toList();
         List<Long> toIds = toCandidates.stream().map(Station::getId).toList();

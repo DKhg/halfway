@@ -1,22 +1,20 @@
 package com.hong.halfway.domain.station.batch;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hong.halfway.domain.station.batch.dto.ManualLineOrder;
 import com.hong.halfway.domain.station.batch.dto.SeoulStationTimeResponse;
 import com.hong.halfway.domain.station.entity.Station;
 import com.hong.halfway.domain.station.repository.StationRepository;
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,16 +31,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Order(2)
 public class StationTravelTimeBatchRunner implements CommandLineRunner {
 
-    private static final String MANUAL_LINES_RESOURCE = "station-order/manual-lines.json";
     private static final int JDBC_BATCH_SIZE = 1000;
 
     private final StationRepository stationRepository;
     private final SeoulOpenDataClient seoulOpenDataClient;
     private final StationGraphBuilder graphBuilder;
     private final ShortestPathCalculator shortestPathCalculator;
+    private final ManualLineOrderLoader manualLineOrderLoader;
+    private final GtfsDirectoryLocator gtfsDirectoryLocator;
+    private final GtfsAdjacentTimeLoader gtfsAdjacentTimeLoader;
     private final JdbcTemplate jdbcTemplate;
-    // Boot 환경에 ObjectMapper 빈이 자동 등록 안 되어있어 직접 생성
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * 그래프 구성 → 역마다 다익스트라 실행 → station_travel_time 전체 재생성
@@ -52,9 +50,12 @@ public class StationTravelTimeBatchRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         List<Station> stations = stationRepository.findAll();
         List<SeoulStationTimeResponse.Row> seoulRows = seoulOpenDataClient.fetchTravelTimes();
-        List<ManualLineOrder> manualLines = loadManualLines();
+        List<ManualLineOrder> manualLines = manualLineOrderLoader.load();
+        GtfsAdjacentTimeLoader.Result gtfsResult = gtfsDirectoryLocator.locate()
+                .map(dir -> gtfsAdjacentTimeLoader.load(dir, stations))
+                .orElse(new GtfsAdjacentTimeLoader.Result(List.of(), Set.of()));
 
-        Map<Long, List<Edge>> graph = graphBuilder.build(stations, seoulRows, manualLines);
+        Map<Long, List<Edge>> graph = graphBuilder.build(stations, seoulRows, manualLines, gtfsResult);
 
         jdbcTemplate.update("DELETE FROM station_travel_time");
 
@@ -92,13 +93,5 @@ public class StationTravelTimeBatchRunner implements CommandLineRunner {
                         + "VALUES (?, ?, ?, ?, ?, ?, ?)",
                 batch);
         batch.clear();
-    }
-
-    // 리소스에 담아둔 수동 노선 순서(manual-lines.json) 로드
-    private List<ManualLineOrder> loadManualLines() throws Exception {
-        try (InputStream is = new ClassPathResource(MANUAL_LINES_RESOURCE).getInputStream()) {
-            return objectMapper.readValue(is, objectMapper.getTypeFactory()
-                    .constructCollectionType(List.class, ManualLineOrder.class));
-        }
     }
 }
