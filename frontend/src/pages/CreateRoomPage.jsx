@@ -2,10 +2,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createRoom } from '../api/roomApi'
 import { getAllStationNames } from '../api/stationApi'
-import AddToHomeScreenModal from '../components/common/AddToHomeScreenModal'
 import DateCalendarModal from '../components/common/DateCalendarModal'
 import StationAutocompleteInput from '../components/common/StationAutocompleteInput'
-import { markAddToHomeScreenPromptSeen, shouldPromptAddToHomeScreen } from '../utils/addToHomeScreen'
 import { formatMeetingDate } from '../utils/date'
 import './CreateRoomPage.css'
 
@@ -24,7 +22,6 @@ function CreateRoomPage() {
   const [error, setError] = useState(null)
   const [room, setRoom] = useState(null)
   const [copied, setCopied] = useState(false)
-  const [isAddToHomeScreenModalOpen, setIsAddToHomeScreenModalOpen] = useState(false)
 
   useEffect(() => {
     getAllStationNames().then(setStationOptions).catch(() => {})
@@ -35,7 +32,12 @@ function CreateRoomPage() {
   const hasCategory = mode === 'SETTLEMENT_ONLY' || includesFood || includesCafe
   const canSubmit = name.trim().length > 0 && isFixedStationValid && hasCategory && !isLoading
 
-  const createRoomNow = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!canSubmit) {
+      return
+    }
+
     setIsLoading(true)
     setError(null)
     try {
@@ -56,25 +58,6 @@ function CreateRoomPage() {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  // 홈 화면 추가는 방이 생기기 전에 해야 나중에 그 방을 다시 찾아올 수 있어서, 생성 직전에 한 번 끼워 넣음
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!canSubmit) {
-      return
-    }
-    if (shouldPromptAddToHomeScreen()) {
-      setIsAddToHomeScreenModalOpen(true)
-      return
-    }
-    createRoomNow()
-  }
-
-  const handleAddToHomeScreenProceed = () => {
-    markAddToHomeScreenPromptSeen()
-    setIsAddToHomeScreenModalOpen(false)
-    createRoomNow()
   }
 
   const shareLink = room ? `${window.location.origin}/rooms/${room.code}` : ''
@@ -291,10 +274,6 @@ function CreateRoomPage() {
           }}
           onClose={() => setIsDateModalOpen(false)}
         />
-      )}
-
-      {isAddToHomeScreenModalOpen && (
-        <AddToHomeScreenModal onProceed={handleAddToHomeScreenProceed} />
       )}
     </div>
   )
