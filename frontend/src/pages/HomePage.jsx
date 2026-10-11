@@ -154,7 +154,10 @@ function HomePage() {
       {isMyRoomsOpen && <MyRoomsModal onClose={() => setIsMyRoomsOpen(false)} />}
 
       {isAddToHomeScreenModalOpen && (
-        <AddToHomeScreenModal onProceed={handleAddToHomeScreenProceed} />
+        <AddToHomeScreenModal
+          onProceed={handleAddToHomeScreenProceed}
+          onClose={() => setIsAddToHomeScreenModalOpen(false)}
+        />
       )}
 
       {isInviteModalOpen && (
