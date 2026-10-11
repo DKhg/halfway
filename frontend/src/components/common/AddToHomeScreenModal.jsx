@@ -23,7 +23,7 @@ function AddToHomeScreenModal({ onProceed }) {
           <p className="a2hs-instruction-step">① 하단 공유 버튼을 탭하세요</p>
           <p className="a2hs-instruction-step">② '홈 화면에 추가'를 선택하세요</p>
         </div>
-        <button type="button" className="a2hs-primary-btn" onClick={onProceed}>
+        <button type="button" className="a2hs-primary-btn" onClick={() => setShowIosInstructions(false)}>
           확인
         </button>
       </Modal>
