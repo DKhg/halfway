@@ -57,7 +57,7 @@ public class SettlementController {
     }
 
     /**
-     * 결제자 계좌 정보 입력·수정 (결제자만 가능)
+     * 총무 계좌 정보 입력·수정 (총무만 가능)
      */
     @PatchMapping("/account")
     public ResponseEntity<Void> updateAccount(@PathVariable String code,
@@ -67,7 +67,7 @@ public class SettlementController {
     }
 
     /**
-     * 정산 항목 추가 (결제자만 가능)
+     * 정산 항목 추가 (참여자 전원 가능)
      */
     @PostMapping("/items")
     public ResponseEntity<Void> addItem(@PathVariable String code, @Valid @RequestBody SettlementItemRequest request,
@@ -77,7 +77,7 @@ public class SettlementController {
     }
 
     /**
-     * 영수증 사진에서 상호명·합계 금액 초안 추출 (결제자만 가능)
+     * 영수증 사진에서 상호명·합계 금액 초안 추출 (참여자 전원 가능)
      */
     @PostMapping("/items/receipt-scan")
     public ResponseEntity<ReceiptItemDraft> scanReceipt(@PathVariable String code,
@@ -88,7 +88,7 @@ public class SettlementController {
     }
 
     /**
-     * 정산 항목 수정 (결제자만 가능)
+     * 정산 항목 수정 (참여자 전원 가능)
      */
     @PatchMapping("/items/{itemId}")
     public ResponseEntity<Void> updateItem(@PathVariable String code, @PathVariable Long itemId,
@@ -98,7 +98,7 @@ public class SettlementController {
     }
 
     /**
-     * 정산 항목 삭제 (결제자만 가능)
+     * 정산 항목 삭제 (참여자 전원 가능)
      */
     @DeleteMapping("/items/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable String code, @PathVariable Long itemId,

@@ -132,6 +132,7 @@ function JoinPage() {
   const [actionError, setActionError] = useState(null)
   const [copied, setCopied] = useState(false)
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
+  const [isStartSettlementConfirmOpen, setIsStartSettlementConfirmOpen] = useState(false)
   const [isEditingStation, setIsEditingStation] = useState(false)
   const [isChangingFairness, setIsChangingFairness] = useState(false)
   const [isChangingMeetingDate, setIsChangingMeetingDate] = useState(false)
@@ -604,11 +605,27 @@ function JoinPage() {
   }
 
   // 정산 화면으로 이동. 아직 아무도 시작 안 했으면 누른 사람이 그대로 결제자가 됨 (실수로 눌러도 본인이나 방장이 바로 취소 가능)
-  const handleGoToSettlement = async () => {
+  // 정산만 하기 모드 진입 등 순수 이동만 필요한 곳에서 사용 (총무 지정 확인 없이 바로 이동)
+  const handleGoToSettlement = () => {
+    navigate(`/rooms/${code}/settlement`)
+  }
+
+  // "정산하러 가기" 버튼: 정산이 시작 전이면 누르는 사람이 총무가 되므로 확인창을 먼저 띄움.
+  // 이미 누군가 시작했으면(StepIndicator의 정산 탭도 이 조건으로 풀림) 확인 없이 바로 이동
+  const handleSettlementButtonClick = () => {
+    if (room.settlementStarted) {
+      navigate(`/rooms/${code}/settlement`)
+    } else {
+      setIsStartSettlementConfirmOpen(true)
+    }
+  }
+
+  const handleConfirmStartSettlement = async () => {
+    setIsStartSettlementConfirmOpen(false)
     try {
       await startSettlement(code)
     } catch {
-      // 이미 시작됐거나(다른 사람이 결제자) 그 밖의 이유로 실패해도 일단 조회 화면으로 이동
+      // 확인창이 떠 있는 동안 다른 사람이 먼저 시작했을 수도 있음 — 그 경우도 그냥 조회 화면으로 이동
     }
     navigate(`/rooms/${code}/settlement`)
   }
@@ -1329,12 +1346,22 @@ function JoinPage() {
             <button
               type="button"
               className="join-settlement-link-btn"
-              onClick={handleGoToSettlement}
+              onClick={handleSettlementButtonClick}
             >
               정산하러 가기
             </button>
           )}
         </div>
+
+        {isStartSettlementConfirmOpen && (
+          <ConfirmModal
+            message="총무가 되는 거예요, 계속할까요?"
+            confirmLabel="계속"
+            cancelLabel="취소"
+            onConfirm={handleConfirmStartSettlement}
+            onCancel={() => setIsStartSettlementConfirmOpen(false)}
+          />
+        )}
 
         {placeAlertMessage && (
           <ConfirmModal

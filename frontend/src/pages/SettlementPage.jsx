@@ -52,6 +52,7 @@ function SettlementPage() {
   const [accountCopied, setAccountCopied] = useState(false)
   const [accountSaved, setAccountSaved] = useState(false)
   const [isItemModalOpen, setIsItemModalOpen] = useState(false)
+  const [isStartConfirmOpen, setIsStartConfirmOpen] = useState(false)
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
   const [isScanningReceipt, setIsScanningReceipt] = useState(false)
@@ -112,6 +113,7 @@ function SettlementPage() {
     if (isStartingSettlement) {
       return
     }
+    setIsStartConfirmOpen(false)
     setIsStartingSettlement(true)
     setSettlementError(null)
     try {
@@ -171,7 +173,8 @@ function SettlementPage() {
     setEditingItemId(null)
     setItemName('')
     setItemAmount('')
-    setItemMemberIds([])
+    // 대부분 전원이 나눠 내는 상황이라 기본값은 전체 체크, 일부만 먹은 항목이면 빼야 할 사람만 해제하게 함
+    setItemMemberIds(room.participants.map((participant) => participant.id))
     setSettlementError(null)
     setIsItemModalOpen(true)
   }
@@ -336,14 +339,14 @@ function SettlementPage() {
           type="button"
           className="settlement-start-btn"
           disabled={isStartingSettlement}
-          onClick={handleStartSettlement}
+          onClick={() => setIsStartConfirmOpen(true)}
         >
           {isStartingSettlement ? '시작하는 중...' : '정산 시작하기'}
         </button>
       ) : (
         <div className="settlement-panel">
           <div className="settlement-payer-row">
-            <div className="settlement-payer-badge">결제자: {settlement.payerNickname}</div>
+            <div className="settlement-payer-badge">총무: {settlement.payerNickname}</div>
             {(room.owner || isPayer) && (
               <button
                 type="button"
@@ -367,50 +370,46 @@ function SettlementPage() {
                   <span className="settlement-item-amount">{item.amount.toLocaleString()}원</span>
                 </div>
                 <div className="settlement-item-members">{item.participantNicknames.join(', ')}</div>
-                {isPayer && (
-                  <div className="settlement-item-actions">
-                    <button
-                      type="button"
-                      aria-label="항목 수정"
-                      className="settlement-item-edit-btn"
-                      onClick={() => handleStartEditItem(item)}
-                    >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M12 20h9" />
-                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-                      </svg>
-                      수정
-                    </button>
-                    <button
-                      type="button"
-                      aria-label="항목 삭제"
-                      className="settlement-item-delete-btn"
-                      disabled={pendingDeleteItemId === item.id}
-                      onClick={() => handleDeleteItem(item.id)}
-                    >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />
-                      </svg>
-                      삭제
-                    </button>
-                  </div>
-                )}
+                <div className="settlement-item-actions">
+                  <button
+                    type="button"
+                    aria-label="항목 수정"
+                    className="settlement-item-edit-btn"
+                    onClick={() => handleStartEditItem(item)}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                    </svg>
+                    수정
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="항목 삭제"
+                    className="settlement-item-delete-btn"
+                    disabled={pendingDeleteItemId === item.id}
+                    onClick={() => handleDeleteItem(item.id)}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />
+                    </svg>
+                    삭제
+                  </button>
+                </div>
               </div>
             ))}
           </div>
 
-          {isPayer && (
-            <button type="button" className="settlement-add-item-btn" onClick={handleOpenAddItemModal}>
-              + 항목 추가
-            </button>
-          )}
+          <button type="button" className="settlement-add-item-btn" onClick={handleOpenAddItemModal}>
+            + 항목 추가
+          </button>
 
           <div className="settlement-totals">
             {settlement.totals.map((total) => (
               <div key={total.participantId} className="settlement-total-row">
                 <span>
                   {total.nickname}
-                  {total.payer ? ' (결제자)' : ''}
+                  {total.payer ? ' (총무)' : ''}
                 </span>
                 <span>{total.amount.toLocaleString()}원</span>
               </div>
@@ -456,7 +455,7 @@ function SettlementPage() {
                     </button>
                   </div>
                 ) : (
-                  <div className="settlement-progress-hint">결제자가 아직 계좌 정보를 안 넣었어요.</div>
+                  <div className="settlement-progress-hint">총무가 아직 계좌 정보를 안 넣었어요.</div>
                 )}
               </div>
             )
@@ -509,6 +508,7 @@ function SettlementPage() {
             value={itemAmount}
             onChange={(e) => setItemAmount(e.target.value)}
           />
+          <div className="settlement-member-checks-label">이 항목, 누구랑 나눠낼까요?</div>
           <div className="settlement-member-checks">
             {room.participants.map((participant) => (
               <label key={participant.id} className="settlement-member-check">
@@ -529,12 +529,22 @@ function SettlementPage() {
         </Modal>
       )}
 
+      {isStartConfirmOpen && (
+        <ConfirmModal
+          message="총무가 되는 거예요, 계속할까요?"
+          confirmLabel="계속"
+          cancelLabel="취소"
+          onConfirm={handleStartSettlement}
+          onCancel={() => setIsStartConfirmOpen(false)}
+        />
+      )}
+
       {isCancelConfirmOpen && (
         <ConfirmModal
           title="정산 취소"
           message={room.mode === 'SETTLEMENT_ONLY'
             ? '정산만 하는 방이라 취소하면 방 자체가 삭제돼요. 계속할까요?'
-            : '결제자와 입력된 항목이 모두 지워지고 처음부터 다시 시작해요. 계속할까요?'}
+            : '총무 지정과 입력된 항목이 모두 지워지고 처음부터 다시 시작해요. 계속할까요?'}
           confirmLabel="취소하기"
           cancelLabel="닫기"
           danger

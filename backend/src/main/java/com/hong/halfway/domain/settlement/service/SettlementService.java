@@ -110,7 +110,7 @@ public class SettlementService {
     }
 
     /**
-     * 결제자 계좌 정보 입력·수정 (결제자만 가능)
+     * 총무 계좌 정보 입력·수정 (총무만 가능)
      */
     @Transactional
     public void updateAccount(String code, String bank, String accountNumber, UUID requesterId) {
@@ -122,13 +122,13 @@ public class SettlementService {
     }
 
     /**
-     * 정산 항목 추가 (결제자만 가능)
+     * 정산 항목 추가 (참여자 전원 가능)
      */
     @Transactional
     public void addItem(String code, SettlementItemRequest request, UUID requesterId) {
         Room room = findRoomByCode(code);
         Settlement settlement = findSettlementByRoom(room);
-        requirePayer(settlement, requesterId);
+        findMyParticipant(room, requesterId);
 
         List<Participant> members = findMembersInRoom(room, request.getParticipantIds());
         SettlementItem item = settlementItemRepository.save(
@@ -138,11 +138,12 @@ public class SettlementService {
     }
 
     /**
-     * 영수증 사진에서 상호명·합계 금액을 추출 (결제자만 가능). 이미지는 Gemini 호출 한 번에만 쓰고 저장하지 않음
+     * 영수증 사진에서 상호명·합계 금액을 추출 (참여자 전원 가능). 이미지는 Gemini 호출 한 번에만 쓰고 저장하지 않음
      */
     public ReceiptItemDraft scanReceipt(String code, byte[] imageBytes, String contentType, UUID requesterId) {
-        Settlement settlement = findSettlementByRoom(findRoomByCode(code));
-        requirePayer(settlement, requesterId);
+        Room room = findRoomByCode(code);
+        findSettlementByRoom(room);
+        findMyParticipant(room, requesterId);
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new CustomException(ErrorCode.INVALID_RECEIPT_IMAGE);
         }
@@ -153,13 +154,13 @@ public class SettlementService {
     }
 
     /**
-     * 정산 항목 수정 (결제자만 가능)
+     * 정산 항목 수정 (참여자 전원 가능)
      */
     @Transactional
     public void updateItem(String code, Long itemId, SettlementItemRequest request, UUID requesterId) {
         Room room = findRoomByCode(code);
         Settlement settlement = findSettlementByRoom(room);
-        requirePayer(settlement, requesterId);
+        findMyParticipant(room, requesterId);
         SettlementItem item = findItemInSettlement(itemId, settlement);
 
         List<Participant> members = findMembersInRoom(room, request.getParticipantIds());
@@ -172,12 +173,13 @@ public class SettlementService {
     }
 
     /**
-     * 정산 항목 삭제 (결제자만 가능)
+     * 정산 항목 삭제 (참여자 전원 가능)
      */
     @Transactional
     public void deleteItem(String code, Long itemId, UUID requesterId) {
-        Settlement settlement = findSettlementByRoom(findRoomByCode(code));
-        requirePayer(settlement, requesterId);
+        Room room = findRoomByCode(code);
+        Settlement settlement = findSettlementByRoom(room);
+        findMyParticipant(room, requesterId);
         SettlementItem item = findItemInSettlement(itemId, settlement);
 
         settlementItemMemberRepository.deleteAllByItem(item);

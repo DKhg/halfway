@@ -280,18 +280,33 @@ class SettlementServiceTest {
     }
 
     @Test
-    void 결제자가_아니면_항목을_추가할_수_없다() {
+    void 결제자가_아니어도_항목을_추가할_수_있다() {
         Room room = createSettlementReadyRoom("5", new String[]{"지우", "민수"});
         UUID jiwooId = userIdOf(room, "지우");
         UUID minsuId = userIdOf(room, "민수");
         settlementService.start(room.getCode(), jiwooId);
         Long jiwoo = participantIdOf(room, "지우");
 
+        settlementService.addItem(room.getCode(), SettlementItemRequest.builder()
+                .name("민수가추가").amount(1000).participantIds(List.of(jiwoo)).build(), minsuId);
+
+        assertThat(settlementService.getSettlement(room.getCode(), jiwooId).getItems()).hasSize(1);
+    }
+
+    @Test
+    void 방_참여자가_아니면_항목을_추가할_수_없다() {
+        Room room = createSettlementReadyRoom("5-2", new String[]{"지우", "민수"});
+        Room otherRoom = createSettlementReadyRoom("5-3", new String[]{"다른방사람", "다른방사람2"});
+        UUID jiwooId = userIdOf(room, "지우");
+        UUID outsiderId = userIdOf(otherRoom, "다른방사람");
+        settlementService.start(room.getCode(), jiwooId);
+        Long jiwoo = participantIdOf(room, "지우");
+
         assertThatThrownBy(() -> settlementService.addItem(room.getCode(), SettlementItemRequest.builder()
-                .name("몰래추가").amount(1000).participantIds(List.of(jiwoo)).build(), minsuId))
+                .name("몰래추가").amount(1000).participantIds(List.of(jiwoo)).build(), outsiderId))
                 .isInstanceOf(CustomException.class)
                 .extracting(e -> ((CustomException) e).getErrorCode())
-                .isEqualTo(ErrorCode.NOT_SETTLEMENT_PAYER);
+                .isEqualTo(ErrorCode.PARTICIPANT_NOT_FOUND);
     }
 
     @Test

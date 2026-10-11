@@ -329,6 +329,12 @@
   margin: 0;
 }
 
+.settlement-member-checks-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
 .settlement-member-checks {
   display: flex;
   flex-wrap: wrap;
