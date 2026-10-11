@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import { useAnonymousUser } from './hooks/useAnonymousUser'
 import { usePwaUpdate } from './hooks/usePwaUpdate'
+import { useInstallPrompt } from './hooks/useInstallPrompt'
 import GlobalLoadingBar from './components/common/GlobalLoadingBar'
 import UpdateBanner from './components/common/UpdateBanner'
 import HomePage from './pages/HomePage'
@@ -11,6 +12,7 @@ import SettlementPage from './pages/SettlementPage'
 function App() {
   const { isReady, error } = useAnonymousUser()
   usePwaUpdate()
+  useInstallPrompt()
 
   if (error) {
     return <div>{error}</div>
