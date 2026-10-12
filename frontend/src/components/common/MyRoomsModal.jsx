@@ -18,9 +18,21 @@ function MyRoomsModal({ onClose }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    getMyRooms()
-      .then(setRooms)
-      .catch(() => setError('약속 목록을 불러오지 못했어요.'))
+    const fetchRooms = () => {
+      getMyRooms()
+        .then(setRooms)
+        .catch(() => setError('약속 목록을 불러오지 못했어요.'))
+    }
+    fetchRooms()
+
+    // Safari 뒤로가기는 bfcache로 페이지를 그대로 복원해 마운트가 다시 안 일어남 - 그새 참여한 방이 빠진 옛 목록이 남아있어서, 다시 보이는 순간 재조회
+    const handleVisible = () => {
+      if (document.visibilityState === 'visible') {
+        fetchRooms()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisible)
+    return () => document.removeEventListener('visibilitychange', handleVisible)
   }, [])
 
   const handleSelect = (code) => {

@@ -308,11 +308,13 @@ function SettlementPage() {
   const me = room.participants.find((participant) => participant.me)
   const isPayer = me && settlement && settlement.payerParticipantId === me.id
   const myTotal = settlement?.totals.find((total) => total.participantId === me?.id)
+  // 정산만 하기 모드는 역·장소 화면이 없어서 방 페이지로 돌아가면 바로 이 화면으로 되돌아와 버림 - 뒤로가기는 홈으로 보냄
+  const isSettlementOnly = room.mode === 'SETTLEMENT_ONLY'
 
   return (
     <div className="settlement-page">
       <header className="settlement-header">
-        <button type="button" aria-label="뒤로" className="settlement-back-btn" onClick={() => navigate(`/rooms/${code}`)}>
+        <button type="button" aria-label="뒤로" className="settlement-back-btn" onClick={() => navigate(isSettlementOnly ? '/' : `/rooms/${code}`)}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M15 5l-7 7 7 7" />
           </svg>
