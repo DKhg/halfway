@@ -138,7 +138,12 @@ public class GtfsAdjacentTimeLoader {
         return result;
     }
 
+    // GTFS stops.txt 역명이 우리 station.name과 글자가 다른 경우 ("서울(공항철도)"처럼 "역"이 빠진 표기)
+    private static final Map<String, String> GTFS_STOP_NAME_ALIAS = Map.of(
+            "서울", "서울역");
+
     // stops.txt에서 철도 정류장(RS_ 접두사)의 역 기본 이름만 추출 ("왕십리(경의중앙선)" -> "왕십리")
+    // "·"(가운뎃점)을 우리 DB 표기인 "."으로 통일하고, GTFS_STOP_NAME_ALIAS로 한 번 더 보정
     private Map<String, String> loadStopBaseNames(Path stopsFile) {
         Map<String, String> result = new HashMap<>();
         try (BufferedReader reader = Files.newBufferedReader(stopsFile, StandardCharsets.UTF_8)) {
@@ -154,7 +159,8 @@ public class GtfsAdjacentTimeLoader {
                 }
                 String name = cols[1];
                 int parenIndex = name.indexOf('(');
-                result.put(cols[0], (parenIndex >= 0 ? name.substring(0, parenIndex) : name).trim());
+                String baseName = (parenIndex >= 0 ? name.substring(0, parenIndex) : name).trim().replace('·', '.');
+                result.put(cols[0], GTFS_STOP_NAME_ALIAS.getOrDefault(baseName, baseName));
             }
         } catch (IOException e) {
             throw new IllegalStateException("GTFS stops.txt 로드 실패", e);
