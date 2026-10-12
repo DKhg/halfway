@@ -84,7 +84,7 @@ class VoteServiceTest {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("1", userIds);
 
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
 
         Room updated = roomService.getRoom(room.getCode());
         assertThat(updated.getStatus()).isEqualTo(RoomStatus.VOTING);
@@ -99,7 +99,7 @@ class VoteServiceTest {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("2", userIds);
 
-        assertThatThrownBy(() -> voteService.startVoting(room.getCode(), userIds[1]))
+        assertThatThrownBy(() -> voteService.startVoting(room.getCode(), false, userIds[1]))
                 .isInstanceOf(CustomException.class)
                 .extracting(e -> ((CustomException) e).getErrorCode())
                 .isEqualTo(ErrorCode.NOT_ROOM_OWNER);
@@ -109,9 +109,9 @@ class VoteServiceTest {
     void 이미_투표중이면_다시_시작할_수_없다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("3", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
 
-        assertThatThrownBy(() -> voteService.startVoting(room.getCode(), userIds[0]))
+        assertThatThrownBy(() -> voteService.startVoting(room.getCode(), false, userIds[0]))
                 .isInstanceOf(CustomException.class)
                 .extracting(e -> ((CustomException) e).getErrorCode())
                 .isEqualTo(ErrorCode.INVALID_ROOM_STATUS);
@@ -121,7 +121,7 @@ class VoteServiceTest {
     void 투표를_취소하면_후보가_지워지고_COLLECTING으로_복귀한다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("4", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
 
         voteService.cancelVoting(room.getCode(), userIds[0]);
 
@@ -135,7 +135,7 @@ class VoteServiceTest {
     void 참여자가_후보를_체크하면_득표수가_올라간다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("5", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
         Long candidateId = voteService.getCandidates(room.getCode(), userIds[0]).getCandidates().get(0).getId();
 
         voteService.vote(room.getCode(), candidateId, userIds[0]);
@@ -149,7 +149,7 @@ class VoteServiceTest {
     void 두_참여자가_같은_후보를_체크하면_그_후보가_1등이_된다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("6", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
         Long candidateId = voteService.getCandidates(room.getCode(), userIds[0]).getCandidates().get(0).getId();
 
         voteService.vote(room.getCode(), candidateId, userIds[0]);
@@ -163,7 +163,7 @@ class VoteServiceTest {
     void 아무도_체크하지_않았으면_1등이_없다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("7", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
 
         VoteResultResponse result = voteService.getCandidates(room.getCode(), userIds[0]);
 
@@ -174,7 +174,7 @@ class VoteServiceTest {
     void 방장이_후보를_확정하면_방이_CONFIRMED가_되고_역_이름이_저장된다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("9", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
         StationCandidateResponse candidate = voteService.getCandidates(room.getCode(), userIds[0]).getCandidates().get(0);
 
         voteService.confirmCandidate(room.getCode(), candidate.getId(), userIds[0]);
@@ -188,7 +188,7 @@ class VoteServiceTest {
     void 방장이_아니면_확정할_수_없다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("10", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
         Long candidateId = voteService.getCandidates(room.getCode(), userIds[0]).getCandidates().get(0).getId();
 
         assertThatThrownBy(() -> voteService.confirmCandidate(room.getCode(), candidateId, userIds[1]))
@@ -212,7 +212,7 @@ class VoteServiceTest {
     void 방장이_확정을_취소하면_VOTING으로_복귀하고_확정역이_지워진다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("12", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
         Long candidateId = voteService.getCandidates(room.getCode(), userIds[0]).getCandidates().get(0).getId();
         voteService.confirmCandidate(room.getCode(), candidateId, userIds[0]);
 
@@ -229,7 +229,7 @@ class VoteServiceTest {
     void 음식점이나_카페가_확정된_상태에서는_역_확정을_취소할_수_없다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("12-1", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
         Long candidateId = voteService.getCandidates(room.getCode(), userIds[0]).getCandidates().get(0).getId();
         voteService.confirmCandidate(room.getCode(), candidateId, userIds[0]);
         placeService.confirmPlace(room.getCode(), PlaceCategory.FOOD, "정든백반집", userIds[0]);
@@ -249,7 +249,7 @@ class VoteServiceTest {
     void 방장이_아니면_확정을_취소할_수_없다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("13", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
         Long candidateId = voteService.getCandidates(room.getCode(), userIds[0]).getCandidates().get(0).getId();
         voteService.confirmCandidate(room.getCode(), candidateId, userIds[0]);
 
@@ -263,7 +263,7 @@ class VoteServiceTest {
     void CONFIRMED가_아니면_확정을_취소할_수_없다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("14", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
 
         assertThatThrownBy(() -> voteService.unconfirm(room.getCode(), userIds[0]))
                 .isInstanceOf(CustomException.class)
@@ -319,7 +319,7 @@ class VoteServiceTest {
     void 체크를_해제하면_득표수가_다시_내려간다() {
         UUID[] userIds = new UUID[2];
         Room room = createRoomWithTwoParticipants("8", userIds);
-        voteService.startVoting(room.getCode(), userIds[0]);
+        voteService.startVoting(room.getCode(), false, userIds[0]);
         Long candidateId = voteService.getCandidates(room.getCode(), userIds[0]).getCandidates().get(0).getId();
         voteService.vote(room.getCode(), candidateId, userIds[0]);
 

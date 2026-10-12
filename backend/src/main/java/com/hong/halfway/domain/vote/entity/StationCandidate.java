@@ -51,22 +51,27 @@ public class StationCandidate extends BaseTimeEntity {
     @Column(name = "sum_minutes", nullable = false)
     private short sumMinutes;
 
+    // 귀가역까지 고려해서 고정한 후보인지 (true면 StationCandidateTime의 출발·귀가 구간이 따로 채워짐)
+    @Column(name = "consider_home", nullable = false)
+    private boolean considerHome;
+
     private StationCandidate(Room room, String stationName, short rank, short fairnessScore, short maxMinutes,
-            short sumMinutes) {
+            short sumMinutes, boolean considerHome) {
         this.room = room;
         this.stationName = stationName;
         this.rank = rank;
         this.fairnessScore = fairnessScore;
         this.maxMinutes = maxMinutes;
         this.sumMinutes = sumMinutes;
+        this.considerHome = considerHome;
     }
 
     /**
      * 투표 시작 시점 중간지점 계산 결과 하나를 후보 스냅샷으로 저장
      */
     public static StationCandidate snapshot(Room room, String stationName, int rank, int fairnessScore, int maxMinutes,
-            int sumMinutes) {
+            int sumMinutes, boolean considerHome) {
         return new StationCandidate(room, stationName, (short) rank, (short) fairnessScore, (short) maxMinutes,
-                (short) sumMinutes);
+                (short) sumMinutes, considerHome);
     }
 }

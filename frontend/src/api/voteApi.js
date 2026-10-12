@@ -1,7 +1,7 @@
 import api from './axios'
 
-export function startVoting(code) {
-  return api.post(`/rooms/${code}/voting`)
+export function startVoting(code, considerHome = false) {
+  return api.post(`/rooms/${code}/voting`, null, { params: { considerHome } })
 }
 
 export function cancelVoting(code) {

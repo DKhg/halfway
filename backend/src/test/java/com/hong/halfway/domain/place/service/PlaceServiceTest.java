@@ -93,7 +93,7 @@ class PlaceServiceTest {
         participantService.updateMyInfo(room.getCode(), guest.getId(), ParticipantUpdateRequest.builder()
                 .startStationName("B가게테스트역" + suffix).build());
 
-        voteService.startVoting(room.getCode(), owner.getId());
+        voteService.startVoting(room.getCode(), false, owner.getId());
         Long candidateId = voteService.getCandidates(room.getCode(), owner.getId()).getCandidates().get(0).getId();
         voteService.confirmCandidate(room.getCode(), candidateId, owner.getId());
 
@@ -178,7 +178,7 @@ class PlaceServiceTest {
         participantService.join(room.getCode(), guest.getId(), "손님");
         participantService.updateMyInfo(room.getCode(), guest.getId(), ParticipantUpdateRequest.builder()
                 .startStationName("B좌표실패역").build());
-        voteService.startVoting(room.getCode(), owner.getId());
+        voteService.startVoting(room.getCode(), false, owner.getId());
         Long candidateId = voteService.getCandidates(room.getCode(), owner.getId()).getCandidates().get(0).getId();
         voteService.confirmCandidate(room.getCode(), candidateId, owner.getId());
 

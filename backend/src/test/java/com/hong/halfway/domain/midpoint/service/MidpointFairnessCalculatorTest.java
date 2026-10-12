@@ -97,6 +97,37 @@ class MidpointFairnessCalculatorTest {
         assertThat(ranked.get(0).fairnessScore()).isEqualTo(100);
     }
 
+    @Test
+    void rankRoundTrip도_MAX_MIN_기준으로_동일하게_정렬된다() {
+        List<MidpointCandidate> ranked = MidpointFairnessCalculator.rankRoundTrip(exampleData(), FairnessType.MAX_MIN);
+
+        assertThat(ranked).extracting(MidpointCandidate::stationName)
+                .containsExactly("을지로3가", "왕십리", "교대");
+    }
+
+    @Test
+    void rankRoundTrip은_90분을_넘어도_150분_이하면_후보에_남는다() {
+        Map<String, Map<Long, Integer>> data = new LinkedHashMap<>();
+        data.put("왕복이라먼역", times(60, 60, 95));
+        data.put("왕복도가까운역", times(10, 10, 20));
+
+        List<MidpointCandidate> ranked = MidpointFairnessCalculator.rankRoundTrip(data, FairnessType.MAX_MIN);
+
+        assertThat(ranked).extracting(MidpointCandidate::stationName)
+                .containsExactly("왕복도가까운역", "왕복이라먼역");
+    }
+
+    @Test
+    void rankRoundTrip은_150분_초과면_후보에서_제외된다() {
+        Map<String, Map<Long, Integer>> data = new LinkedHashMap<>();
+        data.put("너무먼역", times(60, 60, 151));
+        data.put("가까운역", times(10, 10, 20));
+
+        List<MidpointCandidate> ranked = MidpointFairnessCalculator.rankRoundTrip(data, FairnessType.MAX_MIN);
+
+        assertThat(ranked).extracting(MidpointCandidate::stationName).containsExactly("가까운역");
+    }
+
     private MidpointCandidate findByName(List<MidpointCandidate> candidates, String name) {
         return candidates.stream()
                 .filter(candidate -> candidate.stationName().equals(name))

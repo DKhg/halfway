@@ -295,7 +295,7 @@ class RoomServiceTest {
         participantService.join(room.getCode(), guest.getId(), "손님");
         participantService.updateMyInfo(room.getCode(), guest.getId(), ParticipantUpdateRequest.builder()
                 .startStationName("B삭제테스트역").build());
-        voteService.startVoting(room.getCode(), owner.getId());
+        voteService.startVoting(room.getCode(), false, owner.getId());
         Long candidateId = voteService.getCandidates(room.getCode(), owner.getId()).getCandidates().get(0).getId();
         voteService.vote(room.getCode(), candidateId, owner.getId());
 

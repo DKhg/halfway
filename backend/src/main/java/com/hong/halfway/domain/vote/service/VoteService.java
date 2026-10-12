@@ -2,7 +2,11 @@ package com.hong.halfway.domain.vote.service;
 
 import com.hong.halfway.domain.midpoint.dto.MidpointCandidateResponse;
 import com.hong.halfway.domain.midpoint.dto.MidpointResultResponse;
+import com.hong.halfway.domain.midpoint.dto.MidpointRoundTripCandidateResponse;
+import com.hong.halfway.domain.midpoint.dto.MidpointRoundTripTimeResponse;
 import com.hong.halfway.domain.midpoint.dto.MidpointStatus;
+import com.hong.halfway.domain.midpoint.dto.MidpointWithHomeResultResponse;
+import com.hong.halfway.domain.midpoint.dto.MidpointWithHomeStatus;
 import com.hong.halfway.domain.midpoint.service.MidpointService;
 import com.hong.halfway.domain.participant.entity.Participant;
 import com.hong.halfway.domain.participant.repository.ParticipantRepository;
@@ -53,15 +57,28 @@ public class VoteService {
 
     /**
      * 투표 시작. 현재 중간지점 후보를 그대로 스냅샷 저장하고 방 상태를 VOTING으로 전환 (방장만 가능)
+     * considerHome이면 귀가역까지 고려한 후보(출발+귀가 합산 시간 기준)로 스냅샷
      */
     @Transactional
-    public void startVoting(String code, UUID requesterId) {
+    public void startVoting(String code, boolean considerHome, UUID requesterId) {
         Room room = findRoomByCode(code);
         requireOwner(room, requesterId);
         if (room.getStatus() != RoomStatus.COLLECTING) {
             throw new CustomException(ErrorCode.INVALID_ROOM_STATUS);
         }
 
+        if (considerHome) {
+            snapshotFromHomeMidpoint(room, code);
+        } else {
+            snapshotFromDepartureMidpoint(room, code);
+        }
+
+        room.startVoting();
+        log.info("[완료] 투표 시작 - code: {}, 귀가역 고려: {}", code, considerHome);
+    }
+
+    // 출발역 기준 중간지점 후보를 StationCandidate로 스냅샷
+    private void snapshotFromDepartureMidpoint(Room room, String code) {
         MidpointResultResponse midpoint = midpointService.getMidpointResult(code);
         if (midpoint.getStatus() != MidpointStatus.READY || midpoint.getCandidates().isEmpty()) {
             throw new CustomException(ErrorCode.CANDIDATES_NOT_READY);
@@ -70,15 +87,38 @@ public class VoteService {
         int rank = 1;
         for (MidpointCandidateResponse candidate : midpoint.getCandidates()) {
             StationCandidate saved = stationCandidateRepository.save(StationCandidate.snapshot(room, candidate.getStationName(),
-                    rank++, candidate.getFairnessScore(), candidate.getMaxMinutes(), candidate.getSumMinutes()));
+                    rank++, candidate.getFairnessScore(), candidate.getMaxMinutes(), candidate.getSumMinutes(), false));
             for (com.hong.halfway.domain.midpoint.dto.ParticipantTimeResponse time : candidate.getTimes()) {
                 Participant participant = participantRepository.getReferenceById(time.getParticipantId());
                 stationCandidateTimeRepository.save(StationCandidateTime.snapshot(saved, participant, time.getMinutes()));
             }
         }
+    }
 
-        room.startVoting();
-        log.info("[완료] 투표 시작 - code: {}", code);
+    // 귀가역까지 고려한 후보를 StationCandidate로 스냅샷. 출발·귀가 구간을 따로 저장해서
+    // 투표 화면에서도 선택 화면과 동일하게 구간별로 보여줄 수 있게 함
+    private void snapshotFromHomeMidpoint(Room room, String code) {
+        MidpointWithHomeResultResponse midpoint = midpointService.getMidpointResultWithHome(code);
+        if (midpoint.getStatus() != MidpointWithHomeStatus.READY || midpoint.getCandidates().isEmpty()) {
+            throw new CustomException(ErrorCode.CANDIDATES_NOT_READY);
+        }
+
+        int rank = 1;
+        for (MidpointRoundTripCandidateResponse candidate : midpoint.getCandidates()) {
+            List<Integer> combinedMinutesList = candidate.getTimes().stream()
+                    .map(time -> time.getDepartureMinutes() + time.getHomeMinutes())
+                    .toList();
+            int maxMinutes = combinedMinutesList.stream().mapToInt(Integer::intValue).max().orElse(0);
+            int sumMinutes = combinedMinutesList.stream().mapToInt(Integer::intValue).sum();
+
+            StationCandidate saved = stationCandidateRepository.save(StationCandidate.snapshot(room, candidate.getStationName(),
+                    rank++, candidate.getFairnessScore(), maxMinutes, sumMinutes, true));
+            for (MidpointRoundTripTimeResponse time : candidate.getTimes()) {
+                Participant participant = participantRepository.getReferenceById(time.getParticipantId());
+                stationCandidateTimeRepository.save(StationCandidateTime.snapshotWithHome(saved, participant,
+                        time.getDepartureMinutes(), time.getHomeMinutes()));
+            }
+        }
     }
 
     /**
@@ -234,6 +274,8 @@ public class VoteService {
                         .participantId(time.getParticipant().getId())
                         .nickname(time.getParticipant().getNickname())
                         .minutes(time.getMinutes())
+                        .departureMinutes(time.getDepartureMinutes() == null ? null : (int) time.getDepartureMinutes())
+                        .homeMinutes(time.getHomeMinutes() == null ? null : (int) time.getHomeMinutes())
                         .build())
                 .toList();
         List<StationVote> votes = votesByCandidateId.getOrDefault(candidate.getId(), List.of());
@@ -247,6 +289,7 @@ public class VoteService {
                 .fairnessScore(candidate.getFairnessScore())
                 .maxMinutes(candidate.getMaxMinutes())
                 .sumMinutes(candidate.getSumMinutes())
+                .considerHome(candidate.isConsiderHome())
                 .times(times)
                 .voteCount(votes.size())
                 .votedByMe(votedByMe)

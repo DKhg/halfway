@@ -192,6 +192,7 @@ function CreateRoomPage() {
           </>
         )}
 
+        {/* 일단 무조건 "모두 공평하게"로 고정. "다 같이 빨리"(SUM_MIN) 선택 UI는 나중에 다시 쓸 수 있게 주석으로만 남겨둠
         {mode === 'MIDPOINT' && (
           <>
             <div className="create-room-field-label">정렬 기준</div>
@@ -215,6 +216,7 @@ function CreateRoomPage() {
             </div>
           </>
         )}
+        */}
 
         {mode !== 'SETTLEMENT_ONLY' && (
           <>

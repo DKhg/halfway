@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.hong.halfway.domain.midpoint.dto.MidpointResultResponse;
 import com.hong.halfway.domain.midpoint.dto.MidpointStatus;
+import com.hong.halfway.domain.midpoint.dto.MidpointWithHomeResultResponse;
+import com.hong.halfway.domain.midpoint.dto.MidpointWithHomeStatus;
 import com.hong.halfway.domain.participant.dto.ParticipantUpdateRequest;
 import com.hong.halfway.domain.participant.service.ParticipantService;
 import com.hong.halfway.domain.room.dto.RoomCreateRequest;
@@ -17,6 +19,7 @@ import com.hong.halfway.domain.station.repository.StationRepository;
 import com.hong.halfway.domain.station.repository.StationTravelTimeRepository;
 import com.hong.halfway.domain.user.entity.User;
 import com.hong.halfway.domain.user.repository.UserRepository;
+import com.hong.halfway.domain.user.service.UserService;
 import com.hong.halfway.global.error.CustomException;
 import com.hong.halfway.global.error.ErrorCode;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,9 @@ class MidpointServiceTest {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private StationRepository stationRepository;
 
     @Autowired
@@ -58,6 +64,16 @@ class MidpointServiceTest {
         participantService.updateMyInfo(room.getCode(), user.getId(), ParticipantUpdateRequest.builder()
                 .startStationName(stationName)
                 .build());
+    }
+
+    private void joinWithStationAndHome(Room room, String userHashSuffix, String nickname, String stationName,
+            String homeStationName) {
+        User user = userRepository.save(User.createAnonymous("mid-user-" + userHashSuffix));
+        participantService.join(room.getCode(), user.getId(), nickname);
+        participantService.updateMyInfo(room.getCode(), user.getId(), ParticipantUpdateRequest.builder()
+                .startStationName(stationName)
+                .build());
+        userService.updateHomeStation(user.getId(), homeStationName);
     }
 
     @Test
@@ -105,5 +121,54 @@ class MidpointServiceTest {
         assertThat(result.getCandidates().get(0).getStationName()).isEqualTo("C테스트역3");
         assertThat(result.getCandidates().get(0).getMaxMinutes()).isEqualTo(8);
         assertThat(result.getCandidates().get(0).getTimes()).hasSize(2);
+    }
+
+    @Test
+    void 참여자_전원이_귀가역을_등록하지_않으면_HOME_STATION_PENDING_상태다() {
+        stationRepository.save(Station.create("D테스트역4", "테스트선4"));
+
+        Room room = createRoom("4");
+        joinWithStationAndHome(room, "4a", "참여자1", "A테스트역4", "D테스트역4");
+        joinWithStation(room, "4b", "참여자2", "B테스트역4");
+
+        MidpointWithHomeResultResponse result = midpointService.getMidpointResultWithHome(room.getCode());
+
+        assertThat(result.getStatus()).isEqualTo(MidpointWithHomeStatus.HOME_STATION_PENDING);
+        assertThat(result.getHomeStationSetCount()).isEqualTo(1);
+        assertThat(result.getReadyParticipantCount()).isEqualTo(2);
+        assertThat(result.getCandidates()).isEmpty();
+    }
+
+    @Test
+    void 전원_귀가역_등록시_출발_귀가_왕복_기준으로_후보를_계산한다() {
+        Station a = stationRepository.save(Station.create("A테스트역5", "테스트선5"));
+        Station b = stationRepository.save(Station.create("B테스트역5", "테스트선5"));
+        Station c = stationRepository.save(Station.create("C테스트역5", "테스트선5"));
+        Station d = stationRepository.save(Station.create("D테스트역5", "테스트선5"));
+        Station e = stationRepository.save(Station.create("E테스트역5", "테스트선5"));
+        stationTravelTimeRepository.save(StationTravelTime.create(a, c, (short) 6, (short) 0));
+        stationTravelTimeRepository.save(StationTravelTime.create(c, a, (short) 6, (short) 0));
+        stationTravelTimeRepository.save(StationTravelTime.create(b, c, (short) 9, (short) 0));
+        stationTravelTimeRepository.save(StationTravelTime.create(c, b, (short) 9, (short) 0));
+        stationTravelTimeRepository.save(StationTravelTime.create(d, c, (short) 3, (short) 0));
+        stationTravelTimeRepository.save(StationTravelTime.create(c, d, (short) 3, (short) 0));
+        stationTravelTimeRepository.save(StationTravelTime.create(e, c, (short) 7, (short) 0));
+        stationTravelTimeRepository.save(StationTravelTime.create(c, e, (short) 7, (short) 0));
+
+        Room room = createRoom("5");
+        joinWithStationAndHome(room, "5a", "참여자1", "A테스트역5", "D테스트역5");
+        joinWithStationAndHome(room, "5b", "참여자2", "B테스트역5", "E테스트역5");
+
+        MidpointWithHomeResultResponse result = midpointService.getMidpointResultWithHome(room.getCode());
+
+        assertThat(result.getStatus()).isEqualTo(MidpointWithHomeStatus.READY);
+        assertThat(result.getCandidates()).hasSize(1);
+        assertThat(result.getCandidates().get(0).getStationName()).isEqualTo("C테스트역5");
+        // 참여자1: 출발 6분 + 귀가 3분, 참여자2: 출발 9분 + 귀가 7분 (구간별로 따로 내려감, 합산값은 응답에 없음)
+        assertThat(result.getCandidates().get(0).getTimes())
+                .extracting("departureMinutes", "homeMinutes")
+                .containsExactlyInAnyOrder(
+                        org.assertj.core.groups.Tuple.tuple(6, 3),
+                        org.assertj.core.groups.Tuple.tuple(9, 7));
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,10 +28,12 @@ public class VoteController {
 
     /**
      * 투표 시작. 현재 중간지점 후보를 고정하고 방을 VOTING 상태로 전환 (방장만 가능)
+     * considerHome=true면 귀가역까지 고려한 후보로 고정
      */
     @PostMapping("/voting")
-    public ResponseEntity<Void> startVoting(@PathVariable String code, @AuthenticationPrincipal UUID requesterId) {
-        voteService.startVoting(code, requesterId);
+    public ResponseEntity<Void> startVoting(@PathVariable String code,
+            @RequestParam(defaultValue = "false") boolean considerHome, @AuthenticationPrincipal UUID requesterId) {
+        voteService.startVoting(code, considerHome, requesterId);
         return ResponseEntity.noContent().build();
     }
 

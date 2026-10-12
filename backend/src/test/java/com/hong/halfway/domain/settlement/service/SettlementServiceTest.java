@@ -96,7 +96,7 @@ class SettlementServiceTest {
                     .startStationName("B정산역" + suffix).build());
         }
 
-        voteService.startVoting(room.getCode(), owner.getId());
+        voteService.startVoting(room.getCode(), false, owner.getId());
         Long candidateId = voteService.getCandidates(room.getCode(), owner.getId()).getCandidates().get(0).getId();
         voteService.confirmCandidate(room.getCode(), candidateId, owner.getId());
         if (confirmFood) {

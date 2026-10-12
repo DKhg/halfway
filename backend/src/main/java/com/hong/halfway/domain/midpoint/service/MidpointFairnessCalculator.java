@@ -13,6 +13,9 @@ public final class MidpointFairnessCalculator {
     // 한 명이라도 이 시간을 넘는 후보는 제외
     private static final int MAX_ACCEPTABLE_MINUTES = 90;
 
+    // 왕복(출발+귀가) 기준 상한. 편도 기준의 2배보다는 낮게 잡아서 "한쪽이 너무 먼" 후보는 걸러짐
+    private static final int MAX_ACCEPTABLE_ROUND_TRIP_MINUTES = 150;
+
     // 최종 반환하는 후보 수
     private static final int TOP_CANDIDATE_COUNT = 3;
 
@@ -27,6 +30,19 @@ public final class MidpointFairnessCalculator {
         return minutesByCandidateAndParticipant.entrySet().stream()
                 .map(entry -> toCandidate(entry.getKey(), entry.getValue()))
                 .filter(candidate -> candidate.maxMinutes() <= MAX_ACCEPTABLE_MINUTES)
+                .sorted(comparator(fairnessType))
+                .limit(TOP_CANDIDATE_COUNT)
+                .toList();
+    }
+
+    /**
+     * 출발+귀가 왕복 기준 소요시간을 받아 150분 초과 후보를 제외하고, 공평 기준에 따라 정렬해 상위 3개만 반환
+     */
+    public static List<MidpointCandidate> rankRoundTrip(Map<String, Map<Long, Integer>> minutesByCandidateAndParticipant,
+            FairnessType fairnessType) {
+        return minutesByCandidateAndParticipant.entrySet().stream()
+                .map(entry -> toCandidate(entry.getKey(), entry.getValue()))
+                .filter(candidate -> candidate.maxMinutes() <= MAX_ACCEPTABLE_ROUND_TRIP_MINUTES)
                 .sorted(comparator(fairnessType))
                 .limit(TOP_CANDIDATE_COUNT)
                 .toList();

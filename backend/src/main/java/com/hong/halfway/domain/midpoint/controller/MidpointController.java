@@ -1,6 +1,7 @@
 package com.hong.halfway.domain.midpoint.controller;
 
 import com.hong.halfway.domain.midpoint.dto.MidpointResultResponse;
+import com.hong.halfway.domain.midpoint.dto.MidpointWithHomeResultResponse;
 import com.hong.halfway.domain.midpoint.service.MidpointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +23,13 @@ public class MidpointController {
     @GetMapping
     public ResponseEntity<MidpointResultResponse> getMidpoint(@PathVariable String code) {
         return ResponseEntity.ok(midpointService.getMidpointResult(code));
+    }
+
+    /**
+     * 출발역+귀가역(왕복)을 모두 고려한 중간지점 후보 계산. 참여자 전원이 귀가역을 등록해야 결과가 나옴
+     */
+    @GetMapping("/with-home")
+    public ResponseEntity<MidpointWithHomeResultResponse> getMidpointWithHome(@PathVariable String code) {
+        return ResponseEntity.ok(midpointService.getMidpointResultWithHome(code));
     }
 }

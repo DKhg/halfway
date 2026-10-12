@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { deleteRoom, getRoom, updateRoomFairness, updateRoomMeetingDate } from '../api/roomApi'
 import { joinRoom, updateMyStation } from '../api/participantApi'
 import { getAllStationNames } from '../api/stationApi'
-import { getMe } from '../api/userApi'
-import { getMidpoint } from '../api/midpointApi'
+import { getMe, updateHomeStation } from '../api/userApi'
+import { getMidpoint, getMidpointWithHome } from '../api/midpointApi'
 import {
   cancelVoting,
   confirmCandidate,
@@ -89,6 +89,17 @@ function JoinPage() {
 
   const [midpoint, setMidpoint] = useState(null)
   const [midpointError, setMidpointError] = useState(null)
+
+  const [midpointWithHome, setMidpointWithHome] = useState(null)
+  const [midpointWithHomeError, setMidpointWithHomeError] = useState(null)
+  const [isLoadingMidpointWithHome, setIsLoadingMidpointWithHome] = useState(false)
+  // true면 출발역 후보 대신 귀가역까지 고려한 후보를 보여주는 중 (투표 시작도 이 기준을 따름)
+  const [isShowingHomeCandidates, setIsShowingHomeCandidates] = useState(false)
+  const [myHomeStationName, setMyHomeStationName] = useState(null)
+  const [isHomeStationModalOpen, setIsHomeStationModalOpen] = useState(false)
+  const [homeStationModalInput, setHomeStationModalInput] = useState('')
+  const [isSavingHomeStationModal, setIsSavingHomeStationModal] = useState(false)
+  const [homeStationModalError, setHomeStationModalError] = useState(null)
 
   const [voteResult, setVoteResult] = useState(null)
   const [voteError, setVoteError] = useState(null)
@@ -178,6 +189,64 @@ function JoinPage() {
         setMidpointError('중간지점 결과를 불러오지 못했어요.')
       })
   }, [code])
+
+  // 왕복 기준 후보를 불러옴 (귀가역은 모달에서 이미 저장한 뒤 호출됨)
+  const handleFetchMidpointWithHome = async () => {
+    if (isLoadingMidpointWithHome) {
+      return
+    }
+    setIsLoadingMidpointWithHome(true)
+    setMidpointWithHomeError(null)
+    try {
+      const data = await getMidpointWithHome(code)
+      setMidpointWithHome(data)
+      setIsShowingHomeCandidates(true)
+    } catch {
+      setMidpointWithHomeError('귀가역까지 고려한 결과를 불러오지 못했어요.')
+    } finally {
+      setIsLoadingMidpointWithHome(false)
+    }
+  }
+
+  // "출발역 기준으로 돌아가기": 귀가역 고려 결과를 버리고 원래 출발역 기준 후보로 돌아감
+  const handleBackToDepartureCandidates = () => {
+    setIsShowingHomeCandidates(false)
+    setMidpointWithHome(null)
+    setMidpointWithHomeError(null)
+  }
+
+  // "귀가역까지 고려해서 보기" 버튼: 이미 설정해둔 귀가역이 있으면 그 값으로, 없으면 빈칸으로 모달을 먼저 띄움
+  const handleClickConsiderHome = async () => {
+    setHomeStationModalError(null)
+    try {
+      const myInfo = await getMe()
+      setMyHomeStationName(myInfo.homeStationName || '')
+      setHomeStationModalInput(myInfo.homeStationName || '')
+    } catch {
+      setHomeStationModalInput('')
+    }
+    setIsHomeStationModalOpen(true)
+  }
+
+  const handleSaveHomeStationModal = async () => {
+    if (isSavingHomeStationModal) {
+      return
+    }
+    setIsSavingHomeStationModal(true)
+    setHomeStationModalError(null)
+    try {
+      await updateHomeStation(homeStationModalInput.trim())
+      setMyHomeStationName(homeStationModalInput.trim())
+      setIsHomeStationModalOpen(false)
+      await handleFetchMidpointWithHome()
+    } catch (error) {
+      setHomeStationModalError(
+        error.response?.status === 400 ? '등록되지 않은 역 이름이에요.' : '저장하지 못했어요. 다시 시도해 주세요.',
+      )
+    } finally {
+      setIsSavingHomeStationModal(false)
+    }
+  }
 
   // 투표 후보·득표 현황을 다시 불러옴 (투표 시작 전에는 빈 목록)
   const fetchVote = useCallback(() => {
@@ -351,7 +420,7 @@ function JoinPage() {
     setIsStartingVoting(true)
     setActionError(null)
     try {
-      await startVoting(code)
+      await startVoting(code, isShowingHomeCandidates)
       await refresh()
     } catch {
       setActionError('투표를 시작하지 못했어요. 다시 시도해 주세요.')
@@ -992,6 +1061,7 @@ function JoinPage() {
 
           {isCustomTab && (
             <div className="join-place-search">
+              <div className="join-place-search-hint">확정 역 기준 2km 이내 장소만 검색돼요.</div>
               <div className="join-place-search-row">
                 <input
                   type="text"
@@ -1651,84 +1721,147 @@ function JoinPage() {
               수정
             </button>
           </div>
-          {midpoint.candidates.length === 0 ? (
-            <div className="join-midpoint-empty">
-              참여자들 사이 거리가 너무 멀어서 90분 안에 갈 수 있는 역을 찾지 못했어요. 출발역을 다시 확인해 주세요.
-            </div>
-          ) : (
-            <>
-              {room.owner && (
-                <div className="join-fairness-row">
-                  <span className="join-fairness-label">정렬 기준</span>
-                  <div className="join-fairness-toggle">
-                    <button
-                      type="button"
-                      aria-pressed={room.fairnessType === 'MAX_MIN'}
-                      className="join-fairness-btn"
-                      disabled={isChangingFairness}
-                      onClick={() => handleChangeFairness('MAX_MIN')}
-                    >
-                      모두 공평하게
-                    </button>
-                    <button
-                      type="button"
-                      aria-pressed={room.fairnessType === 'SUM_MIN'}
-                      className="join-fairness-btn"
-                      disabled={isChangingFairness}
-                      onClick={() => handleChangeFairness('SUM_MIN')}
-                    >
-                      다 같이 빨리
-                    </button>
-                  </div>
-                </div>
-              )}
-              <div className="join-midpoint-list">
-                {midpoint.candidates.map((candidate, index) => (
-                  <div key={candidate.stationName} className="join-midpoint-card">
-                    <div className="join-midpoint-header">
-                      <span className="join-midpoint-rank">{index + 1}위</span>
-                      <span className="join-midpoint-name">{candidate.stationName}</span>
-                      <span className="join-midpoint-lines">{renderLineBadges(candidate.stationName)}</span>
-                      {room.fairnessType !== 'SUM_MIN' && (
-                        <span className="join-midpoint-fairness">공평도 {candidate.fairnessScore}</span>
-                      )}
-                    </div>
-                    <div className="join-midpoint-summary">
-                      {room.fairnessType === 'SUM_MIN'
-                        ? `다 같이 총 ${candidate.sumMinutes}분`
-                        : `제일 오래 걸리는 사람 ${candidate.maxMinutes}분`}
-                    </div>
-                    <div className="join-midpoint-times">
-                      {candidate.times.map((time) => (
-                        <span
-                          key={time.participantId}
-                          className={
-                            time.participantId === me.id
-                              ? 'join-midpoint-time-chip join-midpoint-time-chip--me'
-                              : 'join-midpoint-time-chip'
-                          }
-                        >
-                          {time.nickname} {time.minutes}분
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+
+          <div className="join-midpoint-home-section">
+            {!isShowingHomeCandidates ? (
+              <button
+                type="button"
+                className="join-midpoint-home-btn"
+                disabled={isLoadingMidpointWithHome}
+                onClick={handleClickConsiderHome}
+              >
+                {isLoadingMidpointWithHome ? '계산하는 중...' : '귀가역까지 고려해서 보기'}
+              </button>
+            ) : (
+              <button type="button" className="join-midpoint-home-btn" onClick={handleBackToDepartureCandidates}>
+                출발역 기준으로 돌아가기
+              </button>
+            )}
+            {midpointWithHomeError && <div className="join-error">{midpointWithHomeError}</div>}
+          </div>
+
+          {!isShowingHomeCandidates && (
+            midpoint.candidates.length === 0 ? (
+              <div className="join-midpoint-empty">
+                참여자들 사이 거리가 너무 멀어서 90분 안에 갈 수 있는 역을 찾지 못했어요. 출발역을 다시 확인해 주세요.
               </div>
-              <p className="join-midpoint-disclaimer">실제 소요시간은 운행 상황에 따라 다를 수 있어요.</p>
-              {room.owner && (
-                <button
-                  type="button"
-                  className="join-vote-start-btn"
-                  disabled={isStartingVoting}
-                  onClick={handleStartVoting}
-                >
-                  {isStartingVoting ? '투표 시작하는 중...' : '이 후보들로 투표 시작'}
-                </button>
-              )}
-            </>
+            ) : (
+              <>
+                <div className="join-midpoint-list">
+                  {midpoint.candidates.map((candidate, index) => (
+                    <div key={candidate.stationName} className="join-midpoint-card">
+                      <div className="join-midpoint-header">
+                        <span className="join-midpoint-rank">{index + 1}위</span>
+                        <span className="join-midpoint-name">{candidate.stationName}</span>
+                        <span className="join-midpoint-lines">{renderLineBadges(candidate.stationName)}</span>
+                        <span className="join-midpoint-fairness">공평도 {candidate.fairnessScore}</span>
+                      </div>
+                      <div className="join-midpoint-summary">
+                        제일 오래 걸리는 사람 {candidate.maxMinutes}분
+                      </div>
+                      <div className="join-midpoint-times">
+                        {candidate.times.map((time) => (
+                          <span
+                            key={time.participantId}
+                            className={
+                              time.participantId === me.id
+                                ? 'join-midpoint-time-chip join-midpoint-time-chip--me'
+                                : 'join-midpoint-time-chip'
+                            }
+                          >
+                            {time.nickname} {time.minutes}분
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="join-midpoint-disclaimer">실제 소요시간은 운행 상황에 따라 다를 수 있어요.</p>
+              </>
+            )
+          )}
+
+          {isShowingHomeCandidates && midpointWithHome && midpointWithHome.status === 'HOME_STATION_PENDING' && (
+            <div className="join-progress-hint">
+              참여자 전원이 귀가역을 설정해야 볼 수 있어요
+              ({midpointWithHome.readyParticipantCount}명 중 {midpointWithHome.homeStationSetCount}명 설정함)
+            </div>
+          )}
+
+          {isShowingHomeCandidates && midpointWithHome && midpointWithHome.status === 'READY' && (
+            midpointWithHome.candidates.length === 0 ? (
+              <div className="join-midpoint-empty">
+                왕복 기준으로는 150분 안에 모두가 갈 수 있는 역을 찾지 못했어요.
+              </div>
+            ) : (
+              <>
+                <div className="join-midpoint-list">
+                  {midpointWithHome.candidates.map((candidate, index) => (
+                    <div key={candidate.stationName} className="join-midpoint-card">
+                      <div className="join-midpoint-header">
+                        <span className="join-midpoint-rank">{index + 1}위</span>
+                        <span className="join-midpoint-name">{candidate.stationName}</span>
+                        <span className="join-midpoint-lines">{renderLineBadges(candidate.stationName)}</span>
+                        <span className="join-midpoint-fairness">공평도 {candidate.fairnessScore}</span>
+                      </div>
+                      <div className="join-midpoint-summary">
+                        제일 오래 걸리는 사람{' '}
+                        {Math.max(...candidate.times.map((time) => time.departureMinutes + time.homeMinutes))}분
+                      </div>
+                      <div className="join-midpoint-times">
+                        {candidate.times.map((time) => (
+                          <span
+                            key={time.participantId}
+                            className={
+                              time.participantId === me.id
+                                ? 'join-midpoint-time-chip join-midpoint-time-chip--me'
+                                : 'join-midpoint-time-chip'
+                            }
+                          >
+                            {time.nickname} 출발 {time.departureMinutes}분 · 귀가 {time.homeMinutes}분
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="join-midpoint-disclaimer">실제 소요시간은 운행 상황에 따라 다를 수 있어요.</p>
+              </>
+            )
+          )}
+
+          {room.owner
+            && ((!isShowingHomeCandidates && midpoint.candidates.length > 0)
+              || (isShowingHomeCandidates && midpointWithHome?.status === 'READY' && midpointWithHome.candidates.length > 0)) && (
+            <button
+              type="button"
+              className="join-vote-start-btn"
+              disabled={isStartingVoting}
+              onClick={handleStartVoting}
+            >
+              {isStartingVoting ? '투표 시작하는 중...' : '이 후보들로 투표 시작'}
+            </button>
           )}
         </>
+      )}
+
+      {isHomeStationModalOpen && (
+        <Modal title="귀가역 설정" onClose={() => setIsHomeStationModalOpen(false)}>
+          <StationAutocompleteInput
+            value={homeStationModalInput}
+            onChange={setHomeStationModalInput}
+            stationOptions={stationOptions}
+          />
+          {homeStationModalError && <div className="join-error">{homeStationModalError}</div>}
+          <button
+            type="button"
+            className="join-submit-cta"
+            disabled={!homeStationModalInput.trim() || isSavingHomeStationModal}
+            onClick={handleSaveHomeStationModal}
+          >
+            {isSavingHomeStationModal ? '저장하는 중...' : '저장'}
+          </button>
+        </Modal>
       )}
 
       {me && room.status === 'VOTING' && voteResult && (
@@ -1780,7 +1913,9 @@ function JoinPage() {
                           : 'join-midpoint-time-chip'
                       }
                     >
-                      {time.nickname} {time.minutes}분
+                      {candidate.considerHome
+                        ? `${time.nickname} 출발 ${time.departureMinutes}분 · 귀가 ${time.homeMinutes}분`
+                        : `${time.nickname} ${time.minutes}분`}
                     </span>
                   ))}
                 </div>

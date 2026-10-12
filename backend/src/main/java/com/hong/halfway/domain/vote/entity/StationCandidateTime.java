@@ -39,16 +39,36 @@ public class StationCandidateTime extends BaseTimeEntity {
     @Column(nullable = false)
     private short minutes;
 
-    private StationCandidateTime(StationCandidate candidate, Participant participant, short minutes) {
+    // 귀가역 고려 후보일 때만 채워짐: 출발역에서 이 후보까지 걸리는 시간(분)
+    @Column(name = "departure_minutes")
+    private Short departureMinutes;
+
+    // 귀가역 고려 후보일 때만 채워짐: 이 후보에서 귀가역까지 걸리는 시간(분)
+    @Column(name = "home_minutes")
+    private Short homeMinutes;
+
+    private StationCandidateTime(StationCandidate candidate, Participant participant, short minutes,
+            Short departureMinutes, Short homeMinutes) {
         this.candidate = candidate;
         this.participant = participant;
         this.minutes = minutes;
+        this.departureMinutes = departureMinutes;
+        this.homeMinutes = homeMinutes;
     }
 
     /**
-     * 투표 시작 시점 참여자별 소요시간 스냅샷 생성
+     * 투표 시작 시점 참여자별 소요시간 스냅샷 생성 (출발역 기준 후보)
      */
     public static StationCandidateTime snapshot(StationCandidate candidate, Participant participant, int minutes) {
-        return new StationCandidateTime(candidate, participant, (short) minutes);
+        return new StationCandidateTime(candidate, participant, (short) minutes, null, null);
+    }
+
+    /**
+     * 투표 시작 시점 참여자별 소요시간 스냅샷 생성 (귀가역 고려 후보 - 출발·귀가 구간을 따로 기록)
+     */
+    public static StationCandidateTime snapshotWithHome(StationCandidate candidate, Participant participant,
+            int departureMinutes, int homeMinutes) {
+        return new StationCandidateTime(candidate, participant, (short) (departureMinutes + homeMinutes),
+                (short) departureMinutes, (short) homeMinutes);
     }
 }

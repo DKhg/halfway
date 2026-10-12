@@ -22,6 +22,9 @@ public class StationCandidateResponse {
 
     private final int sumMinutes;
 
+    // 귀가역까지 고려해서 고정한 후보인지 (true면 times의 departureMinutes/homeMinutes가 채워짐)
+    private final boolean considerHome;
+
     private final List<ParticipantTimeResponse> times;
 
     private final int voteCount;
