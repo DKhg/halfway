@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Capacitor } from '@capacitor/core'
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { getRoom } from '../api/roomApi'
 import {
   addSettlementItem,
@@ -219,12 +221,8 @@ function SettlementPage() {
     }
   }
 
-  const handleReceiptFileChange = async (e) => {
-    const file = e.target.files[0]
-    e.target.value = ''
-    if (!file || isScanningReceipt) {
-      return
-    }
+  // 웹(파일 입력)·네이티브(카메라) 둘 다 여기로 모여서 같은 스캔 로직을 탐
+  const processReceiptFile = async (file) => {
     setIsScanningReceipt(true)
     setSettlementError(null)
     try {
@@ -242,6 +240,38 @@ function SettlementPage() {
       setSettlementError('영수증을 읽지 못했어요. 다시 시도해 주세요.')
     } finally {
       setIsScanningReceipt(false)
+    }
+  }
+
+  const handleReceiptFileChange = (e) => {
+    const file = e.target.files[0]
+    e.target.value = ''
+    if (!file || isScanningReceipt) {
+      return
+    }
+    processReceiptFile(file)
+  }
+
+  // "영수증으로 자동 채우기" 버튼: 네이티브 앱이면 카메라 플러그인(촬영/갤러리 선택)으로,
+  // 웹(PWA)이면 기존 파일 입력창 그대로 열림
+  const handleOpenReceiptPicker = async () => {
+    if (isScanningReceipt) {
+      return
+    }
+    if (!Capacitor.isNativePlatform()) {
+      receiptInputRef.current?.click()
+      return
+    }
+    try {
+      const photo = await Camera.getPhoto({
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Prompt,
+        quality: 80,
+      })
+      const blob = await (await fetch(photo.webPath)).blob()
+      await processReceiptFile(blob)
+    } catch {
+      // 사용자가 촬영·선택을 취소하면 Camera.getPhoto가 reject됨 — 에러로 취급하지 않고 조용히 무시
     }
   }
 
@@ -480,7 +510,7 @@ function SettlementPage() {
             type="button"
             className="settlement-receipt-tile"
             disabled={isScanningReceipt}
-            onClick={() => receiptInputRef.current?.click()}
+            onClick={handleOpenReceiptPicker}
           >
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
