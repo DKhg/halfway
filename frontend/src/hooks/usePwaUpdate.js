@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { registerSW } from 'virtual:pwa-register'
+import { Capacitor } from '@capacitor/core'
 import { notifyNeedRefresh, setApplyUpdate } from '../utils/pwaUpdateBus'
 
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000 // 1시간마다 백그라운드에서 새 버전 체크
@@ -9,7 +10,8 @@ let hasRegistered = false
 
 export function usePwaUpdate() {
   useEffect(() => {
-    if (hasRegistered) {
+    // 네이티브 앱은 업데이트를 플레이스토어로 받으므로 서비스워커 갱신 배너 자체가 의미 없음
+    if (hasRegistered || Capacitor.isNativePlatform()) {
       return
     }
     hasRegistered = true
