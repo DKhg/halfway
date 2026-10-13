@@ -1,12 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getRoom } from '../api/roomApi'
-import { getMe, updateHomeStation } from '../api/userApi'
-import { getAllStationNames } from '../api/stationApi'
 import AddToHomeScreenModal from '../components/common/AddToHomeScreenModal'
 import Modal from '../components/common/Modal'
+import MyPageModal from '../components/common/MyPageModal'
 import MyRoomsModal from '../components/common/MyRoomsModal'
-import StationAutocompleteInput from '../components/common/StationAutocompleteInput'
 import { markAddToHomeScreenPromptSeen, shouldPromptAddToHomeScreen } from '../utils/addToHomeScreen'
 import './HomePage.css'
 
@@ -26,54 +24,17 @@ function extractRoomCode(input) {
 function HomePage() {
   const navigate = useNavigate()
   const [isMyRoomsOpen, setIsMyRoomsOpen] = useState(false)
+  const [isMyPageOpen, setIsMyPageOpen] = useState(false)
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const [inviteInput, setInviteInput] = useState('')
   const [inviteError, setInviteError] = useState(null)
   const [isCheckingInvite, setIsCheckingInvite] = useState(false)
-  const [isHomeStationModalOpen, setIsHomeStationModalOpen] = useState(false)
-  const [homeStationInput, setHomeStationInput] = useState('')
-  const [stationOptions, setStationOptions] = useState([])
-  const [isSavingHomeStation, setIsSavingHomeStation] = useState(false)
-  const [homeStationError, setHomeStationError] = useState(null)
-  const [homeStationSaved, setHomeStationSaved] = useState(false)
   const [isAddToHomeScreenModalOpen, setIsAddToHomeScreenModalOpen] = useState(false)
 
   const handleOpenInviteModal = () => {
     setInviteInput('')
     setInviteError(null)
     setIsInviteModalOpen(true)
-  }
-
-  const handleOpenHomeStationModal = async () => {
-    setHomeStationError(null)
-    setHomeStationSaved(false)
-    setIsHomeStationModalOpen(true)
-    try {
-      const [stations, me] = await Promise.all([getAllStationNames(), getMe()])
-      setStationOptions(stations)
-      setHomeStationInput(me.homeStationName || '')
-    } catch {
-      setHomeStationError('귀가역 정보를 불러오지 못했어요.')
-    }
-  }
-
-  const handleSaveHomeStation = async () => {
-    if (isSavingHomeStation) {
-      return
-    }
-    setIsSavingHomeStation(true)
-    setHomeStationError(null)
-    try {
-      await updateHomeStation(homeStationInput.trim())
-      setHomeStationSaved(true)
-      setTimeout(() => setHomeStationSaved(false), 2000)
-    } catch (error) {
-      setHomeStationError(
-        error.response?.status === 400 ? '등록되지 않은 역 이름이에요.' : '저장하지 못했어요. 다시 시도해 주세요.',
-      )
-    } finally {
-      setIsSavingHomeStation(false)
-    }
   }
 
   // 방을 만들고 난 뒤에 홈 화면에 추가하면 그 방으로 못 돌아오기 때문에, 방 만들기 폼으로 들어가기 전에 먼저 끼워 넣음
@@ -115,8 +76,11 @@ function HomePage() {
           <button type="button" className="home-my-rooms-btn" onClick={() => setIsMyRoomsOpen(true)}>
             내 약속
           </button>
-          <button type="button" className="home-my-rooms-btn home-set-station-btn" onClick={handleOpenHomeStationModal}>
-            귀가역 설정
+          <button type="button" aria-label="마이페이지" className="home-icon-btn" onClick={() => setIsMyPageOpen(true)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
           </button>
         </div>
       </header>
@@ -153,6 +117,8 @@ function HomePage() {
 
       {isMyRoomsOpen && <MyRoomsModal onClose={() => setIsMyRoomsOpen(false)} />}
 
+      {isMyPageOpen && <MyPageModal onClose={() => setIsMyPageOpen(false)} />}
+
       {isAddToHomeScreenModalOpen && (
         <AddToHomeScreenModal
           onProceed={handleAddToHomeScreenProceed}
@@ -186,32 +152,6 @@ function HomePage() {
             onClick={handleJoinByInvite}
           >
             {isCheckingInvite ? '확인하는 중...' : '참여하기'}
-          </button>
-        </Modal>
-      )}
-
-      {isHomeStationModalOpen && (
-        <Modal title="귀가역 설정" onClose={() => setIsHomeStationModalOpen(false)}>
-          <p className="home-invite-lead">
-            자주 가는 귀가역을 저장해두면 막차 계산할 때 매번 안 입력해도 돼요.
-          </p>
-          <StationAutocompleteInput
-            placeholder="귀가역 또는 초성(ㄱㄴ)"
-            value={homeStationInput}
-            onChange={(value) => {
-              setHomeStationInput(value)
-              setHomeStationError(null)
-            }}
-            stationOptions={stationOptions}
-          />
-          {homeStationError && <div className="home-invite-error">{homeStationError}</div>}
-          <button
-            type="button"
-            className="home-invite-submit-btn"
-            disabled={isSavingHomeStation}
-            onClick={handleSaveHomeStation}
-          >
-            {isSavingHomeStation ? '저장하는 중...' : homeStationSaved ? '저장됨!' : '저장'}
           </button>
         </Modal>
       )}

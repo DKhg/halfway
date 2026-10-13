@@ -85,4 +85,11 @@ public class StationPlacePool extends BaseTimeEntity {
         return new StationPlacePool(stationName, category, placeId, placeName, roadAddressName, placeUrl, walkMinutes,
                 comment, addedByUser);
     }
+
+    /**
+     * 등록자 표시만 비움 (계정 삭제 시 사용, 가게 데이터·한줄평은 그대로 유지)
+     */
+    public void clearAddedByUser() {
+        this.addedByUser = null;
+    }
 }

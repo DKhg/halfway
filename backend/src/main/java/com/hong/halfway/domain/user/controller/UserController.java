@@ -1,14 +1,17 @@
 package com.hong.halfway.domain.user.controller;
 
 import com.hong.halfway.domain.user.dto.HomeStationUpdateRequest;
+import com.hong.halfway.domain.user.dto.NicknameUpdateRequest;
 import com.hong.halfway.domain.user.dto.UserCreateResponse;
 import com.hong.halfway.domain.user.dto.UserMeResponse;
 import com.hong.halfway.domain.user.service.UserService;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,6 +51,25 @@ public class UserController {
     public ResponseEntity<Void> updateHomeStation(@RequestBody HomeStationUpdateRequest request,
             @AuthenticationPrincipal UUID userId) {
         userService.updateHomeStation(userId, request.getHomeStationName());
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 기본 닉네임 설정·수정 (마이페이지)
+     */
+    @PatchMapping("/me/nickname")
+    public ResponseEntity<Void> updateNickname(@Valid @RequestBody NicknameUpdateRequest request,
+            @AuthenticationPrincipal UUID userId) {
+        userService.updateNickname(userId, request.getNickname());
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 내 익명 계정 삭제 (데이터 초기화)
+     */
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteMe(@AuthenticationPrincipal UUID userId) {
+        userService.deleteMyAccount(userId);
         return ResponseEntity.noContent().build();
     }
 }

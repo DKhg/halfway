@@ -11,3 +11,11 @@ export function getMe() {
 export function updateHomeStation(homeStationName) {
   return api.patch('/users/me/home-station', { homeStationName })
 }
+
+export function updateNickname(nickname) {
+  return api.patch('/users/me/nickname', { nickname })
+}
+
+export function deleteMyAccount() {
+  return api.delete('/users/me')
+}

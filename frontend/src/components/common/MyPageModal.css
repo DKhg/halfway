@@ -1,0 +1,103 @@
+.my-page-status {
+  text-align: center;
+  padding: 40px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-ink-soft);
+}
+
+.my-page-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: var(--border-width) dashed var(--color-ink-soft);
+}
+
+.my-page-section:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.my-page-field-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.my-page-field-hint {
+  margin: -4px 0 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+}
+
+.my-page-input {
+  height: 48px;
+  box-sizing: border-box;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+  font-size: 15px;
+  color: var(--color-ink);
+  background: var(--color-surface);
+}
+
+.my-page-error {
+  padding: 8px 12px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-pink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.my-page-save-btn {
+  height: 44px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-yellow);
+  box-shadow: var(--shadow-hard-sm);
+  color: var(--color-ink);
+  font-size: 14px;
+  font-weight: 700;
+  transition: filter 0.12s ease;
+}
+
+@media (hover: hover) {
+  .my-page-save-btn:not(:disabled):hover {
+    filter: brightness(0.92);
+  }
+}
+
+.my-page-save-btn:not(:disabled):active {
+  filter: brightness(0.87);
+}
+
+.my-page-danger-section .my-page-field-label {
+  color: var(--color-ink);
+}
+
+.my-page-delete-btn {
+  height: 44px;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-pink);
+  box-shadow: var(--shadow-hard-sm);
+  color: var(--color-ink);
+  font-size: 14px;
+  font-weight: 700;
+  transition: filter 0.12s ease;
+}
+
+@media (hover: hover) {
+  .my-page-delete-btn:not(:disabled):hover {
+    filter: brightness(0.92);
+  }
+}
+
+.my-page-delete-btn:not(:disabled):active {
+  filter: brightness(0.87);
+}

@@ -138,6 +138,8 @@ function JoinPage() {
   const [poolSuggestions, setPoolSuggestions] = useState([])
 
   const [nickname, setNickname] = useState('')
+  // 마이페이지에 기본 닉네임이 저장돼 있으면 true — 참여 화면에서 닉네임 입력칸 자체를 안 보여줌
+  const [hasProfileNickname, setHasProfileNickname] = useState(false)
   const [station, setStation] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [actionError, setActionError] = useState(null)
@@ -164,6 +166,18 @@ function JoinPage() {
       .then(setStationOptions)
       .catch(() => {})
       .finally(() => setStationNamesLoaded(true))
+  }, [])
+
+  // 마이페이지에 저장된 기본 닉네임이 있으면 참여 입력칸 자체를 없애고 그 값으로 바로 참여할 수 있게 함
+  useEffect(() => {
+    getMe()
+      .then((data) => {
+        if (data.nickname) {
+          setNickname((prev) => prev || data.nickname)
+          setHasProfileNickname(true)
+        }
+      })
+      .catch(() => {})
   }, [])
 
   // 방 정보를 다시 불러와 참여자 목록·내 상태를 최신화
@@ -215,13 +229,18 @@ function JoinPage() {
     setMidpointWithHomeError(null)
   }
 
-  // "귀가역까지 고려해서 보기" 버튼: 이미 설정해둔 귀가역이 있으면 그 값으로, 없으면 빈칸으로 모달을 먼저 띄움
+  // "귀가역까지 고려해서 보기" 버튼: 마이페이지에 이미 설정해둔 귀가역이 있으면 모달 없이 바로 그 값으로 조회하고,
+  // 없으면 빈칸인 모달을 띄워서 먼저 저장하게 함
   const handleClickConsiderHome = async () => {
     setHomeStationModalError(null)
     try {
       const myInfo = await getMe()
-      setMyHomeStationName(myInfo.homeStationName || '')
-      setHomeStationModalInput(myInfo.homeStationName || '')
+      if (myInfo.homeStationName) {
+        setMyHomeStationName(myInfo.homeStationName)
+        await handleFetchMidpointWithHome()
+        return
+      }
+      setHomeStationModalInput('')
     } catch {
       setHomeStationModalInput('')
     }
@@ -1216,18 +1235,24 @@ function JoinPage() {
           <div className="join-my-turn-card">
             <div className="join-my-turn-title">참여하기</div>
 
-            <label htmlFor="join-nickname-input" className="join-field-label">
-              닉네임
-            </label>
-            <input
-              id="join-nickname-input"
-              type="text"
-              placeholder="닉네임"
-              className="join-station-input"
-              maxLength={20}
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-            />
+            {hasProfileNickname ? (
+              <p className="join-progress-hint">&quot;{nickname}&quot;(으)로 참여해요</p>
+            ) : (
+              <>
+                <label htmlFor="join-nickname-input" className="join-field-label">
+                  닉네임
+                </label>
+                <input
+                  id="join-nickname-input"
+                  type="text"
+                  placeholder="닉네임"
+                  className="join-station-input"
+                  maxLength={20}
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                />
+              </>
+            )}
 
             {actionError && <div className="join-error">{actionError}</div>}
 
@@ -1287,18 +1312,24 @@ function JoinPage() {
             <div className="join-my-turn-card">
               <div className="join-my-turn-title">참여하기</div>
 
-              <label htmlFor="join-nickname-input" className="join-field-label">
-                닉네임
-              </label>
-              <input
-                id="join-nickname-input"
-                type="text"
-                placeholder="닉네임"
-                className="join-station-input"
-                maxLength={20}
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-              />
+              {hasProfileNickname ? (
+                <p className="join-progress-hint">&quot;{nickname}&quot;(으)로 참여해요</p>
+              ) : (
+                <>
+                  <label htmlFor="join-nickname-input" className="join-field-label">
+                    닉네임
+                  </label>
+                  <input
+                    id="join-nickname-input"
+                    type="text"
+                    placeholder="닉네임"
+                    className="join-station-input"
+                    maxLength={20}
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                  />
+                </>
+              )}
 
               {actionError && <div className="join-error">{actionError}</div>}
 
@@ -1626,18 +1657,24 @@ function JoinPage() {
         <div className="join-my-turn-card">
           <div className="join-my-turn-title">참여하기</div>
 
-          <label htmlFor="join-nickname-input" className="join-field-label">
-            닉네임
-          </label>
-          <input
-            id="join-nickname-input"
-            type="text"
-            placeholder="닉네임"
-            className="join-station-input"
-            maxLength={20}
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-          />
+          {hasProfileNickname ? (
+            <p className="join-progress-hint">&quot;{nickname}&quot;(으)로 참여해요</p>
+          ) : (
+            <>
+              <label htmlFor="join-nickname-input" className="join-field-label">
+                닉네임
+              </label>
+              <input
+                id="join-nickname-input"
+                type="text"
+                placeholder="닉네임"
+                className="join-station-input"
+                maxLength={20}
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+              />
+            </>
+          )}
 
           {actionError && <div className="join-error">{actionError}</div>}
 
