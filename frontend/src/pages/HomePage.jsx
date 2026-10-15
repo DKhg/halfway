@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getRoom } from '../api/roomApi'
 import AddToHomeScreenModal from '../components/common/AddToHomeScreenModal'
@@ -12,23 +12,40 @@ const STEPS = [
   {
     number: 1,
     accent: 'yellow',
-    icon: '/home-step-1.png',
     title: '출발역 넣기',
-    desc: '친구들이 각자\n출발지를 넣어요.',
+    desc: '각자 출발지를 넣어요',
+    icon: (
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="7" y="3" width="10" height="18" rx="2.5" />
+        <circle cx="12" cy="10" r="1.6" fill="currentColor" stroke="none" />
+        <path d="M10 15.5h4" />
+      </svg>
+    ),
   },
   {
     number: 2,
     accent: 'green',
-    icon: '/home-step-2.png',
     title: '중간지점 찾기',
-    desc: '투표로 장소를 정하고\n가게까지 확정해요.',
+    desc: '투표로 장소를 정해요',
+    icon: (
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 21s7-7.1 7-12a7 7 0 0 0-14 0c0 4.9 7 12 7 12z" />
+        <circle cx="12" cy="9" r="2.5" />
+      </svg>
+    ),
   },
   {
     number: 3,
     accent: 'pink',
-    icon: '/home-step-3.png',
     title: '약속 확정하기',
-    desc: '막차까지 확인하고\n정산까지 한 번에!',
+    desc: '막차·정산까지 한 번에',
+    icon: (
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4 11 12 4l8 7" />
+        <path d="M5.5 10v10h13V10" />
+        <path d="M10 20v-6h4v6" />
+      </svg>
+    ),
   },
 ]
 
@@ -115,40 +132,26 @@ function HomePage() {
         친구들이 각자 출발지를 넣으면 모두에게 공평한 곳을 딱 골라줘요. 단톡방 논쟁은 이제 그만.
       </p>
 
-      <div className="home-steps-heading">
-        <h2>이렇게 사용해요</h2>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="home-steps-heading-spark">
-          <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" />
-        </svg>
-      </div>
+      <div className="home-steps-section">
+        <div className="home-steps-heading">
+          <h2>이렇게 사용해요</h2>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="home-steps-heading-spark">
+            <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" />
+          </svg>
+        </div>
 
-      <div className="home-steps-row">
-        {STEPS.map((step, index) => (
-          <Fragment key={step.number}>
-            <div className={`home-step-card home-step-card--${step.accent}`}>
-              <span className="home-step-card-number">{step.number}</span>
-              <img src={step.icon} alt="" className="home-step-card-icon" />
-              <div className="home-step-card-title">{step.title}</div>
-              <div className="home-step-card-desc">{step.desc}</div>
+        <div className="home-steps-track">
+          {STEPS.map((step) => (
+            <div className="home-step-node" key={step.number}>
+              <div className={`home-step-badge home-step-badge--${step.accent}`}>
+                {step.icon}
+                <span className="home-step-badge-number">{step.number}</span>
+              </div>
+              <div className="home-step-node-title">{step.title}</div>
+              <div className="home-step-node-desc">{step.desc}</div>
             </div>
-            {index < STEPS.length - 1 && (
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-                className="home-step-arrow"
-              >
-                <path d="M9 6l6 6-6 6" />
-              </svg>
-            )}
-          </Fragment>
-        ))}
+          ))}
+        </div>
       </div>
 
       <div className="home-cta-group">
