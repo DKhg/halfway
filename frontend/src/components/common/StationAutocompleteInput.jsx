@@ -4,7 +4,7 @@ import { matchesStationQuery } from '../../utils/hangul'
 import { getLineColor, getLineLabel } from '../../utils/subwayLine'
 import './StationAutocompleteInput.css'
 
-function StationAutocompleteInput({ id, value, onChange, stationOptions, placeholder }) {
+function StationAutocompleteInput({ id, value, onChange, stationOptions, placeholder, disabled }) {
   const [isOpen, setIsOpen] = useState(false)
   const [dropdownRect, setDropdownRect] = useState(null)
   const wrapperRef = useRef(null)
@@ -88,6 +88,7 @@ function StationAutocompleteInput({ id, value, onChange, stationOptions, placeho
         className="station-autocomplete-input"
         autoComplete="off"
         value={value}
+        disabled={disabled}
         onChange={(e) => {
           onChange(e.target.value)
           openDropdown()

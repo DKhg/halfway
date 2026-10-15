@@ -141,6 +141,11 @@ function JoinPage() {
   // 마이페이지에 기본 닉네임이 저장돼 있으면 true — 참여 화면에서 닉네임 입력칸 자체를 안 보여줌
   const [hasProfileNickname, setHasProfileNickname] = useState(false)
   const [station, setStation] = useState('')
+  const [homeStation, setHomeStation] = useState('')
+  // 체크 시 귀가역 입력칸을 출발역 값과 동기화(비활성화)함. 기본은 해제 — 이미 저장된 귀가역이 있으면 아래 effect가 미리 채워줌
+  const [isHomeSameAsDeparture, setIsHomeSameAsDeparture] = useState(false)
+  // 마이페이지에 이미 저장된 귀가역 — 입력칸에 미리 채워줌
+  const [savedHomeStationName, setSavedHomeStationName] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [actionError, setActionError] = useState(null)
   const [copied, setCopied] = useState(false)
@@ -175,6 +180,10 @@ function JoinPage() {
         if (data.nickname) {
           setNickname((prev) => prev || data.nickname)
           setHasProfileNickname(true)
+        }
+        if (data.homeStationName) {
+          setSavedHomeStationName(data.homeStationName)
+          setHomeStation((prev) => prev || data.homeStationName)
         }
       })
       .catch(() => {})
@@ -795,13 +804,17 @@ function JoinPage() {
   }
 
   const handleSubmitStation = async () => {
-    if (!station.trim() || isSubmitting) {
+    const trimmedHome = isHomeSameAsDeparture ? station.trim() : homeStation.trim()
+    if (!station.trim() || !trimmedHome || isSubmitting) {
       return
     }
     setIsSubmitting(true)
     setActionError(null)
     try {
-      await updateMyStation(code, { startStationName: station.trim() })
+      await Promise.all([
+        updateMyStation(code, { startStationName: station.trim() }),
+        updateHomeStation(trimmedHome),
+      ])
       setIsEditingStation(false)
       await refresh()
     } catch {
@@ -813,6 +826,8 @@ function JoinPage() {
 
   const handleStartEditStation = (participant) => {
     setStation(participant.startStationName)
+    setIsHomeSameAsDeparture(!savedHomeStationName || savedHomeStationName === participant.startStationName)
+    setHomeStation(savedHomeStationName)
     setActionError(null)
     setIsEditingStation(true)
   }
@@ -851,10 +866,14 @@ function JoinPage() {
   const doneCount = room.participants.filter((participant) => participant.startStationName).length
   const totalCount = room.participants.length
 
-  const trimmedStation = station.trim()
   // 역 목록을 못 가져왔으면 자동완성 없이도 입력할 수 있게 검증을 건너뜀
-  const isStationValid = !stationNamesLoaded || stationOptions.length === 0
-    || stationOptions.some((option) => option.name === trimmedStation)
+  const isKnownStationName = (name) => !stationNamesLoaded || stationOptions.length === 0
+    || stationOptions.some((option) => option.name === name)
+
+  const trimmedStation = station.trim()
+  const isStationValid = isKnownStationName(trimmedStation)
+  const trimmedHomeStation = isHomeSameAsDeparture ? trimmedStation : homeStation.trim()
+  const isHomeStationValid = isKnownStationName(trimmedHomeStation)
 
   // 역 이름으로 노선 배지 목록을 만듦 (환승역은 노선별로 중복 제거)
   const renderLineBadges = (name) => {
@@ -1693,7 +1712,7 @@ function JoinPage() {
         <>
           <div className="join-my-turn-card">
             <div className="join-my-turn-title">
-              {me.startStationName ? '출발역 수정' : `${me.nickname} 차례!`}
+              {me.startStationName ? '출발역, 귀가역 수정' : `${me.nickname} 차례!`}
             </div>
 
             <label htmlFor="join-station-input" className="join-field-label">
@@ -1707,13 +1726,46 @@ function JoinPage() {
               stationOptions={stationOptions}
             />
 
+            <label htmlFor="join-home-station-input" className="join-field-label">
+              귀가역
+            </label>
+            <StationAutocompleteInput
+              id="join-home-station-input"
+              placeholder="집에서 제일 가까운 역"
+              value={isHomeSameAsDeparture ? station : homeStation}
+              onChange={setHomeStation}
+              stationOptions={stationOptions}
+              disabled={isHomeSameAsDeparture}
+            />
+
+            <label className="join-home-same-check">
+              <input
+                type="checkbox"
+                className="join-home-same-check-input"
+                checked={isHomeSameAsDeparture}
+                onChange={(e) => {
+                  const checked = e.target.checked
+                  setIsHomeSameAsDeparture(checked)
+                  if (!checked && !homeStation) {
+                    setHomeStation(savedHomeStationName || station)
+                  }
+                }}
+              />
+              <span className="join-home-same-check-box" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              귀가역도 출발역과 동일해요
+            </label>
+
             {actionError && <div className="join-error">{actionError}</div>}
           </div>
 
           <button
             type="button"
             className="join-submit-cta"
-            disabled={!trimmedStation || !isStationValid || isSubmitting}
+            disabled={!trimmedStation || !isStationValid || !trimmedHomeStation || !isHomeStationValid || isSubmitting}
             onClick={handleSubmitStation}
           >
             {isSubmitting ? '저장하는 중...' : me.startStationName ? '수정 완료' : '중간지점 찾기'}
@@ -1806,7 +1858,8 @@ function JoinPage() {
                                 : 'join-midpoint-time-chip'
                             }
                           >
-                            {time.nickname} {time.minutes}분
+                            <span className="join-midpoint-time-chip-name">{time.nickname}</span>
+                            <span className="join-midpoint-time-chip-value">{time.minutes}분</span>
                           </span>
                         ))}
                       </div>
@@ -1816,13 +1869,6 @@ function JoinPage() {
                 <p className="join-midpoint-disclaimer">실제 소요시간은 운행 상황에 따라 다를 수 있어요.</p>
               </>
             )
-          )}
-
-          {isShowingHomeCandidates && midpointWithHome && midpointWithHome.status === 'HOME_STATION_PENDING' && (
-            <div className="join-progress-hint">
-              참여자 전원이 귀가역을 설정해야 볼 수 있어요
-              ({midpointWithHome.readyParticipantCount}명 중 {midpointWithHome.homeStationSetCount}명 설정함)
-            </div>
           )}
 
           {isShowingHomeCandidates && midpointWithHome && midpointWithHome.status === 'READY' && (
@@ -1855,7 +1901,10 @@ function JoinPage() {
                                 : 'join-midpoint-time-chip'
                             }
                           >
-                            {time.nickname} 출발 {time.departureMinutes}분 · 귀가 {time.homeMinutes}분
+                            <span className="join-midpoint-time-chip-name">{time.nickname}</span>
+                            <span className="join-midpoint-time-chip-value">
+                              출발 {time.departureMinutes}분 · 귀가 {time.homeMinutes}분
+                            </span>
                           </span>
                         ))}
                       </div>
@@ -1950,9 +1999,12 @@ function JoinPage() {
                           : 'join-midpoint-time-chip'
                       }
                     >
-                      {candidate.considerHome
-                        ? `${time.nickname} 출발 ${time.departureMinutes}분 · 귀가 ${time.homeMinutes}분`
-                        : `${time.nickname} ${time.minutes}분`}
+                      <span className="join-midpoint-time-chip-name">{time.nickname}</span>
+                      <span className="join-midpoint-time-chip-value">
+                        {candidate.considerHome
+                          ? `출발 ${time.departureMinutes}분 · 귀가 ${time.homeMinutes}분`
+                          : `${time.minutes}분`}
+                      </span>
                     </span>
                   ))}
                 </div>

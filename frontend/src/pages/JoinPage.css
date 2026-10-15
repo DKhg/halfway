@@ -319,6 +319,58 @@
   background: var(--color-surface);
 }
 
+.join-home-same-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
+  cursor: pointer;
+  user-select: none;
+}
+
+.join-home-same-check-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.join-home-same-check-box {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border: var(--border-width) solid var(--color-ink);
+  border-radius: 6px;
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s ease;
+}
+
+.join-home-same-check-box svg {
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+.join-home-same-check-input:checked + .join-home-same-check-box {
+  background: var(--color-accent-blue);
+}
+
+.join-home-same-check-input:checked + .join-home-same-check-box svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.join-home-same-check-input:focus-visible + .join-home-same-check-box {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
 .join-line-badge {
   min-width: 20px;
   height: 20px;
@@ -444,6 +496,21 @@
   background: var(--color-ink);
   border-color: var(--color-ink);
   color: var(--color-accent-yellow);
+}
+
+.join-midpoint-time-chip-name {
+  font-weight: 800;
+}
+
+.join-midpoint-time-chip-name::after {
+  content: '-';
+  margin: 0 4px;
+  opacity: 0.5;
+}
+
+.join-midpoint-time-chip-value {
+  font-weight: 500;
+  opacity: 0.8;
 }
 
 .join-midpoint-disclaimer {

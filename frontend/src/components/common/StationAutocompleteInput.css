@@ -15,6 +15,11 @@
   background: var(--color-surface);
 }
 
+.station-autocomplete-input:disabled {
+  background: var(--color-bg);
+  color: var(--color-ink-soft);
+}
+
 .station-autocomplete-suggestions {
   position: absolute;
   top: calc(100% + 6px);

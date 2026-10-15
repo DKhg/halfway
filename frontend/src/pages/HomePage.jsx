@@ -71,7 +71,7 @@ function HomePage() {
   return (
     <div className="home-page">
       <header className="home-header">
-        <span className="home-logo">어디서봄</span>
+        <img src="/pwa-192x192.png" alt="어디서봄" className="home-logo-icon" />
         <div className="home-header-actions">
           <button type="button" className="home-my-rooms-btn" onClick={() => setIsMyRoomsOpen(true)}>
             내 약속
@@ -100,7 +100,11 @@ function HomePage() {
       <ol className="home-steps">
         {STEPS.map((step) => (
           <li key={step.number} className={`home-step home-step--${step.accent}`}>
-            <span className="home-step-number">{step.number}</span>
+            <span className="home-step-number" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </span>
             <span>{step.label}</span>
           </li>
         ))}

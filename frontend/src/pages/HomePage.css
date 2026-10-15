@@ -24,14 +24,11 @@
   gap: 8px;
 }
 
-.home-logo {
-  padding: 6px 12px;
-  border: var(--border-width) solid var(--color-ink);
+.home-logo-icon {
+  width: 52px;
+  height: 52px;
   border-radius: var(--radius-sm);
-  background: var(--color-accent-yellow);
-  box-shadow: var(--shadow-hard-sm);
-  font-family: var(--font-display);
-  font-size: 20px;
+  display: block;
 }
 
 .home-my-rooms-btn {
@@ -160,7 +157,6 @@
   border: var(--border-width) solid var(--color-ink);
   border-radius: var(--radius-md);
   background: var(--color-surface);
-  box-shadow: var(--shadow-hard-md);
   font-size: 16px;
   font-weight: 700;
 }
