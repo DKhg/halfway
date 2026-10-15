@@ -49,8 +49,8 @@ function MyPageModal({ onClose }) {
       await updateNickname(trimmed)
       setNicknameSaved(true)
       setTimeout(() => setNicknameSaved(false), 2000)
-    } catch {
-      setNicknameError('저장하지 못했어요. 다시 시도해 주세요.')
+    } catch (error) {
+      setNicknameError(error.response?.data?.message || '저장하지 못했어요. 다시 시도해 주세요.')
     } finally {
       setIsSavingNickname(false)
     }

@@ -614,8 +614,8 @@ function JoinPage() {
       })
       setCustomSearchResults((prev) => prev.filter((result) => result.id !== place.id))
       await refetchPlaceOptions(category)
-    } catch {
-      setPlacesError('추가하지 못했어요. 다시 시도해 주세요.')
+    } catch (error) {
+      setPlacesError(error.response?.data?.message || '추가하지 못했어요. 다시 시도해 주세요.')
     } finally {
       setPendingCustomAdds((prev) => {
         const next = new Set(prev)

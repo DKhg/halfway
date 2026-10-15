@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "잘못된 입력입니다."),
+    CONTAINS_PROFANITY(HttpStatus.BAD_REQUEST, "사용할 수 없는 단어가 포함되어 있어요."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
     ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."),
     PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "참여 정보가 없습니다."),

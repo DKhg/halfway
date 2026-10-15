@@ -20,12 +20,15 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(e.getErrorCode()));
     }
 
-    // @Valid 검증 실패 (예: 방 이름 빈 값)
+    // @Valid 검증 실패 (예: 방 이름 빈 값). 욕설 필터(@NoProfanity)에 걸린 경우만 전용 메시지로 구분
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
         log.warn("[에러] 요청 값 검증 실패 - {}", e.getMessage());
-        return ResponseEntity.status(ErrorCode.INVALID_INPUT.getStatus())
-                .body(new ErrorResponse(ErrorCode.INVALID_INPUT));
+        boolean isProfanity = e.getBindingResult().getFieldErrors().stream()
+                .anyMatch(fieldError -> "NoProfanity".equals(fieldError.getCode()));
+        ErrorCode errorCode = isProfanity ? ErrorCode.CONTAINS_PROFANITY : ErrorCode.INVALID_INPUT;
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(new ErrorResponse(errorCode));
     }
 
     // JSON 파싱 실패 (예: enum에 없는 문자열)

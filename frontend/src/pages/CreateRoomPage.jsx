@@ -51,10 +51,10 @@ function CreateRoomPage() {
         meetingDate,
       })
       setRoom(created)
-    } catch {
-      setError(mode === 'FIXED'
+    } catch (error) {
+      setError(error.response?.data?.message || (mode === 'FIXED'
         ? '방을 만들지 못했어요. 역 이름을 확인하고 다시 시도해 주세요.'
-        : '방을 만들지 못했어요. 다시 시도해 주세요.')
+        : '방을 만들지 못했어요. 다시 시도해 주세요.'))
     } finally {
       setIsLoading(false)
     }
