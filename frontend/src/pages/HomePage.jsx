@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getRoom } from '../api/roomApi'
 import AddToHomeScreenModal from '../components/common/AddToHomeScreenModal'
@@ -9,9 +9,27 @@ import { markAddToHomeScreenPromptSeen, shouldPromptAddToHomeScreen } from '../u
 import './HomePage.css'
 
 const STEPS = [
-  { number: 1, label: '출발역 넣으면 공평한 중간지점 찾아주고', accent: 'yellow' },
-  { number: 2, label: '투표로 장소 정하고 가게까지 확정하고', accent: 'green' },
-  { number: 3, label: '막차 확인하고 정산까지', accent: 'pink' },
+  {
+    number: 1,
+    accent: 'yellow',
+    icon: '/home-step-1.png',
+    title: '출발역 넣기',
+    desc: '친구들이 각자\n출발지를 넣어요.',
+  },
+  {
+    number: 2,
+    accent: 'green',
+    icon: '/home-step-2.png',
+    title: '중간지점 찾기',
+    desc: '투표로 장소를 정하고\n가게까지 확정해요.',
+  },
+  {
+    number: 3,
+    accent: 'pink',
+    icon: '/home-step-3.png',
+    title: '약속 확정하기',
+    desc: '막차까지 확인하고\n정산까지 한 번에!',
+  },
 ]
 
 // 전체 초대 링크를 붙여넣어도, 방 코드만 입력해도 되게 둘 다 받아줌
@@ -97,18 +115,41 @@ function HomePage() {
         친구들이 각자 출발지를 넣으면 모두에게 공평한 곳을 딱 골라줘요. 단톡방 논쟁은 이제 그만.
       </p>
 
-      <ol className="home-steps">
-        {STEPS.map((step) => (
-          <li key={step.number} className={`home-step home-step--${step.accent}`}>
-            <span className="home-step-number" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <div className="home-steps-heading">
+        <h2>이렇게 사용해요</h2>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="home-steps-heading-spark">
+          <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" />
+        </svg>
+      </div>
+
+      <div className="home-steps-row">
+        {STEPS.map((step, index) => (
+          <Fragment key={step.number}>
+            <div className={`home-step-card home-step-card--${step.accent}`}>
+              <span className="home-step-card-number">{step.number}</span>
+              <img src={step.icon} alt="" className="home-step-card-icon" />
+              <div className="home-step-card-title">{step.title}</div>
+              <div className="home-step-card-desc">{step.desc}</div>
+            </div>
+            {index < STEPS.length - 1 && (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="home-step-arrow"
+              >
                 <path d="M9 6l6 6-6 6" />
               </svg>
-            </span>
-            <span>{step.label}</span>
-          </li>
+            )}
+          </Fragment>
         ))}
-      </ol>
+      </div>
 
       <div className="home-cta-group">
         <Link to="/rooms/new" className="home-cta-primary" onClick={handleCreateRoomClick}>

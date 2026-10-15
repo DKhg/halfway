@@ -140,55 +140,105 @@
   color: var(--color-ink-soft);
 }
 
-.home-steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.home-step {
+.home-steps-heading {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border: var(--border-width) solid var(--color-ink);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  font-size: 16px;
-  font-weight: 700;
+  gap: 6px;
 }
 
-.home-step--green {
-  background: var(--color-accent-green);
-  transform: rotate(-1deg);
+.home-steps-heading h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
 }
 
-.home-step-number {
-  width: 36px;
-  height: 36px;
+.home-steps-heading-spark {
   flex-shrink: 0;
-  border-radius: 10px;
-  background: var(--color-ink);
+  color: var(--color-accent-yellow);
+}
+
+.home-steps-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.home-step-card {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 22px 6px 30px;
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.home-step-card--yellow {
+  background: #fff3c4;
+}
+
+.home-step-card--green {
+  background: #e3f7ce;
+}
+
+.home-step-card--pink {
+  background: #ffe1ef;
+}
+
+.home-step-card-number {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 12px;
+  color: var(--color-ink);
 }
 
-.home-step--yellow .home-step-number {
-  color: var(--color-accent-yellow);
+.home-step-card--yellow .home-step-card-number {
+  background: var(--color-accent-yellow);
 }
 
-.home-step--green .home-step-number {
-  color: var(--color-accent-green);
+.home-step-card--green .home-step-card-number {
+  background: var(--color-accent-green);
 }
 
-.home-step--pink .home-step-number {
-  color: var(--color-accent-pink);
+.home-step-card--pink .home-step-card-number {
+  background: var(--color-accent-pink);
+}
+
+.home-step-card-icon {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  margin-top: 4px;
+}
+
+.home-step-card-title {
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.home-step-card-desc {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--color-ink-soft);
+  white-space: pre-line;
+}
+
+.home-step-arrow {
+  flex-shrink: 0;
+  color: var(--color-ink);
 }
 
 .home-cta-group {
