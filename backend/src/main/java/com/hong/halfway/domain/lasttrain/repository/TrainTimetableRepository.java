@@ -13,6 +13,8 @@ public interface TrainTimetableRepository extends JpaRepository<TrainTimetable, 
 
     // 막차 계산 - 승차역 -> 하차역을 실제로 잇는 같은 열차(train_no)를 찾아, 하차 도착이 deadlineMinute 이전인 것 중
     // 승차 출발이 가장 늦은 순으로 정렬 (방향·노선이 다른 조합은 train_no가 같을 수 없어 자연히 걸러짐)
+    // 승차<=하차(미만이 아님): 역 간격이 짧은 노선(우이신설선 등)은 승하차가 같은 분으로 반올림되는 구간이 있어서,
+    // 엄격한 미만으로 걸면 그런 구간의 늦은 시간대 열차가 전부 무효 처리되는 문제가 있었음
     @Query("""
             SELECT t1.trainNo AS trainNo, t1.leaveMinute AS leaveMinute, t2.arriveMinute AS arriveMinute
             FROM TrainTimetable t1, TrainTimetable t2
@@ -23,7 +25,7 @@ public interface TrainTimetableRepository extends JpaRepository<TrainTimetable, 
               AND t2.weekTag = :weekTag
               AND t1.leaveMinute IS NOT NULL
               AND t2.arriveMinute IS NOT NULL
-              AND t1.leaveMinute < t2.arriveMinute
+              AND t1.leaveMinute <= t2.arriveMinute
               AND t2.arriveMinute <= :deadlineMinute
             ORDER BY t1.leaveMinute DESC
             """)
