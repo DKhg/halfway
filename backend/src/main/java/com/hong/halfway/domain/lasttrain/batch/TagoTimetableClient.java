@@ -3,7 +3,9 @@ package com.hong.halfway.domain.lasttrain.batch;
 import com.hong.halfway.domain.lasttrain.batch.dto.TagoTimetableResponse;
 import com.hong.halfway.global.config.ExternalApiProperties;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -68,7 +70,20 @@ public class TagoTimetableClient {
             }
             pageNo++;
         }
-        return allItems;
+        return dedupe(allItems);
+    }
+
+    // TAGO가 같은 운행을 노선·방향·종착역·출발/도착 시각까지 완전히 똑같이 중복으로 내려주는 경우가 있어서
+    // (우이신설선 토요일·휴일에서 역마다 3배씩 중복된 걸 발견) 하나로 합침. 그대로 두면 TagoTripAssigner가
+    // 실제보다 열차가 많다고 착각해 역마다 매긴 순번이 어긋나고, 그 뒤로는 같은 열차 매칭 자체가 깨짐
+    List<TagoTimetableResponse.Item> dedupe(List<TagoTimetableResponse.Item> items) {
+        Map<String, TagoTimetableResponse.Item> uniqueByKey = new LinkedHashMap<>();
+        for (TagoTimetableResponse.Item item : items) {
+            String key = String.join("|", item.subwayRouteId(), item.upDownTypeCode(),
+                    String.valueOf(item.endSubwayStationId()), item.depTime(), item.arrTime());
+            uniqueByKey.putIfAbsent(key, item);
+        }
+        return new ArrayList<>(uniqueByKey.values());
     }
 
     private TagoTimetableResponse.Body fetchPage(String tagoStationId, String dailyTypeCode, String upDownTypeCode,
