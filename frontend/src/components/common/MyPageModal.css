@@ -102,3 +102,13 @@
 .my-page-delete-btn:not(:disabled):active {
   filter: brightness(0.87);
 }
+
+.my-page-privacy-link {
+  display: block;
+  margin-top: 16px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  text-decoration: underline;
+}

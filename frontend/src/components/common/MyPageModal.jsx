@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getMe, updateHomeStation, updateNickname, deleteMyAccount } from '../../api/userApi'
 import { getAllStationNames } from '../../api/stationApi'
 import { clearToken } from '../../utils/authToken'
@@ -168,6 +169,10 @@ function MyPageModal({ onClose }) {
               {isDeleting ? '삭제하는 중...' : '계정 삭제'}
             </button>
           </div>
+
+          <Link to="/privacy" className="my-page-privacy-link" onClick={onClose}>
+            개인정보처리방침
+          </Link>
         </>
       )}
 

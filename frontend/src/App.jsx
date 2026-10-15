@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage'
 import JoinPage from './pages/JoinPage'
 import CreateRoomPage from './pages/CreateRoomPage'
 import SettlementPage from './pages/SettlementPage'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 
 function App() {
   const { isReady, error } = useAnonymousUser()
@@ -34,6 +35,7 @@ function App() {
         <Route path="/rooms/new" element={<CreateRoomPage />} />
         <Route path="/rooms/:code" element={<JoinPage />} />
         <Route path="/rooms/:code/settlement" element={<SettlementPage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
       </Routes>
     </>
   )
