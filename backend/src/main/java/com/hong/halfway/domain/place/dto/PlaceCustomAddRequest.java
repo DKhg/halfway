@@ -1,6 +1,7 @@
 package com.hong.halfway.domain.place.dto;
 
 import com.hong.halfway.domain.place.entity.PlaceCategory;
+import com.hong.halfway.global.validation.NoProfanity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -34,5 +35,6 @@ public class PlaceCustomAddRequest {
 
     // 짧은 한줄평 (선택, 최대 20자)
     @Size(max = 20)
+    @NoProfanity
     private String comment;
 }

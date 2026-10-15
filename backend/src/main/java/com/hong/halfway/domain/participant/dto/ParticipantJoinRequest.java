@@ -1,5 +1,6 @@
 package com.hong.halfway.domain.participant.dto;
 
+import com.hong.halfway.global.validation.NoProfanity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -16,5 +17,6 @@ public class ParticipantJoinRequest {
 
     @NotBlank
     @Size(max = 20)
+    @NoProfanity
     private String nickname;
 }

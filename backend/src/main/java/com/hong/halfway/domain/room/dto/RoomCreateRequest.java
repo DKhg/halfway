@@ -2,6 +2,7 @@ package com.hong.halfway.domain.room.dto;
 
 import com.hong.halfway.domain.room.entity.FairnessType;
 import com.hong.halfway.domain.room.entity.RoomMode;
+import com.hong.halfway.global.validation.NoProfanity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -20,6 +21,7 @@ public class RoomCreateRequest {
 
     @NotBlank
     @Size(max = 30)
+    @NoProfanity
     private String name;
 
     @NotNull
