@@ -125,7 +125,7 @@ function CreateRoomPage() {
         </button>
       </header>
 
-      <h1 className="create-room-title">{'약속 방\n만들기'}</h1>
+      <h1 className="create-room-title">{'어떤 약속 방을\n만들까요?'}</h1>
 
       <form className="create-room-form" onSubmit={handleSubmit}>
         <label htmlFor="create-room-name-input" className="create-room-field-label">
@@ -140,13 +140,13 @@ function CreateRoomPage() {
           onChange={(e) => setName(e.target.value)}
         />
 
-        <div className="create-room-field-label">약속 날짜 (선택)</div>
+        <div className="create-room-field-label">약속 날짜 · 선택</div>
         <button type="button" className="create-room-date-btn" onClick={() => setIsDateModalOpen(true)}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <rect x="4" y="5" width="16" height="16" rx="2.5" />
-            <path d="M4 10h16M8 3v4M16 3v4" />
+          <span>{meetingDate ? formatMeetingDate(meetingDate) : '날짜 선택'}</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
+            <path d="M3.5 10h17M8 3v4M16 3v4" />
           </svg>
-          {meetingDate ? formatMeetingDate(meetingDate) : '날짜 선택'}
         </button>
 
         <div className="create-room-field-label">장소 정하는 방식</div>
@@ -157,7 +157,9 @@ function CreateRoomPage() {
             className="create-room-fairness-btn"
             onClick={() => setMode('MIDPOINT')}
           >
+            <span className="create-room-fairness-radio" aria-hidden="true" />
             <span className="create-room-fairness-title">중간지점 자동 계산</span>
+            <span className="create-room-fairness-recommend">추천</span>
           </button>
           <button
             type="button"
@@ -165,6 +167,7 @@ function CreateRoomPage() {
             className="create-room-fairness-btn"
             onClick={() => setMode('FIXED')}
           >
+            <span className="create-room-fairness-radio" aria-hidden="true" />
             <span className="create-room-fairness-title">만날 역은 이미 정했어요</span>
           </button>
           <button
@@ -173,6 +176,7 @@ function CreateRoomPage() {
             className="create-room-fairness-btn"
             onClick={() => setMode('SETTLEMENT_ONLY')}
           >
+            <span className="create-room-fairness-radio" aria-hidden="true" />
             <span className="create-room-fairness-title">정산만 빠르게 하기</span>
           </button>
         </div>
@@ -220,37 +224,33 @@ function CreateRoomPage() {
 
         {mode !== 'SETTLEMENT_ONLY' && (
           <>
-            <div className="create-room-field-label">필요한 카테고리 (최소 1개)</div>
+            <div className="create-room-field-label">필요한 카테고리 · 최소 1개</div>
             <div className="create-room-category-row">
               <button
                 type="button"
                 aria-pressed={includesFood}
-                className="create-room-category-chip create-room-category-chip--food"
+                className="create-room-category-chip"
                 onClick={() => setIncludesFood((prev) => !prev)}
               >
-                <span className="create-room-category-chip-check" aria-hidden="true">
-                  {includesFood && (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 6L9 17l-5-5" />
-                    </svg>
-                  )}
-                </span>
-                🍚 음식점
+                {includesFood && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12.5l4.5 4.5L19 7" />
+                  </svg>
+                )}
+                음식점
               </button>
               <button
                 type="button"
                 aria-pressed={includesCafe}
-                className="create-room-category-chip create-room-category-chip--cafe"
+                className="create-room-category-chip"
                 onClick={() => setIncludesCafe((prev) => !prev)}
               >
-                <span className="create-room-category-chip-check" aria-hidden="true">
-                  {includesCafe && (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 6L9 17l-5-5" />
-                    </svg>
-                  )}
-                </span>
-                ☕ 카페
+                {includesCafe && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12.5l4.5 4.5L19 7" />
+                  </svg>
+                )}
+                카페
               </button>
             </div>
           </>

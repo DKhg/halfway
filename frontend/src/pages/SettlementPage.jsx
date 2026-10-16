@@ -355,7 +355,8 @@ function SettlementPage() {
         <StepIndicator
           steps={ROOM_FLOW_STEPS}
           currentKey="SETTLEMENT"
-          onStepClick={(key) => key !== 'SETTLEMENT' && navigate(`/rooms/${code}`)}
+          disabledKeys={['STATION']}
+          onStepClick={(key) => key === 'PLACE' && navigate(`/rooms/${code}`)}
         />
       )}
 
@@ -437,6 +438,7 @@ function SettlementPage() {
           </button>
 
           <div className="settlement-totals">
+            <div className="settlement-totals-label">각자 낼 금액</div>
             {settlement.totals.map((total) => (
               <div key={total.participantId} className="settlement-total-row">
                 <span>
@@ -462,6 +464,11 @@ function SettlementPage() {
                 onChange={(e) => setSettlementAccountNumber(e.target.value)}
               />
               <button type="button" disabled={isSavingAccount} onClick={handleSaveAccount}>
+                {!isSavingAccount && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                )}
                 {accountSaved ? '저장됨!' : isSavingAccount ? '저장하는 중...' : '계좌 저장'}
               </button>
             </div>
@@ -474,15 +481,15 @@ function SettlementPage() {
                 {settlement.payerBank && settlement.payerAccountNumber ? (
                   <div className="settlement-pay-links">
                     <a
-                      className="settlement-pay-link"
+                      className="settlement-pay-link settlement-pay-link--toss"
                       href={buildTossLink(settlement.payerBank, settlement.payerAccountNumber, myTotal.amount)}
                     >
                       토스로 송금
                     </a>
-                    <a className="settlement-pay-link" href="kakaotalk://kakaopay/home" target="_blank" rel="noreferrer">
+                    <a className="settlement-pay-link settlement-pay-link--kakao" href="kakaotalk://kakaopay/home" target="_blank" rel="noreferrer">
                       카카오페이 열기
                     </a>
-                    <button type="button" className="settlement-pay-link" onClick={handleCopyAccount}>
+                    <button type="button" className="settlement-pay-link settlement-pay-link--copy" onClick={handleCopyAccount}>
                       {accountCopied ? '복사됨!' : '계좌번호 복사'}
                     </button>
                   </div>

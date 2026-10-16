@@ -16,11 +16,11 @@
   overflow-y: auto;
   box-sizing: border-box;
   padding: var(--space-lg);
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-lg);
-  background: var(--color-bg);
+  background: var(--color-surface);
   color: var(--color-ink);
-  box-shadow: var(--shadow-hard-xl);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -34,18 +34,18 @@
 
 .modal-title {
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 22px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 20px;
 }
 
 .modal-close-btn {
   width: 36px;
   height: 36px;
   flex-shrink: 0;
-  border: 2px solid var(--color-ink);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-input);
   color: var(--color-ink);
   display: flex;
   align-items: center;

@@ -53,15 +53,24 @@ function MyRoomsModal({ onClose }) {
           {rooms.map((room) => (
             <li key={room.code}>
               <button type="button" className="my-rooms-item" onClick={() => handleSelect(room.code)}>
-                <div className="my-rooms-item-top">
-                  <span className="my-rooms-item-name">{room.name}</span>
-                  {room.owner && <span className="my-rooms-owner-badge">방장</span>}
-                </div>
-                <div className="my-rooms-item-meta">
-                  <span>{STATUS_LABEL[room.status]}</span>
-                  <span>참여자 {room.participantCount}명</span>
-                  <span>{formatMeetingDate(room.meetingDate) ?? '날짜 미정'}</span>
-                </div>
+                <span className="my-rooms-item-body">
+                  <span className="my-rooms-item-top">
+                    <span className="my-rooms-item-name">{room.name}</span>
+                    {room.owner && <span className="my-rooms-owner-badge">방장</span>}
+                  </span>
+                  <span className="my-rooms-item-meta">
+                    <span className={`my-rooms-item-status my-rooms-item-status--${room.status.toLowerCase()}`}>
+                      {STATUS_LABEL[room.status]}
+                    </span>
+                    <span>·</span>
+                    <span>참여자 {room.participantCount}명</span>
+                    <span>·</span>
+                    <span>{formatMeetingDate(room.meetingDate) ?? '날짜 미정'}</span>
+                  </span>
+                </span>
+                <svg className="my-rooms-item-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
               </button>
             </li>
           ))}

@@ -12,64 +12,86 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .my-rooms-item {
   width: 100%;
   box-sizing: border-box;
   padding: 14px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-md);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-hard-sm);
+  background: var(--color-surface-muted);
   text-align: left;
   color: var(--color-ink);
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  align-items: center;
+  gap: 14px;
+  transition: background-color 0.12s ease;
 }
 
 @media (hover: hover) {
   .my-rooms-item:hover {
-    transform: translate(3px, 3px);
-    box-shadow: none;
+    background: var(--color-divider);
   }
 }
 
 .my-rooms-item:active {
-  transform: translate(3px, 3px);
-  box-shadow: none;
+  background: var(--color-divider);
+}
+
+.my-rooms-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .my-rooms-item-top {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
 }
 
 .my-rooms-item-name {
-  font-family: var(--font-display);
-  font-size: 18px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .my-rooms-owner-badge {
-  padding: 2px 8px;
-  border: 2px solid var(--color-ink);
-  border-radius: var(--radius-pill);
-  background: var(--color-accent-yellow);
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--color-accent-yellow-bg);
+  color: var(--color-accent-yellow-ink);
   font-size: 11px;
   font-weight: 700;
-  flex-shrink: 0;
 }
 
 .my-rooms-item-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   font-size: 13px;
   font-weight: 500;
   color: var(--color-ink-soft);
+}
+
+.my-rooms-item-status {
+  font-weight: 600;
+  color: var(--color-ink-label);
+}
+
+.my-rooms-item-status--confirmed {
+  color: var(--color-primary-strong);
+}
+
+.my-rooms-item-chevron {
+  flex-shrink: 0;
+  color: #b0b8c1;
 }

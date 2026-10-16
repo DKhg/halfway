@@ -15,7 +15,7 @@ const STEPS = [
     title: '출발역 넣기',
     desc: '각자 출발지를 넣어요',
     icon: (
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <rect x="7" y="3" width="10" height="18" rx="2.5" />
         <circle cx="12" cy="10" r="1.6" fill="currentColor" stroke="none" />
         <path d="M10 15.5h4" />
@@ -24,11 +24,11 @@ const STEPS = [
   },
   {
     number: 2,
-    accent: 'green',
+    accent: 'primary-soft',
     title: '중간지점 찾기',
     desc: '투표로 장소를 정해요',
     icon: (
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M12 21s7-7.1 7-12a7 7 0 0 0-14 0c0 4.9 7 12 7 12z" />
         <circle cx="12" cy="9" r="2.5" />
       </svg>
@@ -36,11 +36,11 @@ const STEPS = [
   },
   {
     number: 3,
-    accent: 'pink',
+    accent: 'primary',
     title: '약속 확정하기',
     desc: '막차·정산까지 한 번에',
     icon: (
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M4 11 12 4l8 7" />
         <path d="M5.5 10v10h13V10" />
         <path d="M10 20v-6h4v6" />
@@ -106,52 +106,47 @@ function HomePage() {
   return (
     <div className="home-page">
       <header className="home-header">
-        <img src="/pwa-192x192.png" alt="어디서봄" className="home-logo-icon" />
+        <span className="home-logo">
+          어디서<span className="home-logo-accent">봄?</span>
+        </span>
         <div className="home-header-actions">
           <button type="button" className="home-my-rooms-btn" onClick={() => setIsMyRoomsOpen(true)}>
             내 약속
           </button>
           <button type="button" aria-label="마이페이지" className="home-icon-btn" onClick={() => setIsMyPageOpen(true)}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
             </svg>
           </button>
         </div>
       </header>
 
       <div className="home-hero">
-        <h1>{'어디서\n만나?'}</h1>
-        <div className="home-badge-group">
-          <span className="home-badge home-badge--pink">딱 중간!</span>
-          <span className="home-badge home-badge--blue">링크 한 방이면 끝</span>
-        </div>
+        <span className="home-badge">
+          <span className="home-badge-dot" />
+          링크 한 방이면 끝
+        </span>
+        <h1>
+          어디서 볼래?
+          <br />
+          이제 <span className="home-hero-highlight">딱 중간</span>에서.
+        </h1>
+        <p className="home-lead">
+          친구들이 각자 출발지를 넣으면 모두에게 공평한 곳을 골라줘요. 단톡방 논쟁은 이제 그만.
+        </p>
       </div>
 
-      <p className="home-lead">
-        친구들이 각자 출발지를 넣으면 모두에게 공평한 곳을 딱 골라줘요. 단톡방 논쟁은 이제 그만.
-      </p>
-
       <div className="home-steps-section">
-        <div className="home-steps-heading">
-          <h2>이렇게 사용해요</h2>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="home-steps-heading-spark">
-            <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" />
-          </svg>
-        </div>
-
-        <div className="home-steps-track">
-          {STEPS.map((step) => (
-            <div className="home-step-node" key={step.number}>
-              <div className={`home-step-badge home-step-badge--${step.accent}`}>
-                {step.icon}
-                <span className="home-step-badge-number">{step.number}</span>
-              </div>
-              <div className="home-step-node-title">{step.title}</div>
-              <div className="home-step-node-desc">{step.desc}</div>
+        {STEPS.map((step, index) => (
+          <div className={`home-step-row${index < STEPS.length - 1 ? ' home-step-row--divided' : ''}`} key={step.number}>
+            <div className={`home-step-icon home-step-icon--${step.accent}`}>{step.icon}</div>
+            <div>
+              <div className="home-step-title">{step.title}</div>
+              <div className="home-step-desc">{step.desc}</div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
       <div className="home-cta-group">
@@ -159,6 +154,10 @@ function HomePage() {
           약속 방 만들기
         </Link>
         <button type="button" className="home-cta-secondary" onClick={handleOpenInviteModal}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
           초대 링크 받았어요
         </button>
       </div>

@@ -6,17 +6,17 @@
   width: 100%;
   box-sizing: border-box;
   height: 52px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
   padding: 0 14px;
   font-size: 17px;
   font-weight: 500;
   color: var(--color-ink);
-  background: var(--color-surface);
+  background: var(--color-surface-input);
 }
 
 .station-autocomplete-input:disabled {
-  background: var(--color-bg);
+  background: var(--color-divider);
   color: var(--color-ink-soft);
 }
 
@@ -31,10 +31,10 @@
   list-style: none;
   max-height: 220px;
   overflow-y: auto;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
   background: var(--color-surface);
-  box-shadow: var(--shadow-hard-sm);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -66,12 +66,12 @@
 
 @media (hover: hover) {
   .station-autocomplete-suggestion-btn:hover {
-    background: var(--color-accent-yellow);
+    background: var(--color-primary-soft-bg);
   }
 }
 
 .station-autocomplete-suggestion-btn:active {
-  background: var(--color-accent-yellow);
+  background: var(--color-primary-soft-bg);
 }
 
 .station-autocomplete-suggestion-lines {

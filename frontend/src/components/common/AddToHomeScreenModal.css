@@ -31,39 +31,37 @@
 .a2hs-skip-btn {
   width: 100%;
   height: 48px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-ink);
-  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  transition: background-color 0.12s ease;
 }
 
 .a2hs-primary-btn {
-  background: var(--color-accent-green);
-  box-shadow: var(--shadow-hard-sm);
+  background: var(--color-primary);
+  color: #ffffff;
 }
 
 .a2hs-skip-btn {
-  background: var(--color-surface);
+  background: var(--color-surface-input);
+  color: var(--color-ink);
 }
 
 @media (hover: hover) {
   .a2hs-primary-btn:hover {
-    transform: translate(3px, 3px);
-    box-shadow: none;
+    background: var(--color-primary-strong);
   }
 
   .a2hs-skip-btn:hover {
-    filter: brightness(0.92);
+    background: var(--color-divider);
   }
 }
 
 .a2hs-primary-btn:active {
-  transform: translate(3px, 3px);
-  box-shadow: none;
+  background: var(--color-primary-strong);
 }
 
 .a2hs-skip-btn:active {
-  filter: brightness(0.87);
+  background: var(--color-divider);
 }

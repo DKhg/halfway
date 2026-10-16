@@ -11,10 +11,10 @@
   width: max-content;
   max-width: calc(100vw - var(--space-md) * 2);
   padding: var(--space-md) var(--space-lg);
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
   background: var(--color-surface);
-  box-shadow: var(--shadow-hard-md);
+  box-shadow: var(--shadow-card);
 }
 
 .update-banner-text {
@@ -27,23 +27,21 @@
   flex-shrink: 0;
   height: 44px;
   padding: 0 var(--space-lg);
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
-  background: var(--color-accent-green);
+  background: var(--color-primary);
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-ink);
-  box-shadow: var(--shadow-hard-sm);
-  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  color: #ffffff;
+  transition: background-color 0.12s ease;
 }
 
 @media (hover: hover) {
   .update-banner-btn:hover {
-    filter: brightness(0.95);
+    background: var(--color-primary-strong);
   }
 }
 
 .update-banner-btn:active {
-  transform: translate(3px, 3px);
-  box-shadow: none;
+  background: var(--color-primary-strong);
 }

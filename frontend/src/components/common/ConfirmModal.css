@@ -14,19 +14,20 @@
   max-width: 340px;
   box-sizing: border-box;
   padding: var(--space-lg);
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-lg);
-  background: var(--color-bg);
+  background: var(--color-surface);
   color: var(--color-ink);
-  box-shadow: var(--shadow-hard-xl);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .confirm-modal-title {
-  font-family: var(--font-display);
-  font-size: 20px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 19px;
 }
 
 .confirm-modal-message {
@@ -47,43 +48,50 @@
 .confirm-modal-confirm-btn {
   flex: 1;
   height: 48px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-ink);
-  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  transition: background-color 0.12s ease;
 }
 
 .confirm-modal-cancel-btn {
-  background: var(--color-surface);
+  background: var(--color-surface-input);
+  color: var(--color-ink);
 }
 
 .confirm-modal-confirm-btn {
-  background: var(--color-accent-blue);
-  box-shadow: var(--shadow-hard-sm);
+  background: var(--color-primary);
+  color: #ffffff;
 }
 
 .confirm-modal-confirm-btn--danger {
-  background: var(--color-accent-pink);
+  background: var(--color-accent-red);
+  color: #ffffff;
 }
 
 @media (hover: hover) {
   .confirm-modal-cancel-btn:hover {
-    filter: brightness(0.92);
+    background: var(--color-divider);
   }
 
   .confirm-modal-confirm-btn:hover {
-    transform: translate(3px, 3px);
-    box-shadow: none;
+    background: var(--color-primary-strong);
+  }
+
+  .confirm-modal-confirm-btn--danger:hover {
+    background: #e23c3c;
   }
 }
 
 .confirm-modal-cancel-btn:active {
-  filter: brightness(0.87);
+  background: var(--color-divider);
 }
 
 .confirm-modal-confirm-btn:active {
-  transform: translate(3px, 3px);
-  box-shadow: none;
+  background: var(--color-primary-strong);
+}
+
+.confirm-modal-confirm-btn--danger:active {
+  background: #e23c3c;
 }

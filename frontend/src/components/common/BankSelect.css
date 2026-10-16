@@ -9,13 +9,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
   padding: 0 14px;
   font-size: 16px;
   font-weight: 500;
   color: var(--color-ink);
-  background: var(--color-bg);
+  background: var(--color-surface-input);
 }
 
 .bank-select-placeholder {
@@ -38,10 +38,10 @@
   list-style: none;
   max-height: 260px;
   overflow-y: auto;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
   background: var(--color-surface);
-  box-shadow: var(--shadow-hard-sm);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -62,10 +62,10 @@
 
 @media (hover: hover) {
   .bank-select-option-btn:hover {
-    background: var(--color-accent-blue);
+    background: var(--color-primary-soft-bg);
   }
 }
 
 .bank-select-option-btn:active {
-  background: var(--color-accent-blue);
+  background: var(--color-primary-soft-bg);
 }

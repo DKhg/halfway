@@ -17,30 +17,31 @@
 .privacy-back-btn {
   width: 44px;
   height: 44px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  background: var(--color-surface-input);
   color: var(--color-ink);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: filter 0.12s ease;
+  transition: background-color 0.12s ease;
 }
 
 @media (hover: hover) {
   .privacy-back-btn:hover {
-    filter: brightness(0.92);
+    background: var(--color-divider);
   }
 }
 
 .privacy-back-btn:active {
-  filter: brightness(0.87);
+  background: var(--color-divider);
 }
 
 .privacy-page h1 {
   margin: 4px 0 0;
-  font-family: var(--font-display);
-  font-size: 24px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 22px;
 }
 
 .privacy-effective-date {
@@ -87,14 +88,15 @@
 
 .privacy-table th,
 .privacy-table td {
-  border: 1.5px solid var(--color-ink);
+  border: 1px solid var(--color-divider);
   padding: 8px 10px;
   text-align: left;
   vertical-align: top;
 }
 
 .privacy-table th {
-  background: var(--color-accent-yellow);
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
   font-weight: 800;
 }
 

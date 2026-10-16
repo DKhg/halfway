@@ -903,15 +903,20 @@ function JoinPage() {
         <div className="join-confirmed-summary-head">
           <div className="join-confirmed-summary-head-top">
             <span className="join-confirmed-summary-label">{label}</span>
-            <span className="join-confirmed-summary-badge">확정</span>
+            <span className="join-confirmed-summary-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7" />
+              </svg>
+              확정
+            </span>
           </div>
           <span className="join-confirmed-summary-name">{placeName}</span>
         </div>
         <div className="join-confirmed-summary-actions">
-          <a className="join-confirmed-summary-link" href={links.kakao} target="_blank" rel="noreferrer">
+          <a className="join-confirmed-summary-link join-confirmed-summary-link--kakao" href={links.kakao} target="_blank" rel="noreferrer">
             카카오맵
           </a>
-          <a className="join-confirmed-summary-link" href={links.naver} target="_blank" rel="noreferrer">
+          <a className="join-confirmed-summary-link join-confirmed-summary-link--naver" href={links.naver} target="_blank" rel="noreferrer">
             네이버지도
           </a>
           {room.owner && (
@@ -1013,7 +1018,7 @@ function JoinPage() {
                 .filter(Boolean)
                 .join(' · ')
               return (
-                <div key={place.id} className="join-place-card">
+                <div key={place.id} className={`join-place-card join-place-card--${category.toLowerCase()}`}>
                   <div className="join-place-name-row">
                     <div className="join-place-name">{place.name}</div>
                     {place.custom && !isPoolTab && <span className="join-place-custom-badge">직접 추가</span>}
@@ -1312,15 +1317,10 @@ function JoinPage() {
           <StepIndicator
             steps={ROOM_FLOW_STEPS}
             currentKey="PLACE"
-            disabledKeys={[
-              ...(room.settlementStarted ? [] : ['SETTLEMENT']),
-              ...(room.owner ? [] : ['STATION']),
-            ]}
+            disabledKeys={['STATION', ...(room.settlementStarted ? [] : ['SETTLEMENT'])]}
             onStepClick={(key) => {
               if (key === 'SETTLEMENT') {
                 navigate(`/rooms/${code}/settlement`)
-              } else if (key === 'STATION') {
-                document.getElementById('join-unconfirm-zone')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
               }
             }}
           />
@@ -1371,7 +1371,7 @@ function JoinPage() {
           ) : (
             <>
               {includedCategoryTabs.length > 1 && (
-                <div className="join-place-tabs">
+                <div className="join-place-main-tabs">
                   {includedCategoryTabs.map((tab) => (
                     <button
                       key={tab.key}
@@ -1626,29 +1626,31 @@ function JoinPage() {
 
       <div className="join-title-block">
         <h1>{room.name}</h1>
-        <div className="join-progress-row">
-          <span className="join-progress-badge">
-            {doneCount}/{totalCount} 입력 완료
-          </span>
-          <span className="join-progress-hint">{hint}</span>
-        </div>
-        <div className="join-meeting-date-row">
-          <span className="join-meeting-date-text">
-            {formatMeetingDate(room.meetingDate) ?? '약속 날짜 미정'}
-          </span>
-          {(room.owner || me) && !room.settlementStarted && (
-            <button
-              type="button"
-              className="join-meeting-date-edit-btn"
-              disabled={isChangingMeetingDate}
-              onClick={() => setIsDateModalOpen(true)}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M4 20l1-4.5L16.5 4 20 7.5 8.5 19 4 20z" />
-              </svg>
-              날짜 수정
-            </button>
-          )}
+        <div className="join-meta-group">
+          <div className="join-progress-row">
+            <span className="join-progress-badge">
+              {doneCount}/{totalCount} 입력 완료
+            </span>
+            <span className="join-progress-hint">{hint}</span>
+          </div>
+          <div className="join-meeting-date-row">
+            <span className="join-meeting-date-text">
+              {formatMeetingDate(room.meetingDate) ?? '약속 날짜 미정'}
+            </span>
+            {(room.owner || me) && !room.settlementStarted && (
+              <button
+                type="button"
+                className="join-meeting-date-edit-btn"
+                disabled={isChangingMeetingDate}
+                onClick={() => setIsDateModalOpen(true)}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 20l1-4.5L16.5 4 20 7.5 8.5 19 4 20z" />
+                </svg>
+                날짜 수정
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -1819,10 +1821,17 @@ function JoinPage() {
                 disabled={isLoadingMidpointWithHome}
                 onClick={handleClickConsiderHome}
               >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 11.5 12 5l8 6.5" />
+                  <path d="M5.5 10.5V19a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-8.5" />
+                </svg>
                 {isLoadingMidpointWithHome ? '계산하는 중...' : '귀가역까지 고려해서 보기'}
               </button>
             ) : (
-              <button type="button" className="join-midpoint-home-btn" onClick={handleBackToDepartureCandidates}>
+              <button type="button" className="join-midpoint-home-btn join-midpoint-home-btn--active" onClick={handleBackToDepartureCandidates}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M15 5l-7 7 7 7" />
+                </svg>
                 출발역 기준으로 돌아가기
               </button>
             )}

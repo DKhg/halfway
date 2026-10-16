@@ -20,24 +20,24 @@
 .settlement-back-btn {
   width: 44px;
   height: 44px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  background: var(--color-surface-input);
   color: var(--color-ink);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: filter 0.12s ease;
+  transition: background-color 0.12s ease;
 }
 
 @media (hover: hover) {
   .settlement-back-btn:hover {
-    filter: brightness(0.92);
+    background: var(--color-divider);
   }
 }
 
 .settlement-back-btn:active {
-  filter: brightness(0.87);
+  background: var(--color-divider);
 }
 
 .settlement-status {
@@ -48,10 +48,10 @@
 
 .settlement-title {
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 34px;
-  line-height: 1.1;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.15;
 }
 
 .settlement-subtitle {
@@ -68,9 +68,10 @@
 .settlement-error {
   width: 100%;
   padding: 10px 14px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
-  background: var(--color-accent-pink);
+  background: var(--color-accent-red-soft);
+  color: var(--color-ink);
   font-size: 13px;
   font-weight: 700;
 }
@@ -78,24 +79,23 @@
 .settlement-start-btn {
   height: 52px;
   padding: 0 28px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-pill);
-  background: var(--color-accent-green);
-  box-shadow: var(--shadow-hard-md);
-  color: var(--color-ink);
+  background: var(--color-primary);
+  color: #ffffff;
   font-size: 16px;
   font-weight: 700;
-  transition: filter 0.12s ease;
+  transition: background-color 0.12s ease;
 }
 
 @media (hover: hover) {
   .settlement-start-btn:not(:disabled):hover {
-    filter: brightness(0.92);
+    background: var(--color-primary-strong);
   }
 }
 
 .settlement-start-btn:not(:disabled):active {
-  filter: brightness(0.87);
+  background: var(--color-primary-strong);
 }
 
 .settlement-panel {
@@ -116,35 +116,33 @@
 
 .settlement-payer-badge {
   padding: 4px 14px;
-  border: 2px solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-pill);
-  background: var(--color-accent-yellow);
+  background: var(--color-accent-yellow-bg);
+  color: var(--color-accent-yellow-ink);
   font-size: 12px;
   font-weight: 700;
 }
 
 .settlement-cancel-btn {
   padding: 4px 12px;
-  border: 2px solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-hard-sm);
+  background: var(--color-surface-input);
   color: var(--color-ink);
   font-size: 11px;
   font-weight: 700;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition: background-color 0.1s ease;
 }
 
 @media (hover: hover) {
   .settlement-cancel-btn:not(:disabled):hover {
-    transform: translate(2px, 2px);
-    box-shadow: none;
+    background: var(--color-divider);
   }
 }
 
 .settlement-cancel-btn:not(:disabled):active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
+  background: var(--color-divider);
 }
 
 .settlement-items {
@@ -158,26 +156,22 @@
   flex-direction: column;
   gap: 6px;
   padding: 14px 16px;
-  border: var(--border-width) solid var(--color-ink);
-  border-left-width: 8px;
+  border: none;
+  border-left: 6px solid transparent;
   border-radius: var(--radius-md);
   background: var(--color-surface);
-  box-shadow: var(--shadow-hard-sm);
+  box-shadow: var(--shadow-card);
 }
 
-.settlement-item-card:nth-child(4n + 1) {
+.settlement-item-card:nth-child(3n + 1) {
+  border-left-color: var(--color-primary);
+}
+
+.settlement-item-card:nth-child(3n + 2) {
   border-left-color: var(--color-accent-yellow);
 }
 
-.settlement-item-card:nth-child(4n + 2) {
-  border-left-color: var(--color-accent-pink);
-}
-
-.settlement-item-card:nth-child(4n + 3) {
-  border-left-color: var(--color-accent-blue);
-}
-
-.settlement-item-card:nth-child(4n + 4) {
+.settlement-item-card:nth-child(3n + 3) {
   border-left-color: var(--color-accent-green);
 }
 
@@ -206,15 +200,15 @@
   gap: 4px;
   height: 34px;
   padding: 0 12px;
-  border: 2px solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-sm);
   font-size: 12px;
   font-weight: 700;
 }
 
 .settlement-item-edit-btn {
-  background: var(--color-accent-blue);
-  color: var(--color-ink);
+  background: #e8f0ff;
+  color: #3b6fd1;
 }
 
 .settlement-item-delete-btn {
@@ -226,26 +220,23 @@
   align-self: center;
   height: 44px;
   padding: 0 20px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-pill);
-  background: var(--color-accent-yellow);
-  box-shadow: var(--shadow-hard-sm);
-  color: var(--color-ink);
+  background: var(--color-primary);
+  color: #ffffff;
   font-size: 14px;
   font-weight: 700;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: background-color 0.12s ease;
 }
 
 @media (hover: hover) {
   .settlement-add-item-btn:hover {
-    transform: translate(2px, 2px);
-    box-shadow: none;
+    background: var(--color-primary-strong);
   }
 }
 
 .settlement-add-item-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
+  background: var(--color-primary-strong);
 }
 
 .settlement-account-form {
@@ -253,21 +244,27 @@
   flex-direction: column;
   gap: 10px;
   padding: 16px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-md);
   background: var(--color-surface);
-  box-shadow: var(--shadow-hard-sm);
+  box-shadow: var(--shadow-card);
 }
 
 .settlement-account-form input {
   height: 48px;
   box-sizing: border-box;
-  border: var(--border-width) solid var(--color-ink);
+  border: 1.5px solid transparent;
   border-radius: var(--radius-sm);
   padding: 0 14px;
   font-size: 16px;
   color: var(--color-ink);
-  background: var(--color-bg);
+  background: var(--color-surface-input);
+  transition: border-color 0.12s ease;
+}
+
+.settlement-account-form input:focus {
+  outline: none;
+  border-color: var(--color-primary);
 }
 
 .settlement-receipt-input {
@@ -280,11 +277,11 @@
   align-items: center;
   gap: 6px;
   padding: 20px 16px;
-  border: 2px dashed var(--color-ink-soft);
+  border: 1.5px dashed var(--color-border);
   border-radius: var(--radius-md);
-  background: var(--color-bg);
+  background: var(--color-surface-input);
   color: var(--color-ink);
-  transition: filter 0.08s ease;
+  transition: background-color 0.08s ease;
 }
 
 .settlement-receipt-tile-title {
@@ -311,12 +308,18 @@
 .settlement-modal-input {
   height: 48px;
   box-sizing: border-box;
-  border: var(--border-width) solid var(--color-ink);
+  border: 1.5px solid transparent;
   border-radius: var(--radius-sm);
   padding: 0 14px;
   font-size: 16px;
   color: var(--color-ink);
-  background: var(--color-surface);
+  background: var(--color-surface-input);
+  transition: border-color 0.12s ease;
+}
+
+.settlement-modal-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
 }
 
 .settlement-amount-input {
@@ -344,9 +347,15 @@
 .settlement-member-check {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 14px;
   font-weight: 500;
+}
+
+.settlement-member-check input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
 }
 
 .settlement-item-form-actions {
@@ -359,28 +368,38 @@
   flex: 1;
   height: 48px;
   padding: 0 18px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-pill);
-  background: var(--color-accent-yellow);
-  box-shadow: var(--shadow-hard-sm);
-  color: var(--color-ink);
+  background: var(--color-primary);
+  color: #ffffff;
   font-size: 15px;
   font-weight: 700;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition: background-color 0.08s ease;
+}
+
+.settlement-account-form > button {
+  align-self: center;
+  flex: none;
+  width: auto;
+  height: 44px;
+  padding: 0 24px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 @media (hover: hover) {
   .settlement-modal-save-btn:not(:disabled):hover,
   .settlement-account-form > button:not(:disabled):hover {
-    transform: translate(2px, 2px);
-    box-shadow: none;
+    background: var(--color-primary-strong);
   }
 }
 
 .settlement-modal-save-btn:not(:disabled):active,
 .settlement-account-form > button:not(:disabled):active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
+  background: var(--color-primary-strong);
 }
 
 .settlement-totals {
@@ -388,10 +407,16 @@
   flex-direction: column;
   gap: 8px;
   padding: 14px 16px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-md);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-hard-sm);
+  background: var(--color-surface-muted);
+}
+
+.settlement-totals-label {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-ink-soft);
 }
 
 .settlement-total-row {
@@ -426,10 +451,9 @@
 .settlement-pay-link {
   height: 48px;
   padding: 0 16px;
-  border: var(--border-width) solid var(--color-ink);
+  border: none;
   border-radius: var(--radius-md);
-  background: var(--color-accent-blue);
-  box-shadow: var(--shadow-hard-sm);
+  background: var(--color-surface-input);
   color: var(--color-ink);
   font-size: 13px;
   font-weight: 700;
@@ -437,17 +461,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: background-color 0.12s ease;
+}
+
+.settlement-pay-link--toss {
+  background: #e8f0ff;
+  color: #0064ff;
+}
+
+.settlement-pay-link--kakao {
+  background: var(--color-accent-yellow);
+  color: var(--color-ink);
+}
+
+.settlement-pay-link--copy {
+  background: var(--color-primary-soft-bg);
+  color: var(--color-primary-strong);
 }
 
 @media (hover: hover) {
   .settlement-pay-link:hover {
-    transform: translate(2px, 2px);
-    box-shadow: none;
+    background: var(--color-divider);
   }
 }
 
 .settlement-pay-link:active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
+  background: var(--color-divider);
 }
