@@ -103,10 +103,9 @@
 }
 
 .create-room-fairness-btn {
-  min-height: 56px;
-  padding: 0 16px;
+  padding: 14px 16px;
   border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
   color: var(--color-ink);
   display: flex;
@@ -114,6 +113,38 @@
   gap: 12px;
   text-align: left;
   transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.create-room-fairness-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  color: var(--color-ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.create-room-fairness-btn[aria-pressed='true'] .create-room-fairness-icon {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.create-room-fairness-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.create-room-fairness-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .create-room-fairness-radio {
@@ -128,18 +159,23 @@
 }
 
 .create-room-fairness-title {
-  flex: 1;
   font-size: 15px;
+  font-weight: 600;
+}
+
+.create-room-fairness-desc {
+  font-size: 12.5px;
   font-weight: 500;
+  color: var(--color-ink-soft);
 }
 
 .create-room-fairness-recommend {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--color-accent-yellow-ink);
   background: var(--color-accent-yellow-bg);
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
 }
 
 .create-room-fairness-btn[aria-pressed='true'] {
@@ -150,10 +186,6 @@
 .create-room-fairness-btn[aria-pressed='true'] .create-room-fairness-radio {
   border: 6px solid var(--color-primary);
   background: var(--color-surface);
-}
-
-.create-room-fairness-btn[aria-pressed='true'] .create-room-fairness-title {
-  font-weight: 600;
 }
 
 @media (hover: hover) {

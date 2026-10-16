@@ -12,6 +12,15 @@ const STATUS_LABEL = {
   CLOSED: '종료',
 }
 
+// "10월 17" 처럼 날짜 배지에 쓸 월·일만 뽑아냄 (요일·연도는 메타 줄에 이미 나옴)
+function splitMonthDay(meetingDate) {
+  if (!meetingDate) {
+    return null
+  }
+  const [, month, day] = meetingDate.split('-').map(Number)
+  return { month, day }
+}
+
 function MyRoomsModal({ onClose }) {
   const navigate = useNavigate()
   const [rooms, setRooms] = useState(null)
@@ -50,31 +59,63 @@ function MyRoomsModal({ onClose }) {
 
       {!error && rooms !== null && rooms.length > 0 && (
         <ul className="my-rooms-list">
-          {rooms.map((room) => (
-            <li key={room.code}>
-              <button type="button" className="my-rooms-item" onClick={() => handleSelect(room.code)}>
-                <span className="my-rooms-item-body">
-                  <span className="my-rooms-item-top">
-                    <span className="my-rooms-item-name">{room.name}</span>
-                    {room.owner && <span className="my-rooms-owner-badge">방장</span>}
-                  </span>
-                  <span className="my-rooms-item-meta">
-                    <span className={`my-rooms-item-status my-rooms-item-status--${room.status.toLowerCase()}`}>
-                      {STATUS_LABEL[room.status]}
+          {rooms.map((room) => {
+            const monthDay = splitMonthDay(room.meetingDate)
+            return (
+              <li key={room.code}>
+                <button type="button" className="my-rooms-item" onClick={() => handleSelect(room.code)}>
+                  {room.status === 'CONFIRMED' ? (
+                    <span className="my-rooms-item-badge my-rooms-item-badge--done" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12.5l4.5 4.5L19 7" />
+                      </svg>
                     </span>
-                    <span>·</span>
-                    <span>참여자 {room.participantCount}명</span>
-                    <span>·</span>
-                    <span>{formatMeetingDate(room.meetingDate) ?? '날짜 미정'}</span>
+                  ) : monthDay ? (
+                    <span className="my-rooms-item-badge my-rooms-item-badge--date" aria-hidden="true">
+                      <span className="my-rooms-item-badge-month">{monthDay.month}월</span>
+                      <span className="my-rooms-item-badge-day">{monthDay.day}</span>
+                    </span>
+                  ) : (
+                    <span className="my-rooms-item-badge my-rooms-item-badge--undated" aria-hidden="true">미정</span>
+                  )}
+
+                  <span className="my-rooms-item-body">
+                    <span className="my-rooms-item-top">
+                      <span className="my-rooms-item-name">{room.name}</span>
+                      {room.owner && <span className="my-rooms-owner-badge">방장</span>}
+                      {room.status === 'CONFIRMED' && <span className="my-rooms-confirmed-badge">확정</span>}
+                    </span>
+                    <span className="my-rooms-item-meta">
+                      <span className={`my-rooms-item-status my-rooms-item-status--${room.status.toLowerCase()}`}>
+                        {STATUS_LABEL[room.status]}
+                      </span>
+                      <span>·</span>
+                      <span>참여자 {room.participantCount}명</span>
+                      {room.meetingDate && (
+                        <>
+                          <span>·</span>
+                          <span>{formatMeetingDate(room.meetingDate)}</span>
+                        </>
+                      )}
+                    </span>
                   </span>
-                </span>
-                <svg className="my-rooms-item-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                  <path d="M9 6l6 6-6 6" />
-                </svg>
-              </button>
-            </li>
-          ))}
+                  <svg className="my-rooms-item-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M9 6l6 6-6 6" />
+                  </svg>
+                </button>
+              </li>
+            )
+          })}
         </ul>
+      )}
+
+      {!error && rooms !== null && (
+        <button type="button" className="my-rooms-new-btn" onClick={() => { onClose(); navigate('/rooms/new') }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          새 약속
+        </button>
       )}
     </Modal>
   )

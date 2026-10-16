@@ -157,9 +157,20 @@ function CreateRoomPage() {
             className="create-room-fairness-btn"
             onClick={() => setMode('MIDPOINT')}
           >
+            <span className="create-room-fairness-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z" />
+                <circle cx="12" cy="10" r="2.2" />
+              </svg>
+            </span>
+            <span className="create-room-fairness-text">
+              <span className="create-room-fairness-title-row">
+                <span className="create-room-fairness-title">중간지점 자동 계산</span>
+                <span className="create-room-fairness-recommend">추천</span>
+              </span>
+              <span className="create-room-fairness-desc">출발역만 넣으면 공평한 역을 찾아줘요</span>
+            </span>
             <span className="create-room-fairness-radio" aria-hidden="true" />
-            <span className="create-room-fairness-title">중간지점 자동 계산</span>
-            <span className="create-room-fairness-recommend">추천</span>
           </button>
           <button
             type="button"
@@ -167,8 +178,20 @@ function CreateRoomPage() {
             className="create-room-fairness-btn"
             onClick={() => setMode('FIXED')}
           >
+            <span className="create-room-fairness-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="7" y="3" width="10" height="18" rx="2.5" />
+                <circle cx="12" cy="10" r="1.6" fill="currentColor" stroke="none" />
+                <path d="M10 15.5h4" />
+              </svg>
+            </span>
+            <span className="create-room-fairness-text">
+              <span className="create-room-fairness-title-row">
+                <span className="create-room-fairness-title">만날 역은 이미 정했어요</span>
+              </span>
+              <span className="create-room-fairness-desc">바로 장소 고르기로 넘어가요</span>
+            </span>
             <span className="create-room-fairness-radio" aria-hidden="true" />
-            <span className="create-room-fairness-title">만날 역은 이미 정했어요</span>
           </button>
           <button
             type="button"
@@ -176,8 +199,19 @@ function CreateRoomPage() {
             className="create-room-fairness-btn"
             onClick={() => setMode('SETTLEMENT_ONLY')}
           >
+            <span className="create-room-fairness-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="3" />
+                <path d="M3 10h18M7 15h4" />
+              </svg>
+            </span>
+            <span className="create-room-fairness-text">
+              <span className="create-room-fairness-title-row">
+                <span className="create-room-fairness-title">정산만 빠르게 하기</span>
+              </span>
+              <span className="create-room-fairness-desc">쓴 돈만 나눠서 계산해요</span>
+            </span>
             <span className="create-room-fairness-radio" aria-hidden="true" />
-            <span className="create-room-fairness-title">정산만 빠르게 하기</span>
           </button>
         </div>
 

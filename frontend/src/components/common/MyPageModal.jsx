@@ -100,70 +100,101 @@ function MyPageModal({ onClose }) {
 
       {!isLoading && !loadError && (
         <>
-          <div className="my-page-settings-card">
-            <div className="my-page-field">
-              <label htmlFor="my-page-nickname-input" className="my-page-field-label">
-                기본 닉네임
-              </label>
-              <p className="my-page-field-hint">방에 참여할 때 자동으로 채워져요.</p>
-              <div className="my-page-field-row">
-                <input
-                  id="my-page-nickname-input"
-                  type="text"
-                  placeholder="닉네임"
-                  className="my-page-input"
-                  maxLength={20}
-                  value={nickname}
-                  onChange={(e) => {
-                    setNickname(e.target.value)
-                    setNicknameError(null)
-                  }}
-                />
-                <button
-                  type="button"
-                  className="my-page-save-btn"
-                  disabled={!nickname.trim() || isSavingNickname}
-                  onClick={handleSaveNickname}
-                >
-                  {isSavingNickname ? '저장 중' : nicknameSaved ? '저장됨' : '저장'}
-                </button>
-              </div>
-              {nicknameError && <div className="my-page-error">{nicknameError}</div>}
-            </div>
-
-            <div className="my-page-field-divider" />
-
-            <div className="my-page-field">
-              <label htmlFor="my-page-home-station-input" className="my-page-field-label">
-                귀가역
-              </label>
-              <p className="my-page-field-hint">막차 계산, 귀가역까지 고려한 중간지점 계산에 자동으로 쓰여요.</p>
-              <div className="my-page-field-row">
-                <StationAutocompleteInput
-                  id="my-page-home-station-input"
-                  placeholder="귀가역 또는 초성(ㄱㄴ)"
-                  value={homeStation}
-                  onChange={(value) => {
-                    setHomeStation(value)
-                    setHomeStationError(null)
-                  }}
-                  stationOptions={stationOptions}
-                />
-                <button
-                  type="button"
-                  className="my-page-save-btn"
-                  disabled={isSavingHomeStation}
-                  onClick={handleSaveHomeStation}
-                >
-                  {isSavingHomeStation ? '저장 중' : homeStationSaved ? '저장됨' : '저장'}
-                </button>
-              </div>
-              {homeStationError && <div className="my-page-error">{homeStationError}</div>}
+          <div className="my-page-profile-card">
+            <div className="my-page-avatar">{nickname.trim().charAt(0) || '?'}</div>
+            <div className="my-page-profile-text">
+              <div className="my-page-profile-name">{nickname.trim() || '닉네임 미설정'}</div>
             </div>
           </div>
 
+          <div className="my-page-section-label">자동 입력</div>
+          <div className="my-page-list">
+            <div className="my-page-list-row my-page-list-row--editable">
+              <span className="my-page-list-row-icon my-page-list-row-icon--primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
+                </svg>
+              </span>
+              <div className="my-page-list-row-text">
+                <span className="my-page-list-row-title">기본 닉네임</span>
+                <span className="my-page-list-row-desc">방에 참여할 때 자동으로 채워져요</span>
+                <div className="my-page-field-row">
+                  <input
+                    id="my-page-nickname-input"
+                    type="text"
+                    placeholder="닉네임"
+                    className="my-page-input"
+                    maxLength={20}
+                    value={nickname}
+                    onChange={(e) => {
+                      setNickname(e.target.value)
+                      setNicknameError(null)
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="my-page-save-btn"
+                    disabled={!nickname.trim() || isSavingNickname}
+                    onClick={handleSaveNickname}
+                  >
+                    {isSavingNickname ? '저장 중' : nicknameSaved ? '저장됨' : '저장'}
+                  </button>
+                </div>
+                {nicknameError && <div className="my-page-error">{nicknameError}</div>}
+              </div>
+            </div>
+
+            <div className="my-page-list-divider" />
+
+            <div className="my-page-list-row my-page-list-row--editable">
+              <span className="my-page-list-row-icon my-page-list-row-icon--yellow">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 11 12 4l8 7" />
+                  <path d="M5.5 10v10h13V10" />
+                </svg>
+              </span>
+              <div className="my-page-list-row-text">
+                <span className="my-page-list-row-title">귀가역</span>
+                <span className="my-page-list-row-desc">막차·귀가 고려 계산에 쓰여요</span>
+                <div className="my-page-field-row">
+                  <StationAutocompleteInput
+                    id="my-page-home-station-input"
+                    placeholder="귀가역 또는 초성(ㄱㄴ)"
+                    value={homeStation}
+                    onChange={(value) => {
+                      setHomeStation(value)
+                      setHomeStationError(null)
+                    }}
+                    stationOptions={stationOptions}
+                  />
+                  <button
+                    type="button"
+                    className="my-page-save-btn"
+                    disabled={isSavingHomeStation}
+                    onClick={handleSaveHomeStation}
+                  >
+                    {isSavingHomeStation ? '저장 중' : homeStationSaved ? '저장됨' : '저장'}
+                  </button>
+                </div>
+                {homeStationError && <div className="my-page-error">{homeStationError}</div>}
+              </div>
+            </div>
+          </div>
+
+          <div className="my-page-section-label">정보</div>
+          <div className="my-page-list">
+            <Link to="/privacy" className="my-page-list-row" onClick={onClose}>
+              <span className="my-page-list-row-text">
+                <span className="my-page-list-row-title">개인정보처리방침</span>
+              </span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </Link>
+          </div>
+
           <div className="my-page-danger-section">
-            <p className="my-page-field-hint">내 익명 계정과 참여한 모든 약속 기록을 삭제해요. 되돌릴 수 없어요.</p>
             {deleteError && <div className="my-page-error">{deleteError}</div>}
             <button
               type="button"
@@ -173,14 +204,8 @@ function MyPageModal({ onClose }) {
             >
               {isDeleting ? '삭제하는 중...' : '계정 삭제'}
             </button>
+            <p className="my-page-field-hint">익명 계정과 참여한 모든 약속 기록이 삭제되며 되돌릴 수 없어요</p>
           </div>
-
-          <Link to="/privacy" className="my-page-list-link" onClick={onClose}>
-            <span>개인정보처리방침</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <path d="M9 6l6 6-6 6" />
-            </svg>
-          </Link>
         </>
       )}
 

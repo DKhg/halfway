@@ -46,8 +46,8 @@
 .date-calendar-label-btn {
   border: none;
   border-radius: var(--radius-sm);
-  background: #eef4ff;
-  color: #3b6fd1;
+  background: var(--color-primary-soft-bg);
+  color: var(--color-primary-strong);
   font-family: var(--font-sans);
   font-weight: 700;
   font-size: 15px;
@@ -175,8 +175,8 @@
   height: 44px;
   border: none;
   border-radius: var(--radius-sm);
-  background: #e8f0ff;
-  color: #3b6fd1;
+  background: var(--color-primary-soft-bg);
+  color: var(--color-primary-strong);
   font-size: 14px;
   font-weight: 700;
   transition: filter 0.12s ease;

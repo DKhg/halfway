@@ -6,13 +6,19 @@
   width: 100%;
   box-sizing: border-box;
   height: 52px;
-  border: none;
+  border: 1.5px solid transparent;
   border-radius: var(--radius-sm);
   padding: 0 14px;
   font-size: 17px;
   font-weight: 500;
   color: var(--color-ink);
   background: var(--color-surface-input);
+  transition: border-color 0.12s ease;
+}
+
+.station-autocomplete-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
 }
 
 .station-autocomplete-input:disabled {

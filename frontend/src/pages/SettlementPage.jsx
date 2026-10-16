@@ -18,6 +18,7 @@ import ConfirmModal from '../components/common/ConfirmModal'
 import Modal from '../components/common/Modal'
 import StepIndicator from '../components/common/StepIndicator'
 import { ROOM_FLOW_STEPS } from '../utils/roomSteps'
+import { formatMeetingDate } from '../utils/date'
 import './SettlementPage.css'
 
 const AUTO_REFRESH_INTERVAL_MS = 10000
@@ -52,6 +53,7 @@ function SettlementPage() {
   const [isSavingItem, setIsSavingItem] = useState(false)
   const [pendingDeleteItemId, setPendingDeleteItemId] = useState(null)
   const [accountCopied, setAccountCopied] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
   const [accountSaved, setAccountSaved] = useState(false)
   const [isItemModalOpen, setIsItemModalOpen] = useState(false)
   const [isStartConfirmOpen, setIsStartConfirmOpen] = useState(false)
@@ -291,6 +293,16 @@ function SettlementPage() {
     }
   }
 
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setLinkCopied(true)
+      setTimeout(() => setLinkCopied(false), 2000)
+    } catch {
+      setLinkCopied(false)
+    }
+  }
+
   const handleCopyAccount = async () => {
     if (!settlement?.payerAccountNumber) {
       return
@@ -340,6 +352,7 @@ function SettlementPage() {
   const myTotal = settlement?.totals.find((total) => total.participantId === me?.id)
   // 정산만 하기 모드는 역·장소 화면이 없어서 방 페이지로 돌아가면 바로 이 화면으로 되돌아와 버림 - 뒤로가기는 홈으로 보냄
   const isSettlementOnly = room.mode === 'SETTLEMENT_ONLY'
+  const grandTotal = settlement?.items.reduce((sum, item) => sum + item.amount, 0) ?? 0
 
   return (
     <div className="settlement-page">
@@ -348,6 +361,13 @@ function SettlementPage() {
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M15 5l-7 7 7 7" />
           </svg>
+        </button>
+        <button type="button" className="settlement-copy-btn" onClick={handleCopyLink}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
+            <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+          </svg>
+          {linkCopied ? '복사됨!' : '링크'}
         </button>
       </header>
 
@@ -378,32 +398,71 @@ function SettlementPage() {
         </button>
       ) : (
         <div className="settlement-panel">
-          <div className="settlement-payer-row">
-            <div className="settlement-payer-badge">총무: {settlement.payerNickname}</div>
-            {(room.owner || isPayer) && (
-              <button
-                type="button"
-                className="settlement-cancel-btn"
-                disabled={isCanceling}
-                onClick={() => setIsCancelConfirmOpen(true)}
-              >
-                {isCanceling ? '취소하는 중...' : '정산 취소'}
-              </button>
-            )}
+          <div className="settlement-hero-card">
+            <div className="settlement-hero-top">
+              <span className="settlement-hero-meta">
+                {room.mode === 'SETTLEMENT_ONLY' ? room.name : room.confirmedStationName}
+                {room.meetingDate ? ` · ${formatMeetingDate(room.meetingDate)}` : ''}
+              </span>
+              <span className="settlement-hero-payer-badge">총무 {settlement.payerNickname}</span>
+            </div>
+            <div className="settlement-hero-total-block">
+              <span className="settlement-hero-total-label">총 쓴 돈</span>
+              <span className="settlement-hero-total-amount">{grandTotal.toLocaleString()}원</span>
+            </div>
+          </div>
+
+          {(room.owner || isPayer) && (
+            <button
+              type="button"
+              className="settlement-cancel-btn"
+              disabled={isCanceling}
+              onClick={() => setIsCancelConfirmOpen(true)}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" />
+              </svg>
+              {isCanceling ? '취소하는 중...' : '정산 취소'}
+            </button>
+          )}
+
+          <div className="settlement-section-heading">
+            <h2>쓴 내역</h2>
+            <span>{settlement.items.length}건</span>
           </div>
 
           <div className="settlement-items">
             {settlement.items.length === 0 && (
-              <div className="settlement-progress-hint">아직 등록된 항목이 없어요.</div>
+              <div className="settlement-items-empty">아직 등록된 항목이 없어요</div>
             )}
-            {settlement.items.map((item) => (
-              <div key={item.id} className="settlement-item-card">
-                <div className="settlement-item-top">
-                  <span className="settlement-item-name">{item.name}</span>
+            {settlement.items.map((item, index) => (
+              <div key={item.id}>
+                {index > 0 && <div className="settlement-item-divider" />}
+                <div className="settlement-item-row">
+                  <span
+                    className={`settlement-item-icon${item.name === room.confirmedCafePlaceName ? ' settlement-item-icon--cafe' : ''}`}
+                    aria-hidden="true"
+                  >
+                    {item.name === room.confirmedFoodPlaceName ? (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.5 1-4 3.5-4 7v3h4" />
+                      </svg>
+                    ) : item.name === room.confirmedCafePlaceName ? (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9zM17 11h1.5a2.5 2.5 0 0 1 0 5H17" />
+                      </svg>
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M9 13h6M9 17h6" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="settlement-item-info">
+                    <span className="settlement-item-name">{item.name}</span>
+                    <span className="settlement-item-members">{item.participantNicknames.join(', ')}</span>
+                  </span>
                   <span className="settlement-item-amount">{item.amount.toLocaleString()}원</span>
-                </div>
-                <div className="settlement-item-members">{item.participantNicknames.join(', ')}</div>
-                <div className="settlement-item-actions">
                   <button
                     type="button"
                     aria-label="항목 수정"
@@ -414,7 +473,6 @@ function SettlementPage() {
                       <path d="M12 20h9" />
                       <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
                     </svg>
-                    수정
                   </button>
                   <button
                     type="button"
@@ -426,31 +484,44 @@ function SettlementPage() {
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />
                     </svg>
-                    삭제
                   </button>
                 </div>
               </div>
             ))}
+            <div className="settlement-item-divider" />
+            <button type="button" className="settlement-add-item-btn" onClick={handleOpenAddItemModal}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              항목 추가
+            </button>
           </div>
 
-          <button type="button" className="settlement-add-item-btn" onClick={handleOpenAddItemModal}>
-            + 항목 추가
-          </button>
+          <div className="settlement-section-heading">
+            <h2>각자 낼 금액</h2>
+          </div>
 
           <div className="settlement-totals">
-            <div className="settlement-totals-label">각자 낼 금액</div>
             {settlement.totals.map((total) => (
               <div key={total.participantId} className="settlement-total-row">
-                <span>
+                <span className="settlement-total-avatar">{total.nickname.charAt(0)}</span>
+                <span className="settlement-total-name">
                   {total.nickname}
-                  {total.payer ? ' (총무)' : ''}
+                  {total.payer && <span className="settlement-total-payer-label">총무</span>}
                 </span>
-                <span>{total.amount.toLocaleString()}원</span>
+                <span className="settlement-total-amount">{total.amount.toLocaleString()}원</span>
+                <span className={`settlement-total-tag${total.payer ? ' settlement-total-tag--payer' : ''}`}>
+                  {total.payer ? '받을 돈' : '보낼 돈'}
+                </span>
               </div>
             ))}
           </div>
 
           {isPayer ? (
+            <>
+            <div className="settlement-section-heading">
+              <h2>받을 계좌</h2>
+            </div>
             <div className="settlement-account-form">
               <BankSelect
                 value={settlementBank || settlement.payerBank || ''}
@@ -472,6 +543,7 @@ function SettlementPage() {
                 {accountSaved ? '저장됨!' : isSavingAccount ? '저장하는 중...' : '계좌 저장'}
               </button>
             </div>
+            </>
           ) : (
             myTotal && (
               <div className="settlement-pay-zone">

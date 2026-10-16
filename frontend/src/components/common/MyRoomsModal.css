@@ -40,6 +40,46 @@
   background: var(--color-divider);
 }
 
+.my-rooms-item-badge {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-rooms-item-badge--date {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.my-rooms-item-badge-month {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.my-rooms-item-badge-day {
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.my-rooms-item-badge--done {
+  background: var(--color-primary-soft-bg);
+  color: var(--color-primary-strong);
+}
+
+.my-rooms-item-badge--undated {
+  background: var(--color-surface-input);
+  color: var(--color-ink-soft);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .my-rooms-item-body {
   flex: 1;
   min-width: 0;
@@ -73,6 +113,16 @@
   font-weight: 700;
 }
 
+.my-rooms-confirmed-badge {
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--color-primary-soft-bg);
+  color: var(--color-primary-strong);
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .my-rooms-item-meta {
   display: flex;
   flex-wrap: wrap;
@@ -94,4 +144,32 @@
 .my-rooms-item-chevron {
   flex-shrink: 0;
   color: #b0b8c1;
+}
+
+.my-rooms-new-btn {
+  align-self: center;
+  margin-top: 4px;
+  height: 48px;
+  padding: 0 20px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow-cta);
+  transition: background-color 0.12s ease;
+}
+
+@media (hover: hover) {
+  .my-rooms-new-btn:hover {
+    background: var(--color-primary-strong);
+  }
+}
+
+.my-rooms-new-btn:active {
+  background: var(--color-primary-strong);
 }

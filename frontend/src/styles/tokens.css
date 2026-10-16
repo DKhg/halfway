@@ -18,14 +18,36 @@
   --color-ink-soft: #6b7684;
   --color-ink-label: #4e5968;
 
+  /* 보라(메인) 색 스케일 — 밝은 쪽 4단계, 기준색, 어두운 쪽 4단계 */
+  --color-primary-50: #f6f3fc;
+  --color-primary-100: #ede6fa;
+  --color-primary-200: #dbcbf6;
+  --color-primary-300: #bc9fef;
   --color-primary: #7b3fe4;
-  --color-primary-strong: #6a2fd6;
-  --color-primary-soft-bg: #f3eeff;
-  --color-primary-soft-border: #c9b3f5;
+  --color-primary-600: #6425d0;
+  --color-primary-700: #521ab3;
+  --color-primary-800: #411291;
+  --color-primary-900: #300c6e;
 
-  --color-accent-yellow: #ffe14d;
-  --color-accent-yellow-bg: #fbe8ae;
-  --color-accent-yellow-ink: #7a5900;
+  /* 기존 이름은 새 스케일을 가리키도록 정리 (호환용) */
+  --color-primary-strong: var(--color-primary-600);
+  --color-primary-soft-bg: var(--color-primary-100);
+  --color-primary-soft-border: var(--color-primary-300);
+
+  /* 노랑(서브) 색 스케일 — 밝은 쪽 4단계, 기준색, 어두운 쪽 4단계 */
+  --color-secondary-50: #fcfaee;
+  --color-secondary-100: #faf3d1;
+  --color-secondary-200: #faeda8;
+  --color-secondary-300: #fbe574;
+  --color-secondary: #ffe14d;
+  --color-secondary-600: #cbab0b;
+  --color-secondary-700: #a58b09;
+  --color-secondary-800: #836e07;
+  --color-secondary-900: #615205;
+
+  --color-accent-yellow: var(--color-secondary);
+  --color-accent-yellow-bg: var(--color-secondary-200);
+  --color-accent-yellow-ink: var(--color-secondary-800);
   --color-accent-pink: #7b3fe4;
   --color-accent-blue: #8fb2ff;
   --color-accent-green: #c5f27a;
@@ -49,6 +71,7 @@
   --radius-md: 14px;
   --radius-lg: 16px;
   --radius-xl: 20px;
+  --radius-2xl: 26px;
   --radius-pill: 999px;
 
   --shadow-hard-sm: none;
@@ -56,4 +79,8 @@
   --shadow-hard-lg: none;
   --shadow-hard-xl: none;
   --shadow-card: 0 16px 36px rgba(25, 31, 40, 0.08);
+  /* 보라 포인트 CTA·우승 카드·플로팅 뱃지에 쓰는 보라 톤 그림자 */
+  --shadow-cta: 0 10px 24px rgba(123, 63, 228, 0.28);
+  --shadow-winner: 0 8px 22px rgba(123, 63, 228, 0.14);
+  --shadow-pill: 0 4px 14px rgba(123, 63, 228, 0.18);
 }
