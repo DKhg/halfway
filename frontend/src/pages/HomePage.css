@@ -1,10 +1,10 @@
 .home-page {
   min-height: 100svh;
   box-sizing: border-box;
-  padding: var(--space-lg) 22px var(--space-xl);
+  padding: var(--space-md) 22px var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 20px;
   background: var(--color-bg);
   color: var(--color-ink);
 }
@@ -99,7 +99,7 @@
 .home-hero {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .home-illustration {
@@ -251,10 +251,10 @@
 .home-step-card {
   background: var(--color-surface-muted);
   border-radius: var(--radius-xl);
-  padding: 14px 12px;
+  padding: 12px 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .home-step-card-text {

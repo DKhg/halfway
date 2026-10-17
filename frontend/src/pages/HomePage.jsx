@@ -152,7 +152,7 @@ function HomePage() {
             <g className="home-illustration-connector" strokeWidth="2.5" strokeDasharray="2 7" strokeLinecap="round" fill="none">
               <path d="M58 52 C95 60 140 85 172 112" />
               <path d="M298 64 C260 70 215 92 188 112" />
-              <path d="M78 192 C110 170 150 150 174 128" />
+              <path d="M282 176 C250 154 210 134 186 112" />
             </g>
             <circle className="home-illustration-glow home-illustration-glow--outer" cx="180" cy="122" r="38" />
             <circle className="home-illustration-glow home-illustration-glow--inner" cx="180" cy="122" r="24" />
@@ -171,10 +171,10 @@ function HomePage() {
               <text className="home-illustration-avatar-text home-illustration-avatar-text--1" x="50" y="53">나</text>
               <circle className="home-illustration-avatar-ring" cx="304" cy="60" r="21" />
               <circle className="home-illustration-avatar-bg home-illustration-avatar-bg--2" cx="304" cy="60" r="17" />
-              <text className="home-illustration-avatar-text home-illustration-avatar-text--2" x="304" y="65">민</text>
-              <circle className="home-illustration-avatar-ring" cx="70" cy="196" r="21" />
-              <circle className="home-illustration-avatar-bg home-illustration-avatar-bg--3" cx="70" cy="196" r="17" />
-              <text className="home-illustration-avatar-text home-illustration-avatar-text--3" x="70" y="201">지</text>
+              <text className="home-illustration-avatar-text home-illustration-avatar-text--2" x="304" y="65">김</text>
+              <circle className="home-illustration-avatar-ring" cx="290" cy="180" r="21" />
+              <circle className="home-illustration-avatar-bg home-illustration-avatar-bg--3" cx="290" cy="180" r="17" />
+              <text className="home-illustration-avatar-text home-illustration-avatar-text--3" x="290" y="185">이</text>
             </g>
           </svg>
           <div className="home-illustration-badge">

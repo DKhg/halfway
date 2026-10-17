@@ -18,6 +18,12 @@
   justify-content: space-between;
 }
 
+.settlement-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .settlement-copy-btn {
   height: 44px;
   padding: 0 14px;
@@ -41,6 +47,30 @@
 
 .settlement-copy-btn:active {
   filter: brightness(0.92);
+}
+
+.settlement-delete-btn {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-input);
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.12s ease;
+}
+
+@media (hover: hover) {
+  .settlement-delete-btn:hover {
+    background: var(--color-divider);
+  }
+}
+
+.settlement-delete-btn:active {
+  background: var(--color-divider);
 }
 
 .settlement-back-btn {
@@ -625,7 +655,7 @@
 .settlement-pay-link {
   height: 48px;
   padding: 0 16px;
-  border: none;
+  border: 1.5px solid var(--color-primary-200);
   border-radius: var(--radius-md);
   background: var(--color-surface-input);
   color: var(--color-ink);

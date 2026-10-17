@@ -1207,8 +1207,10 @@ function JoinPage() {
                       .join(' · ')
                     return (
                       <div key={result.id} className="join-place-search-result-card">
-                        <div className="join-place-name">{result.name}</div>
-                        {meta && <div className="join-place-meta">{meta}</div>}
+                        <div className="join-place-info">
+                          <span className="join-place-name">{result.name}</span>
+                          {meta && <div className="join-place-meta">{meta}</div>}
+                        </div>
                         <div className="join-place-card-actions">
                           {result.placeUrl && (
                             <a
@@ -1217,7 +1219,11 @@ function JoinPage() {
                               target="_blank"
                               rel="noreferrer"
                             >
-                              카카오맵에서 보기
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z" />
+                                <circle cx="12" cy="10" r="2.2" />
+                              </svg>
+                              카카오맵
                             </a>
                           )}
                           <button
@@ -1597,7 +1603,16 @@ function JoinPage() {
         )}
 
         {addCommentTarget && (
-          <Modal title="한줄평 남기기" onClose={() => setAddCommentTarget(null)}>
+          <Modal
+            title="한줄평 남기기"
+            subtitle="다른 참여자에게 보여줄 짧은 메모예요"
+            icon={(
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+              </svg>
+            )}
+            onClose={() => setAddCommentTarget(null)}
+          >
             <p className="join-add-comment-place-name">{addCommentTarget.place.name}</p>
             <input
               type="text"
@@ -1732,31 +1747,30 @@ function JoinPage() {
       <div className="join-title-block">
         <h1>{room.name}</h1>
         <div className="join-status-pills">
-          <span className="join-status-pill join-status-pill--done">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M5 12.5l4.5 4.5L19 7.5" />
-            </svg>
-            {doneCount}/{totalCount} 입력 완료
-          </span>
-          <span className="join-status-pill">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
-              <rect x="3.5" y="5" width="17" height="15" rx="3" />
-              <path d="M3.5 10h17" />
-            </svg>
-            {formatMeetingDate(room.meetingDate) ?? '약속 날짜 미정'}
-          </span>
-          {(room.owner || me) && !room.settlementStarted && (
+          {(room.owner || me) && !room.settlementStarted ? (
             <button
               type="button"
-              className="join-meeting-date-edit-btn"
+              className="join-status-pill join-status-pill--date"
               disabled={isChangingMeetingDate}
               onClick={() => setIsDateModalOpen(true)}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                <rect x="3.5" y="5" width="17" height="15" rx="3" />
+                <path d="M3.5 10h17" />
+              </svg>
+              {formatMeetingDate(room.meetingDate) ?? '약속 날짜 미정'}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M4 20l1-4.5L16.5 4 20 7.5 8.5 19 4 20z" />
               </svg>
-              날짜 수정
             </button>
+          ) : (
+            <span className="join-status-pill">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                <rect x="3.5" y="5" width="17" height="15" rx="3" />
+                <path d="M3.5 10h17" />
+              </svg>
+              {formatMeetingDate(room.meetingDate) ?? '약속 날짜 미정'}
+            </span>
           )}
         </div>
         <p className="join-progress-hint">{hint}</p>
@@ -1780,8 +1794,10 @@ function JoinPage() {
             >
               {participant.nickname.charAt(0)}
             </span>
-            <span className="join-avatar-name">{participant.me ? '나' : participant.nickname}</span>
-            <span className="join-avatar-station">{participant.startStationName || '입력 전'}</span>
+            <span className="join-avatar-info">
+              <span className="join-avatar-name">{participant.me ? '나' : participant.nickname}</span>
+              <span className="join-avatar-station">{participant.startStationName || '입력 전'}</span>
+            </span>
           </div>
         ))}
       </div>

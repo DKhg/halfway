@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Capacitor } from '@capacitor/core'
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
-import { getRoom } from '../api/roomApi'
+import { deleteRoom, getRoom } from '../api/roomApi'
 import {
   addSettlementItem,
   cancelSettlement,
@@ -59,6 +59,7 @@ function SettlementPage() {
   const [isStartConfirmOpen, setIsStartConfirmOpen] = useState(false)
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
   const [isScanningReceipt, setIsScanningReceipt] = useState(false)
   const receiptInputRef = useRef(null)
 
@@ -143,6 +144,16 @@ function SettlementPage() {
     } catch (error) {
       setSettlementError(error.response?.data?.message || '정산을 취소하지 못했어요. 다시 시도해 주세요.')
       setIsCanceling(false)
+    }
+  }
+
+  const handleConfirmDeleteRoom = async () => {
+    setIsDeleteConfirmOpen(false)
+    try {
+      await deleteRoom(code)
+      navigate('/')
+    } catch {
+      setSettlementError('삭제하지 못했어요. 다시 시도해 주세요.')
     }
   }
 
@@ -362,13 +373,22 @@ function SettlementPage() {
             <path d="M15 5l-7 7 7 7" />
           </svg>
         </button>
-        <button type="button" className="settlement-copy-btn" onClick={handleCopyLink}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
-            <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
-          </svg>
-          {linkCopied ? '복사됨!' : '링크'}
-        </button>
+        <div className="settlement-header-actions">
+          <button type="button" className="settlement-copy-btn" onClick={handleCopyLink}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
+              <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+            </svg>
+            {linkCopied ? '복사됨!' : '링크'}
+          </button>
+          {room.owner && (
+            <button type="button" aria-label="방 삭제" className="settlement-delete-btn" onClick={() => setIsDeleteConfirmOpen(true)}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />
+              </svg>
+            </button>
+          )}
+        </div>
       </header>
 
       {room.mode !== 'SETTLEMENT_ONLY' && (
@@ -661,6 +681,18 @@ function SettlementPage() {
           danger
           onConfirm={handleCancelSettlement}
           onCancel={() => setIsCancelConfirmOpen(false)}
+        />
+      )}
+
+      {isDeleteConfirmOpen && (
+        <ConfirmModal
+          title="방 삭제"
+          message="정말 이 약속을 삭제할까요? 되돌릴 수 없어요."
+          confirmLabel="삭제"
+          cancelLabel="취소"
+          danger
+          onConfirm={handleConfirmDeleteRoom}
+          onCancel={() => setIsDeleteConfirmOpen(false)}
         />
       )}
     </div>

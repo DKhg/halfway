@@ -13,14 +13,16 @@ function MyPageModal({ onClose }) {
   const [loadError, setLoadError] = useState(null)
 
   const [nickname, setNickname] = useState('')
+  const [nicknameDraft, setNicknameDraft] = useState('')
+  const [isEditingNickname, setIsEditingNickname] = useState(false)
   const [isSavingNickname, setIsSavingNickname] = useState(false)
-  const [nicknameSaved, setNicknameSaved] = useState(false)
   const [nicknameError, setNicknameError] = useState(null)
 
   const [homeStation, setHomeStation] = useState('')
+  const [homeStationDraft, setHomeStationDraft] = useState('')
+  const [isEditingHomeStation, setIsEditingHomeStation] = useState(false)
   const [stationOptions, setStationOptions] = useState([])
   const [isSavingHomeStation, setIsSavingHomeStation] = useState(false)
-  const [homeStationSaved, setHomeStationSaved] = useState(false)
   const [homeStationError, setHomeStationError] = useState(null)
 
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
@@ -38,8 +40,14 @@ function MyPageModal({ onClose }) {
       .finally(() => setIsLoading(false))
   }, [])
 
+  const handleStartEditNickname = () => {
+    setNicknameDraft(nickname)
+    setNicknameError(null)
+    setIsEditingNickname(true)
+  }
+
   const handleSaveNickname = async () => {
-    const trimmed = nickname.trim()
+    const trimmed = nicknameDraft.trim()
     if (!trimmed || isSavingNickname) {
       return
     }
@@ -47,13 +55,19 @@ function MyPageModal({ onClose }) {
     setNicknameError(null)
     try {
       await updateNickname(trimmed)
-      setNicknameSaved(true)
-      setTimeout(() => setNicknameSaved(false), 2000)
+      setNickname(trimmed)
+      setIsEditingNickname(false)
     } catch (error) {
       setNicknameError(error.response?.data?.message || '저장하지 못했어요. 다시 시도해 주세요.')
     } finally {
       setIsSavingNickname(false)
     }
+  }
+
+  const handleStartEditHomeStation = () => {
+    setHomeStationDraft(homeStation)
+    setHomeStationError(null)
+    setIsEditingHomeStation(true)
   }
 
   const handleSaveHomeStation = async () => {
@@ -63,9 +77,9 @@ function MyPageModal({ onClose }) {
     setIsSavingHomeStation(true)
     setHomeStationError(null)
     try {
-      await updateHomeStation(homeStation.trim())
-      setHomeStationSaved(true)
-      setTimeout(() => setHomeStationSaved(false), 2000)
+      await updateHomeStation(homeStationDraft.trim())
+      setHomeStation(homeStationDraft.trim())
+      setIsEditingHomeStation(false)
     } catch (error) {
       setHomeStationError(
         error.response?.status === 400 ? '등록되지 않은 역 이름이에요.' : '저장하지 못했어요. 다시 시도해 주세요.',
@@ -107,84 +121,135 @@ function MyPageModal({ onClose }) {
             </div>
           </div>
 
-          <div className="my-page-section-label">자동 입력</div>
+          <div className="my-page-section-label">내 정보</div>
           <div className="my-page-list">
-            <div className="my-page-list-row my-page-list-row--editable">
-              <span className="my-page-list-row-icon my-page-list-row-icon--primary">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
-                </svg>
-              </span>
-              <div className="my-page-list-row-text">
-                <span className="my-page-list-row-title">기본 닉네임</span>
-                <span className="my-page-list-row-desc">방에 참여할 때 자동으로 채워져요</span>
-                <div className="my-page-field-row">
-                  <input
-                    id="my-page-nickname-input"
-                    type="text"
-                    placeholder="닉네임"
-                    className="my-page-input"
-                    maxLength={20}
-                    value={nickname}
-                    onChange={(e) => {
-                      setNickname(e.target.value)
-                      setNicknameError(null)
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="my-page-save-btn"
-                    disabled={!nickname.trim() || isSavingNickname}
-                    onClick={handleSaveNickname}
-                  >
-                    {isSavingNickname ? '저장 중' : nicknameSaved ? '저장됨' : '저장'}
+            <div className={`my-page-list-row${isEditingNickname ? ' my-page-list-row--editable' : ''}`}>
+              {isEditingNickname ? (
+                <>
+                  <div className="my-page-edit-head">
+                    <span className="my-page-list-row-icon my-page-list-row-icon--primary">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
+                      </svg>
+                    </span>
+                    <span className="my-page-list-row-title">닉네임</span>
+                  </div>
+                  <div className="my-page-field-row">
+                    <input
+                      id="my-page-nickname-input"
+                      type="text"
+                      placeholder="닉네임"
+                      className="my-page-input"
+                      maxLength={20}
+                      autoFocus
+                      value={nicknameDraft}
+                      onChange={(e) => {
+                        setNicknameDraft(e.target.value)
+                        setNicknameError(null)
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="my-page-save-btn"
+                      disabled={!nicknameDraft.trim() || isSavingNickname}
+                      onClick={handleSaveNickname}
+                    >
+                      {isSavingNickname ? '저장 중' : '저장'}
+                    </button>
+                  </div>
+                  {nicknameError && <div className="my-page-error">{nicknameError}</div>}
+                </>
+              ) : (
+                <>
+                  <span className="my-page-list-row-icon my-page-list-row-icon--primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
+                    </svg>
+                  </span>
+                  <div className="my-page-list-row-text">
+                    <span className="my-page-list-row-title">닉네임</span>
+                    <span className="my-page-list-row-desc">
+                      <span className="my-page-current-badge">현재</span>
+                      {nickname.trim() || '미설정'}
+                    </span>
+                  </div>
+                  <button type="button" className="my-page-change-btn" onClick={handleStartEditNickname}>
+                    바꾸기
                   </button>
-                </div>
-                {nicknameError && <div className="my-page-error">{nicknameError}</div>}
-              </div>
+                </>
+              )}
             </div>
 
             <div className="my-page-list-divider" />
 
-            <div className="my-page-list-row my-page-list-row--editable">
-              <span className="my-page-list-row-icon my-page-list-row-icon--yellow">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M4 11 12 4l8 7" />
-                  <path d="M5.5 10v10h13V10" />
-                </svg>
-              </span>
-              <div className="my-page-list-row-text">
-                <span className="my-page-list-row-title">귀가역</span>
-                <span className="my-page-list-row-desc">막차·귀가 고려 계산에 쓰여요</span>
-                <div className="my-page-field-row">
-                  <StationAutocompleteInput
-                    id="my-page-home-station-input"
-                    placeholder="귀가역 또는 초성(ㄱㄴ)"
-                    value={homeStation}
-                    onChange={(value) => {
-                      setHomeStation(value)
-                      setHomeStationError(null)
-                    }}
-                    stationOptions={stationOptions}
-                  />
-                  <button
-                    type="button"
-                    className="my-page-save-btn"
-                    disabled={isSavingHomeStation}
-                    onClick={handleSaveHomeStation}
-                  >
-                    {isSavingHomeStation ? '저장 중' : homeStationSaved ? '저장됨' : '저장'}
+            <div className={`my-page-list-row${isEditingHomeStation ? ' my-page-list-row--editable' : ''}`}>
+              {isEditingHomeStation ? (
+                <>
+                  <div className="my-page-edit-head">
+                    <span className="my-page-list-row-icon my-page-list-row-icon--yellow">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M4 11 12 4l8 7" />
+                        <path d="M5.5 10v10h13V10" />
+                      </svg>
+                    </span>
+                    <span className="my-page-list-row-title">귀가역</span>
+                  </div>
+                  <div className="my-page-field-row">
+                    <StationAutocompleteInput
+                      id="my-page-home-station-input"
+                      placeholder="귀가역 또는 초성(ㄱㄴ)"
+                      value={homeStationDraft}
+                      onChange={(value) => {
+                        setHomeStationDraft(value)
+                        setHomeStationError(null)
+                      }}
+                      stationOptions={stationOptions}
+                    />
+                    <button
+                      type="button"
+                      className="my-page-save-btn"
+                      disabled={isSavingHomeStation}
+                      onClick={handleSaveHomeStation}
+                    >
+                      {isSavingHomeStation ? '저장 중' : '저장'}
+                    </button>
+                  </div>
+                  {homeStationError && <div className="my-page-error">{homeStationError}</div>}
+                </>
+              ) : (
+                <>
+                  <span className="my-page-list-row-icon my-page-list-row-icon--yellow">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M4 11 12 4l8 7" />
+                      <path d="M5.5 10v10h13V10" />
+                    </svg>
+                  </span>
+                  <div className="my-page-list-row-text">
+                    <span className="my-page-list-row-title">귀가역</span>
+                    <span className="my-page-list-row-desc">
+                      <span className="my-page-current-badge">현재</span>
+                      {homeStation.trim() || '미설정'}
+                    </span>
+                  </div>
+                  <button type="button" className="my-page-change-btn" onClick={handleStartEditHomeStation}>
+                    바꾸기
                   </button>
-                </div>
-                {homeStationError && <div className="my-page-error">{homeStationError}</div>}
-              </div>
+                </>
+              )}
             </div>
           </div>
 
           <div className="my-page-section-label">정보</div>
           <div className="my-page-list">
             <Link to="/privacy" className="my-page-list-row" onClick={onClose}>
+              <span className="my-page-list-row-icon my-page-list-row-icon--blue">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" />
+                  <path d="M9 12l2 2 4-4" />
+                </svg>
+              </span>
               <span className="my-page-list-row-text">
                 <span className="my-page-list-row-title">개인정보처리방침</span>
               </span>
@@ -204,7 +269,7 @@ function MyPageModal({ onClose }) {
             >
               {isDeleting ? '삭제하는 중...' : '계정 삭제'}
             </button>
-            <p className="my-page-field-hint">익명 계정과 참여한 모든 약속 기록이 삭제되며 되돌릴 수 없어요</p>
+            <p className="my-page-field-hint">삭제하면 약속 기록이 모두 사라지고 되돌릴 수 없어요</p>
           </div>
         </>
       )}
