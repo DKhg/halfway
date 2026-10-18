@@ -14,7 +14,7 @@ export default defineConfig({
       // index.html에 등록 스크립트를 자동 주입하지 않음 — usePwaUpdate 훅에서 virtual:pwa-register를
       // 직접 호출해 업데이트 체크 주기·배너 노출을 제어하기 위함
       injectRegister: false,
-      includeAssets: ['favicon.png', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.png', 'apple-touch-icon.png', 'logo-mark.png'],
       manifest: {
         name: '어디서봄',
         short_name: '어디서봄',

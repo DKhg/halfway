@@ -28,11 +28,6 @@
   height: 32px;
   flex-shrink: 0;
   border-radius: var(--radius-sm);
-  background: var(--color-primary);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .home-logo {
