@@ -114,13 +114,6 @@ function MyPageModal({ onClose }) {
 
       {!isLoading && !loadError && (
         <>
-          <div className="my-page-profile-card">
-            <div className="my-page-avatar">{nickname.trim().charAt(0) || '?'}</div>
-            <div className="my-page-profile-text">
-              <div className="my-page-profile-name">{nickname.trim() || '닉네임 미설정'}</div>
-            </div>
-          </div>
-
           <div className="my-page-section-label">내 정보</div>
           <div className="my-page-list">
             <div className={`my-page-list-row${isEditingNickname ? ' my-page-list-row--editable' : ''}`}>

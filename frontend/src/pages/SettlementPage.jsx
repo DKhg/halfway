@@ -18,7 +18,6 @@ import ConfirmModal from '../components/common/ConfirmModal'
 import Modal from '../components/common/Modal'
 import StepIndicator from '../components/common/StepIndicator'
 import { ROOM_FLOW_STEPS } from '../utils/roomSteps'
-import { formatMeetingDate } from '../utils/date'
 import './SettlementPage.css'
 
 const AUTO_REFRESH_INTERVAL_MS = 10000
@@ -418,37 +417,26 @@ function SettlementPage() {
         </button>
       ) : (
         <div className="settlement-panel">
-          <div className="settlement-hero-card">
-            <div className="settlement-hero-top">
-              <span className="settlement-hero-meta">
-                {room.mode === 'SETTLEMENT_ONLY' ? room.name : room.confirmedStationName}
-                {room.meetingDate ? ` · ${formatMeetingDate(room.meetingDate)}` : ''}
-              </span>
-              <span className="settlement-hero-payer-badge">총무 {settlement.payerNickname}</span>
-            </div>
-            <div className="settlement-hero-total-block">
-              <span className="settlement-hero-total-label">총 쓴 돈</span>
-              <span className="settlement-hero-total-amount">{grandTotal.toLocaleString()}원</span>
-            </div>
+          <div className="settlement-hero-top">
+            <span className="settlement-hero-payer-badge">👑 총무 {settlement.payerNickname}</span>
+            {(room.owner || isPayer) && (
+              <button
+                type="button"
+                className="settlement-cancel-btn"
+                disabled={isCanceling}
+                onClick={() => setIsCancelConfirmOpen(true)}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" />
+                </svg>
+                {isCanceling ? '취소하는 중...' : '정산 취소'}
+              </button>
+            )}
           </div>
-
-          {(room.owner || isPayer) && (
-            <button
-              type="button"
-              className="settlement-cancel-btn"
-              disabled={isCanceling}
-              onClick={() => setIsCancelConfirmOpen(true)}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" />
-              </svg>
-              {isCanceling ? '취소하는 중...' : '정산 취소'}
-            </button>
-          )}
 
           <div className="settlement-section-heading">
             <h2>쓴 내역</h2>
-            <span>{settlement.items.length}건</span>
+            <span>총 {grandTotal.toLocaleString()}원 · {settlement.items.length}건</span>
           </div>
 
           <div className="settlement-items">
@@ -527,7 +515,7 @@ function SettlementPage() {
                 <span className="settlement-total-avatar">{total.nickname.charAt(0)}</span>
                 <span className="settlement-total-name">
                   {total.nickname}
-                  {total.payer && <span className="settlement-total-payer-label">총무</span>}
+                  {total.payer && <span className="settlement-total-payer-label">👑 총무</span>}
                 </span>
                 <span className="settlement-total-amount">{total.amount.toLocaleString()}원</span>
                 <span className={`settlement-total-tag${total.payer ? ' settlement-total-tag--payer' : ''}`}>

@@ -114,8 +114,8 @@ function JoinPage() {
   const [isSavingFixedStation, setIsSavingFixedStation] = useState(false)
 
   const [activePlaceCategory, setActivePlaceCategory] = useState('FOOD')
-  // 한쪽 카테고리만 확정된 상태에서 "2차 ○○도 고를까요?" 카드를 눌러 나머지 카테고리를 고르러 들어온 중인지
-  const [isChoosingPendingCategory, setIsChoosingPendingCategory] = useState(false)
+  // 확정된 화면에서 뒤로가기로 목록을 다시 보고 있는 중인지 (다른 곳으로 바꾸거나 확정 취소하러 들어온 상태)
+  const [isBrowsingPlaces, setIsBrowsingPlaces] = useState(false)
   const [foodSubCategory, setFoodSubCategory] = useState('KOREAN')
   const [cafeSubCategory, setCafeSubCategory] = useState('RECOMMEND')
   const [foodOptions, setFoodOptions] = useState([])
@@ -324,8 +324,8 @@ function JoinPage() {
   // 음식점 탭을 보고 있고 아직 안 골랐으면 선택된 세부 카테고리의 실제 장소 목록을 불러옴
   // room 전체가 아니라 필요한 값만 의존성으로 둬서, 10초 자동 조회마다 카카오 API를 다시 부르지 않게 함
   useEffect(() => {
-    if (!room || room.status !== 'CONFIRMED' || room.confirmedFoodPlaceName || activePlaceCategory !== 'FOOD'
-      || foodSubCategory === 'POOL') {
+    if (!room || room.status !== 'CONFIRMED' || (room.confirmedFoodPlaceName && !isBrowsingPlaces)
+      || activePlaceCategory !== 'FOOD' || foodSubCategory === 'POOL') {
       return
     }
     const isCustomTab = foodSubCategory === 'CUSTOM'
@@ -336,12 +336,12 @@ function JoinPage() {
       .catch(() => setPlacesError('장소 목록을 불러오지 못했어요.'))
       .finally(() => setIsFoodLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room?.status, room?.confirmedFoodPlaceName, code, foodSubCategory, activePlaceCategory])
+  }, [room?.status, room?.confirmedFoodPlaceName, code, foodSubCategory, activePlaceCategory, isBrowsingPlaces])
 
   // 카페 탭을 보고 있고 아직 안 골랐으면 실제 장소 목록을 불러옴
   useEffect(() => {
-    if (!room || room.status !== 'CONFIRMED' || room.confirmedCafePlaceName || activePlaceCategory !== 'CAFE'
-      || cafeSubCategory === 'POOL') {
+    if (!room || room.status !== 'CONFIRMED' || (room.confirmedCafePlaceName && !isBrowsingPlaces)
+      || activePlaceCategory !== 'CAFE' || cafeSubCategory === 'POOL') {
       return
     }
     const isCustomTab = cafeSubCategory === 'CUSTOM'
@@ -352,7 +352,7 @@ function JoinPage() {
       .catch(() => setPlacesError('장소 목록을 불러오지 못했어요.'))
       .finally(() => setIsCafeLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room?.status, room?.confirmedCafePlaceName, code, cafeSubCategory, activePlaceCategory])
+  }, [room?.status, room?.confirmedCafePlaceName, code, cafeSubCategory, activePlaceCategory, isBrowsingPlaces])
 
   // "다른 모임에서 추가" 탭을 보고 있으면 같은 역의 가게 풀을 불러옴 (득표·확정까지 바로 가능한 후보로 취급)
   useEffect(() => {
@@ -361,14 +361,14 @@ function JoinPage() {
     }
     const confirmedName = activePlaceCategory === 'FOOD' ? room.confirmedFoodPlaceName : room.confirmedCafePlaceName
     const isPoolTab = activePlaceCategory === 'FOOD' ? foodSubCategory === 'POOL' : cafeSubCategory === 'POOL'
-    if (confirmedName || !isPoolTab) {
+    if ((confirmedName && !isBrowsingPlaces) || !isPoolTab) {
       return
     }
     getPoolSuggestions(code, activePlaceCategory)
       .then(setPoolSuggestions)
       .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room?.status, room?.confirmedFoodPlaceName, room?.confirmedCafePlaceName, code, foodSubCategory, cafeSubCategory, activePlaceCategory])
+  }, [room?.status, room?.confirmedFoodPlaceName, room?.confirmedCafePlaceName, code, foodSubCategory, cafeSubCategory, activePlaceCategory, isBrowsingPlaces])
 
   // 정산만 하기 모드는 역·장소 화면이 없어서, 참여하자마자(또는 이미 참여한 채로 재방문하면) 바로 정산 화면으로 보냄
   const settlementOnlyMeId = room?.mode === 'SETTLEMENT_ONLY'
@@ -866,6 +866,8 @@ function JoinPage() {
   const me = room.participants.find((participant) => participant.me)
   const doneCount = room.participants.filter((participant) => participant.startStationName).length
   const totalCount = room.participants.length
+  // 음식점·카페 중 하나라도 확정됐는지 (장소 목록 화면에서 "확정 결과 보기" 노출 여부에도 씀)
+  const isPlaceStillConfirmed = Boolean(room.confirmedFoodPlaceName || room.confirmedCafePlaceName)
 
   // 역 목록을 못 가져왔으면 자동완성 없이도 입력할 수 있게 검증을 건너뜀
   const isKnownStationName = (name) => !stationNamesLoaded || stationOptions.length === 0
@@ -912,16 +914,6 @@ function JoinPage() {
             </svg>
             {label} 확정
           </span>
-          {room.owner && (
-            <button
-              type="button"
-              className="join-confirmed-summary-clear"
-              disabled={isClearingPlace}
-              onClick={() => handleClearPlace(category)}
-            >
-              확정 취소
-            </button>
-          )}
         </div>
         <span className="join-confirmed-summary-name">{placeName}</span>
         <div className="join-confirmed-summary-actions">
@@ -952,7 +944,7 @@ function JoinPage() {
       className="join-pending-category-card"
       onClick={() => {
         setActivePlaceCategory(category)
-        setIsChoosingPendingCategory(true)
+        setIsBrowsingPlaces(true)
       }}
     >
       <span className="join-pending-category-icon" aria-hidden="true">
@@ -989,12 +981,24 @@ function JoinPage() {
     const maxVoteCount = Math.max(0, ...displayedOptions.map((place) => place.voteCount))
     return (
     <div className="join-confirmed-place-section">
-      {confirmedName ? (
+      {confirmedName && !isBrowsingPlaces ? (
         renderConfirmedSummaryCard(category, category === 'FOOD' ? '음식점' : '카페', confirmedName)
       ) : (
         <div className="join-place-picker">
           <div className="join-place-category-frame">
             <span className="join-place-category-label">카테고리</span>
+            {isBrowsingPlaces && isPlaceStillConfirmed && (
+              <button
+                type="button"
+                className="join-view-confirmed-btn"
+                onClick={() => setIsBrowsingPlaces(false)}
+              >
+                확정 결과 보기
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
 
             {category === 'CAFE' ? (
               // 카페는 하위 카테고리가 "추천" 하나뿐이라 관리용 탭까지 한 줄에 붙임
@@ -1064,8 +1068,18 @@ function JoinPage() {
               return (
                 <div
                   key={place.id}
-                  className={`join-place-card join-place-card--${category.toLowerCase()}${isTopVoted ? ' join-place-card--top' : ''}`}
+                  className={`join-place-card join-place-card--${category.toLowerCase()}${(isTopVoted || place.name === confirmedName) ? ' join-place-card--top' : ''}`}
                 >
+                  {place.name === confirmedName && (
+                    <div className="join-place-confirmed-ribbon">
+                      <span className="join-place-confirmed-ribbon-check" aria-hidden="true">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12.5l4.5 4.5L19 7.5" />
+                        </svg>
+                      </span>
+                      확정
+                    </div>
+                  )}
                   <div className="join-place-card-top">
                     <span className="join-place-icon" aria-hidden="true">
                       {category === 'FOOD' ? (
@@ -1086,7 +1100,7 @@ function JoinPage() {
                       </div>
                       {meta && <div className="join-place-meta">{meta}</div>}
                     </div>
-                    {place.custom && !isPoolTab && (place.addedByMe || room.owner) && (
+                    {place.custom && !isPoolTab && place.name !== confirmedName && (place.addedByMe || room.owner) && (
                       <button
                         type="button"
                         aria-label="삭제"
@@ -1147,19 +1161,30 @@ function JoinPage() {
                       </a>
                     )}
                     {room.owner && (
-                      <button
-                        type="button"
-                        className={`join-place-choose-btn${isTopVoted ? '' : ' join-place-choose-btn--ghost'}`}
-                        disabled={isConfirmingPlace}
-                        onClick={() => handleConfirmPlace(category, place.name)}
-                      >
-                        <span className="join-place-choose-btn-badge" aria-hidden="true">
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 12.5l4.5 4.5L19 7.5" />
-                          </svg>
-                        </span>
-                        여기로 확정
-                      </button>
+                      place.name === confirmedName ? (
+                        <button
+                          type="button"
+                          className="join-place-choose-btn join-place-choose-btn--cancel"
+                          disabled={isClearingPlace}
+                          onClick={() => handleClearPlace(category)}
+                        >
+                          확정 취소
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className={`join-place-choose-btn${isTopVoted ? '' : ' join-place-choose-btn--ghost'}`}
+                          disabled={isConfirmingPlace}
+                          onClick={() => handleConfirmPlace(category, place.name)}
+                        >
+                          <span className="join-place-choose-btn-badge" aria-hidden="true">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M5 12.5l4.5 4.5L19 7.5" />
+                            </svg>
+                          </span>
+                          여기로 확정
+                        </button>
+                      )
                     )}
                   </div>
                 </div>
@@ -1259,9 +1284,9 @@ function JoinPage() {
     hint = '다른 참여자 입력을 기다리는 중'
   }
 
-  const header = (
+  const renderHeader = (onBack) => (
     <header className="join-header">
-      <button type="button" aria-label="뒤로" className="join-back-btn" onClick={() => navigate('/')}>
+      <button type="button" aria-label="뒤로" className="join-back-btn" onClick={onBack}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M15 5l-7 7 7 7" />
         </svg>
@@ -1336,7 +1361,7 @@ function JoinPage() {
   if (room.mode === 'SETTLEMENT_ONLY') {
     return (
       <div className="join-page">
-        {header}
+        {renderHeader(() => navigate('/'))}
 
         <div className="join-title-block">
           <h1>{room.name}</h1>
@@ -1387,7 +1412,6 @@ function JoinPage() {
   }
 
   if (room.status === 'CONFIRMED') {
-    const isPlaceStillConfirmed = Boolean(room.confirmedFoodPlaceName || room.confirmedCafePlaceName)
     const includedCategoryTabs = PLACE_MAIN_CATEGORY_TABS.filter((tab) =>
       tab.key === 'FOOD' ? room.includesFood : room.includesCafe)
     const activeIncludedCategory = includedCategoryTabs.some((tab) => tab.key === activePlaceCategory)
@@ -1396,10 +1420,20 @@ function JoinPage() {
     const allNeededPlacesConfirmed = (!room.includesFood || room.confirmedFoodPlaceName)
       && (!room.includesCafe || room.confirmedCafePlaceName)
     const isFixed = room.mode === 'FIXED'
+    // 뒤로가기로 확정 화면 대신 음식점/카페 목록을 보고 있는 중인지 (고를 게 남았으면 처음부터 목록 상태)
+    const isShowingPlacePicker = isBrowsingPlaces || (!allNeededPlacesConfirmed && !isPlaceStillConfirmed)
+    // 확정 화면 → 뒤로가기 → 목록, 목록 → 뒤로가기 → 홈 (목록과 확정 화면을 계속 왔다갔다하지 않게 한 방향으로만 진행)
+    const handleConfirmedBack = () => {
+      if (!isBrowsingPlaces && isPlaceStillConfirmed) {
+        setIsBrowsingPlaces(true)
+      } else {
+        navigate('/')
+      }
+    }
 
     return (
       <div className="join-page">
-        {header}
+        {renderHeader(handleConfirmedBack)}
 
         <div className="join-confirmed-block">
           <StepIndicator
@@ -1451,21 +1485,7 @@ function JoinPage() {
             </div>
           )}
 
-          {me && (allNeededPlacesConfirmed ? (
-            <div className="join-confirmed-summary">
-              {room.includesFood && renderConfirmedSummaryCard('FOOD', '음식점', room.confirmedFoodPlaceName)}
-              {room.includesCafe && renderConfirmedSummaryCard('CAFE', '카페', room.confirmedCafePlaceName)}
-            </div>
-          ) : isPlaceStillConfirmed && !isChoosingPendingCategory ? (
-            <div className="join-confirmed-summary">
-              {room.includesFood && (room.confirmedFoodPlaceName
-                ? renderConfirmedSummaryCard('FOOD', '음식점', room.confirmedFoodPlaceName)
-                : renderPendingCategoryNudge('FOOD', '음식점'))}
-              {room.includesCafe && (room.confirmedCafePlaceName
-                ? renderConfirmedSummaryCard('CAFE', '카페', room.confirmedCafePlaceName)
-                : renderPendingCategoryNudge('CAFE', '카페'))}
-            </div>
-          ) : (
+          {me && (isShowingPlacePicker ? (
             <>
               {includedCategoryTabs.length > 1 && (
                 <div className="join-place-main-tabs">
@@ -1489,12 +1509,26 @@ function JoinPage() {
                 : renderPlaceCategory('CAFE', room.confirmedCafePlaceName, cafeOptions, isCafeLoading,
                   CAFE_SUB_CATEGORY_TABS, cafeSubCategory, setCafeSubCategory)}
             </>
+          ) : allNeededPlacesConfirmed ? (
+            <div className="join-confirmed-summary">
+              {room.includesFood && renderConfirmedSummaryCard('FOOD', '음식점', room.confirmedFoodPlaceName)}
+              {room.includesCafe && renderConfirmedSummaryCard('CAFE', '카페', room.confirmedCafePlaceName)}
+            </div>
+          ) : (
+            <div className="join-confirmed-summary">
+              {room.includesFood && (room.confirmedFoodPlaceName
+                ? renderConfirmedSummaryCard('FOOD', '음식점', room.confirmedFoodPlaceName)
+                : renderPendingCategoryNudge('FOOD', '음식점'))}
+              {room.includesCafe && (room.confirmedCafePlaceName
+                ? renderConfirmedSummaryCard('CAFE', '카페', room.confirmedCafePlaceName)
+                : renderPendingCategoryNudge('CAFE', '카페'))}
+            </div>
           ))}
 
           {actionError && <div className="join-error">{actionError}</div>}
           {placesError && <div className="join-error">{placesError}</div>}
 
-          {room.owner && isFixed && (
+          {isShowingPlacePicker && room.owner && isFixed && (
             <div className="join-unconfirm-zone" id="join-unconfirm-zone">
               {isEditingFixedStation ? (
                 <>
@@ -1541,7 +1575,7 @@ function JoinPage() {
             </div>
           )}
 
-          {room.owner && !isFixed && (
+          {isShowingPlacePicker && room.owner && !isFixed && (
             <div className="join-unconfirm-zone" id="join-unconfirm-zone">
               <button
                 type="button"
@@ -1742,7 +1776,7 @@ function JoinPage() {
 
   return (
     <div className="join-page">
-      {header}
+      {renderHeader(() => navigate('/'))}
 
       <div className="join-title-block">
         <h1>{room.name}</h1>

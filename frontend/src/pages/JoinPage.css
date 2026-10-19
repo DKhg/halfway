@@ -1000,23 +1000,28 @@
 .join-unconfirm-btn {
   height: 40px;
   padding: 0 16px;
-  border: none;
+  border: 1.5px solid var(--color-primary-200);
   border-radius: var(--radius-pill);
-  background: var(--color-surface-input);
-  color: var(--color-ink);
+  background: var(--color-surface);
+  color: var(--color-primary-strong);
   font-size: 13px;
   font-weight: 700;
   transition: background-color 0.1s ease;
 }
 
+.join-unconfirm-btn:disabled {
+  border-color: var(--color-divider);
+  color: var(--color-ink-soft);
+}
+
 @media (hover: hover) {
   .join-unconfirm-btn:not(:disabled):hover {
-    background: var(--color-divider);
+    background: var(--color-primary-soft-bg);
   }
 }
 
 .join-unconfirm-btn:not(:disabled):active {
-  background: var(--color-divider);
+  background: var(--color-primary-soft-bg);
 }
 
 .join-fixed-station-actions {
@@ -1038,6 +1043,7 @@
   align-items: center;
   gap: 10px;
 }
+
 
 .join-place-main-tabs {
   display: flex;
@@ -1103,6 +1109,34 @@
   color: var(--color-accent-yellow-ink);
   font-size: 12px;
   font-weight: 700;
+}
+
+.join-view-confirmed-btn {
+  position: absolute;
+  top: -14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 10px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: var(--shadow-pill);
+  transition: background-color 0.1s ease;
+}
+
+@media (hover: hover) {
+  .join-view-confirmed-btn:hover {
+    background: var(--color-primary-strong);
+  }
+}
+
+.join-view-confirmed-btn:active {
+  background: var(--color-primary-strong);
 }
 
 .join-place-tabs {
@@ -1204,6 +1238,7 @@
 }
 
 .join-place-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1298,6 +1333,29 @@
 .join-place-name {
   font-size: 17px;
   font-weight: 800;
+}
+
+.join-place-confirmed-ribbon {
+  position: absolute;
+  top: -1px;
+  right: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 6px 8px 9px;
+  border-radius: 0 0 8px 8px;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 4px 10px -4px rgba(91, 33, 182, 0.6);
+}
+
+.join-place-confirmed-ribbon-check {
+  display: flex;
+  color: var(--color-secondary);
 }
 
 .join-place-top-badge {
@@ -1445,6 +1503,22 @@
 
 .join-place-choose-btn--ghost:not(:disabled):active {
   background: var(--color-primary-soft-bg);
+}
+
+.join-place-choose-btn--cancel {
+  border: 1.5px solid var(--color-accent-red-soft);
+  background: var(--color-surface);
+  color: var(--color-accent-red);
+}
+
+@media (hover: hover) {
+  .join-place-choose-btn--cancel:not(:disabled):hover {
+    background: var(--color-accent-red-soft);
+  }
+}
+
+.join-place-choose-btn--cancel:not(:disabled):active {
+  background: var(--color-accent-red-soft);
 }
 
 .join-place-search {
@@ -1784,36 +1858,14 @@
   color: var(--color-accent-yellow-ink);
 }
 
-.join-confirmed-summary-clear {
-  flex-shrink: 0;
-  height: 30px;
-  padding: 0 12px;
-  border: none;
-  border-radius: var(--radius-pill);
-  background: #ffffff;
-  color: var(--color-primary-strong);
-  font-size: 12.5px;
-  font-weight: 800;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  transition: background-color 0.12s ease;
-}
-
 @media (hover: hover) {
   .join-confirmed-summary-link:hover {
     filter: brightness(0.96);
-  }
-
-  .join-confirmed-summary-clear:not(:disabled):hover {
-    background: var(--color-primary-50);
   }
 }
 
 .join-confirmed-summary-link:active {
   filter: brightness(0.92);
-}
-
-.join-confirmed-summary-clear:not(:disabled):active {
-  background: var(--color-primary-50);
 }
 
 .join-lasttrain-field {
