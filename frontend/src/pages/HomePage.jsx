@@ -106,10 +106,7 @@ function HomePage() {
     <div className="home-page">
       <header className="home-header">
         <div className="home-logo-group">
-          <img src="/logo-mark.png" alt="" className="home-logo-icon" aria-hidden="true" />
-          <span className="home-logo">
-            어디서<span className="home-logo-accent">봄?</span>
-          </span>
+          <img src="/logo-mark.png" alt="어디서봄?" className="home-logo-icon" />
         </div>
         <div className="home-header-actions">
           <button type="button" className="home-my-rooms-btn" onClick={() => setIsMyRoomsOpen(true)}>
