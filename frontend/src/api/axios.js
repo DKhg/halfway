@@ -1,11 +1,12 @@
 import axios from 'axios'
-import { Capacitor } from '@capacitor/core'
-import { getToken } from '../utils/authToken'
+import { clearToken, getToken } from '../utils/authToken'
 import { endRequest, startRequest } from '../utils/loadingBus'
 
-// 네이티브 앱에서만 벌어지는 API 응답 문제를 진단하기 위해, 운영(prod) 빌드에서도
-// 네이티브 플랫폼일 때는 로그를 찍음 — 원인 파악 후 제거할 임시 코드
-const shouldLogApi = import.meta.env.DEV || Capacitor.isNativePlatform()
+const shouldLogApi = import.meta.env.DEV
+
+// 저장된 토큰이 서버에 없는(폰에만 남아있던 옛 토큰 등) 경우 401이 한 번 나면 이후 모든 인증 요청이 계속 막히므로,
+// 세션당 한 번만 토큰을 지우고 새로 고쳐서 재발급을 유도. 재발급 후에도 또 401이면 루프 돌지 않고 그대로 둠
+const TOKEN_RECOVERY_FLAG = 'halfway_token_recovery_attempted'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api',
@@ -43,6 +44,11 @@ api.interceptors.response.use(
   },
   (error) => {
     endRequest()
+    if (error.response?.status === 401 && getToken() && !sessionStorage.getItem(TOKEN_RECOVERY_FLAG)) {
+      sessionStorage.setItem(TOKEN_RECOVERY_FLAG, '1')
+      clearToken()
+      window.location.reload()
+    }
     return Promise.reject(error)
   },
 )
