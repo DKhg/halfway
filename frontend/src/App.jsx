@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import { useAnonymousUser } from './hooks/useAnonymousUser'
+import { useBackButton } from './hooks/useBackButton'
 import { useDeepLink } from './hooks/useDeepLink'
 import { usePwaUpdate } from './hooks/usePwaUpdate'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
@@ -13,6 +14,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 
 function App() {
   const { isReady, error } = useAnonymousUser()
+  useBackButton()
   useDeepLink()
   usePwaUpdate()
   useInstallPrompt()

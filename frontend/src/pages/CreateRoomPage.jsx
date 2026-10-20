@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Capacitor } from '@capacitor/core'
+import { Share } from '@capacitor/share'
 import { createRoom } from '../api/roomApi'
 import { getAllStationNames } from '../api/stationApi'
 import DateCalendarModal from '../components/common/DateCalendarModal'
@@ -64,6 +66,16 @@ function CreateRoomPage() {
   const shareLink = room ? `${getPublicOrigin()}/rooms/${room.code}` : ''
 
   const handleShare = async () => {
+    // 웹뷰의 navigator.share는 기기·시스템 웹뷰 버전에 따라 없거나 불안정해서,
+    // 네이티브 앱에서는 Capacitor 공식 플러그인으로 공유 시트를 띄움
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await Share.share({ title: room.name, url: shareLink })
+      } catch {
+        // 사용자가 공유 시트를 취소한 경우, 별도 처리 없음
+      }
+      return
+    }
     if (navigator.share) {
       try {
         await navigator.share({ title: room.name, url: shareLink })
