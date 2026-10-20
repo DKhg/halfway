@@ -1,0 +1,50 @@
+workflows:
+  ios-capacitor:
+    name: iOS Capacitor Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.hong.halfway
+      vars:
+        XCODE_WORKSPACE: "frontend/ios/App/App.xcworkspace"
+        XCODE_SCHEME: "App"
+      node: 20.19.0
+    scripts:
+      - name: npm install
+        script: |
+          cd frontend
+          npm ci
+      - name: 웹 빌드 후 iOS 프로젝트에 동기화
+        script: |
+          cd frontend
+          npm run build:ios
+      - name: Xcode 프로젝트 서명 설정
+        script: |
+          xcode-project use-profiles
+      - name: 빌드 번호 설정
+        script: |
+          cd frontend/ios/App
+          agvtool new-version -all $CM_BUILD_NUMBER
+      - name: ipa 빌드
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - frontend/ios/App/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - rhghdrms10@gmail.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false
