@@ -86,8 +86,8 @@ function MyRoomsModal({ onClose }) {
                       {room.status === 'CONFIRMED' && <span className="my-rooms-confirmed-badge">확정</span>}
                     </span>
                     <span className="my-rooms-item-meta">
-                      <span className={`my-rooms-item-status my-rooms-item-status--${room.status.toLowerCase()}`}>
-                        {STATUS_LABEL[room.status]}
+                      <span className={`my-rooms-item-status my-rooms-item-status--${(room.status ?? '').toLowerCase()}`}>
+                        {STATUS_LABEL[room.status] ?? room.status}
                       </span>
                       <span>·</span>
                       <span>참여자 {room.participantCount}명</span>

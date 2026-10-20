@@ -83,6 +83,9 @@ export function getLineColor(line) {
 }
 
 export function getLineLabel(line) {
+  if (typeof line !== 'string') {
+    return ''
+  }
   if (LINE_LABELS[line]) {
     return LINE_LABELS[line]
   }

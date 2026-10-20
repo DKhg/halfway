@@ -17,6 +17,7 @@ import BankSelect from '../components/common/BankSelect'
 import ConfirmModal from '../components/common/ConfirmModal'
 import Modal from '../components/common/Modal'
 import StepIndicator from '../components/common/StepIndicator'
+import { openAppOrFallback } from '../utils/appLink'
 import { ROOM_FLOW_STEPS } from '../utils/roomSteps'
 import './SettlementPage.css'
 
@@ -53,6 +54,7 @@ function SettlementPage() {
   const [pendingDeleteItemId, setPendingDeleteItemId] = useState(null)
   const [accountCopied, setAccountCopied] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
+  const [payAppHint, setPayAppHint] = useState(null)
   const [accountSaved, setAccountSaved] = useState(false)
   const [isItemModalOpen, setIsItemModalOpen] = useState(false)
   const [isStartConfirmOpen, setIsStartConfirmOpen] = useState(false)
@@ -333,6 +335,22 @@ function SettlementPage() {
     return `supertoss://send?bank=${encodeURIComponent(normalizedBank)}&accountNo=${normalizedAccountNumber}&amount=${amount}`
   }
 
+  // 토스·카카오톡 앱이 안 깔려있으면 딥링크가 조용히 아무 반응 없이 끝나버려서, 안내 문구로 대체
+  const handleOpenToss = () => {
+    setPayAppHint(null)
+    openAppOrFallback(
+      buildTossLink(settlement.payerBank, settlement.payerAccountNumber, myTotal.amount),
+      () => setPayAppHint('토스 앱이 설치되어 있지 않아요. 계좌번호를 복사해서 보내주세요.'),
+    )
+  }
+
+  const handleOpenKakaoPay = () => {
+    setPayAppHint(null)
+    openAppOrFallback('kakaotalk://kakaopay/home', () =>
+      setPayAppHint('카카오톡 앱이 설치되어 있지 않아요. 계좌번호를 복사해서 보내주세요.'),
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="settlement-page">
@@ -559,20 +577,20 @@ function SettlementPage() {
                   {settlement.payerNickname}님에게 {myTotal.amount.toLocaleString()}원 보내면 돼요
                 </div>
                 {settlement.payerBank && settlement.payerAccountNumber ? (
-                  <div className="settlement-pay-links">
-                    <a
-                      className="settlement-pay-link settlement-pay-link--toss"
-                      href={buildTossLink(settlement.payerBank, settlement.payerAccountNumber, myTotal.amount)}
-                    >
-                      토스로 송금
-                    </a>
-                    <a className="settlement-pay-link settlement-pay-link--kakao" href="kakaotalk://kakaopay/home" target="_blank" rel="noreferrer">
-                      카카오페이 열기
-                    </a>
-                    <button type="button" className="settlement-pay-link settlement-pay-link--copy" onClick={handleCopyAccount}>
-                      {accountCopied ? '복사됨!' : '계좌번호 복사'}
-                    </button>
-                  </div>
+                  <>
+                    <div className="settlement-pay-links">
+                      <button type="button" className="settlement-pay-link settlement-pay-link--toss" onClick={handleOpenToss}>
+                        토스로 송금
+                      </button>
+                      <button type="button" className="settlement-pay-link settlement-pay-link--kakao" onClick={handleOpenKakaoPay}>
+                        카카오페이 열기
+                      </button>
+                      <button type="button" className="settlement-pay-link settlement-pay-link--copy" onClick={handleCopyAccount}>
+                        {accountCopied ? '복사됨!' : '계좌번호 복사'}
+                      </button>
+                    </div>
+                    {payAppHint && <div className="settlement-progress-hint">{payAppHint}</div>}
+                  </>
                 ) : (
                   <div className="settlement-progress-hint">총무가 아직 계좌 정보를 안 넣었어요.</div>
                 )}
