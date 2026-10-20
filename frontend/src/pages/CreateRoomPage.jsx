@@ -5,6 +5,7 @@ import { getAllStationNames } from '../api/stationApi'
 import DateCalendarModal from '../components/common/DateCalendarModal'
 import StationAutocompleteInput from '../components/common/StationAutocompleteInput'
 import { formatMeetingDate } from '../utils/date'
+import { getPublicOrigin } from '../utils/publicUrl'
 import './CreateRoomPage.css'
 
 function CreateRoomPage() {
@@ -60,7 +61,7 @@ function CreateRoomPage() {
     }
   }
 
-  const shareLink = room ? `${window.location.origin}/rooms/${room.code}` : ''
+  const shareLink = room ? `${getPublicOrigin()}/rooms/${room.code}` : ''
 
   const handleShare = async () => {
     if (navigator.share) {

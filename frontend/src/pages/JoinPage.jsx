@@ -30,6 +30,7 @@ import { startSettlement } from '../api/settlementApi'
 import { getLastTrain } from '../api/lastTrainApi'
 import { getLineColor, getLineLabel } from '../utils/subwayLine'
 import { formatMeetingDate } from '../utils/date'
+import { getPublicOrigin } from '../utils/publicUrl'
 import ConfirmModal from '../components/common/ConfirmModal'
 import DateCalendarModal from '../components/common/DateCalendarModal'
 import Modal from '../components/common/Modal'
@@ -744,7 +745,7 @@ function JoinPage() {
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href)
+      await navigator.clipboard.writeText(`${getPublicOrigin()}${window.location.pathname}`)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {

@@ -18,6 +18,7 @@ import ConfirmModal from '../components/common/ConfirmModal'
 import Modal from '../components/common/Modal'
 import StepIndicator from '../components/common/StepIndicator'
 import { openAppOrFallback } from '../utils/appLink'
+import { getPublicOrigin } from '../utils/publicUrl'
 import { ROOM_FLOW_STEPS } from '../utils/roomSteps'
 import './SettlementPage.css'
 
@@ -307,7 +308,7 @@ function SettlementPage() {
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href)
+      await navigator.clipboard.writeText(`${getPublicOrigin()}${window.location.pathname}`)
       setLinkCopied(true)
       setTimeout(() => setLinkCopied(false), 2000)
     } catch {
