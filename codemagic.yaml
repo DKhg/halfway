@@ -16,6 +16,7 @@ workflows:
     scripts:
       - name: npm install
         script: |
+          npm install -g npm@latest
           cd frontend
           npm cache clean --force
           rm -rf node_modules package-lock.json
