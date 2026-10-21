@@ -10,7 +10,7 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.hong.halfway
       vars:
-        XCODE_WORKSPACE: "frontend/ios/App/App.xcworkspace"
+        XCODE_PROJECT: "frontend/ios/App/App.xcodeproj"
         XCODE_SCHEME: "App"
       node: 24.15.0
     scripts:
@@ -37,7 +37,7 @@ workflows:
       - name: ipa 빌드
         script: |
           xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
+            --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME"
     artifacts:
       - frontend/ios/App/build/ios/ipa/*.ipa
