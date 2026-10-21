@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getRoom } from '../api/roomApi'
-import AddToHomeScreenModal from '../components/common/AddToHomeScreenModal'
 import Modal from '../components/common/Modal'
 import MyPageModal from '../components/common/MyPageModal'
 import MyRoomsModal from '../components/common/MyRoomsModal'
-import { markAddToHomeScreenPromptSeen, shouldPromptAddToHomeScreen } from '../utils/addToHomeScreen'
 import './HomePage.css'
 
 const STEPS = [
@@ -63,26 +61,11 @@ function HomePage() {
   const [inviteInput, setInviteInput] = useState('')
   const [inviteError, setInviteError] = useState(null)
   const [isCheckingInvite, setIsCheckingInvite] = useState(false)
-  const [isAddToHomeScreenModalOpen, setIsAddToHomeScreenModalOpen] = useState(false)
 
   const handleOpenInviteModal = () => {
     setInviteInput('')
     setInviteError(null)
     setIsInviteModalOpen(true)
-  }
-
-  // 방을 만들고 난 뒤에 홈 화면에 추가하면 그 방으로 못 돌아오기 때문에, 방 만들기 폼으로 들어가기 전에 먼저 끼워 넣음
-  const handleCreateRoomClick = (e) => {
-    if (shouldPromptAddToHomeScreen()) {
-      e.preventDefault()
-      setIsAddToHomeScreenModalOpen(true)
-    }
-  }
-
-  const handleAddToHomeScreenProceed = () => {
-    markAddToHomeScreenPromptSeen()
-    setIsAddToHomeScreenModalOpen(false)
-    navigate('/rooms/new')
   }
 
   // 방 존재 여부를 먼저 확인하고, 있을 때만 이동. 없으면 모달 안에 에러만 띄우고 페이지는 안 넘어감
@@ -202,7 +185,7 @@ function HomePage() {
       </div>
 
       <div className="home-cta-group">
-        <Link to="/rooms/new" className="home-cta-primary" onClick={handleCreateRoomClick}>
+        <Link to="/rooms/new" className="home-cta-primary">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
             <path d="M12 5v14M5 12h14" />
           </svg>
@@ -220,13 +203,6 @@ function HomePage() {
       {isMyRoomsOpen && <MyRoomsModal onClose={() => setIsMyRoomsOpen(false)} />}
 
       {isMyPageOpen && <MyPageModal onClose={() => setIsMyPageOpen(false)} />}
-
-      {isAddToHomeScreenModalOpen && (
-        <AddToHomeScreenModal
-          onProceed={handleAddToHomeScreenProceed}
-          onClose={() => setIsAddToHomeScreenModalOpen(false)}
-        />
-      )}
 
       {isInviteModalOpen && (
         <Modal title="초대 링크로 참여" onClose={() => setIsInviteModalOpen(false)}>

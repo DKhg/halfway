@@ -3,7 +3,6 @@ import { useAnonymousUser } from './hooks/useAnonymousUser'
 import { useBackButton } from './hooks/useBackButton'
 import { useDeepLink } from './hooks/useDeepLink'
 import { usePwaUpdate } from './hooks/usePwaUpdate'
-import { useInstallPrompt } from './hooks/useInstallPrompt'
 import GlobalLoadingBar from './components/common/GlobalLoadingBar'
 import UpdateBanner from './components/common/UpdateBanner'
 import HomePage from './pages/HomePage'
@@ -17,7 +16,6 @@ function App() {
   useBackButton()
   useDeepLink()
   usePwaUpdate()
-  useInstallPrompt()
 
   if (error) {
     return <div>{error}</div>

@@ -29,4 +29,6 @@ button:disabled {
   margin: 0 auto;
   min-height: 100svh;
   background: var(--color-bg);
+  /* 네이티브 앱(iOS)에서 콘텐츠가 상태바 아래까지 그려지는 걸 막음 */
+  padding-top: env(safe-area-inset-top);
 }
