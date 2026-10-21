@@ -17,6 +17,7 @@ workflows:
       - name: npm install
         script: |
           cd frontend
+          rm -rf node_modules package-lock.json
           npm install
       - name: 웹 빌드 후 iOS 프로젝트에 동기화
         script: |
