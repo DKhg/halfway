@@ -282,6 +282,10 @@ function SettlementPage() {
         resultType: CameraResultType.Uri,
         source: CameraSource.Prompt,
         quality: 80,
+        promptLabelHeader: '영수증 사진',
+        promptLabelPhoto: '앨범에서 선택',
+        promptLabelPicture: '사진 찍기',
+        promptLabelCancel: '취소',
       })
       const blob = await (await fetch(photo.webPath)).blob()
       await processReceiptFile(blob)
