@@ -24,6 +24,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>정산 영수증을 촬영해서 금액을 자동으로 채우는 데 사용해요.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
