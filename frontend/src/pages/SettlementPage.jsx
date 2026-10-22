@@ -285,8 +285,14 @@ function SettlementPage() {
       })
       const blob = await (await fetch(photo.webPath)).blob()
       await processReceiptFile(blob)
-    } catch {
-      // 사용자가 촬영·선택을 취소하면 Camera.getPhoto가 reject됨 — 에러로 취급하지 않고 조용히 무시
+    } catch (error) {
+      // 사용자가 촬영·선택을 취소하면 Camera.getPhoto가 "User cancelled..." 메시지로 reject됨 — 이건 에러로 취급 안 함
+      const message = error?.message || String(error)
+      if (/cancel/i.test(message)) {
+        return
+      }
+      // 원인 파악 전까지 임시로 실제 에러 메시지를 그대로 노출
+      setSettlementError(`카메라 오류: ${message}`)
     }
   }
 
