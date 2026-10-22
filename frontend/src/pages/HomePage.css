@@ -1,5 +1,5 @@
 .home-page {
-  min-height: 100svh;
+  min-height: calc(100svh - env(safe-area-inset-top));
   box-sizing: border-box;
   padding: var(--space-md) 22px var(--space-lg);
   display: flex;

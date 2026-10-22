@@ -1,5 +1,5 @@
 .create-room-page {
-  min-height: 100svh;
+  min-height: calc(100svh - env(safe-area-inset-top));
   box-sizing: border-box;
   padding: var(--space-lg) 22px var(--space-xl);
   display: flex;
