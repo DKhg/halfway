@@ -291,8 +291,7 @@ function SettlementPage() {
       if (/cancel/i.test(message)) {
         return
       }
-      // 원인 파악 전까지 임시로 실제 에러 메시지를 그대로 노출
-      setSettlementError(`카메라 오류: ${message}`)
+      setSettlementError('카메라를 열지 못했어요. 설정에서 카메라·사진 권한을 확인해 주세요.')
     }
   }
 

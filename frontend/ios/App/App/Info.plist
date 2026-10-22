@@ -30,6 +30,8 @@
 	<string>정산 영수증을 촬영해서 금액을 자동으로 채우는 데 사용해요.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>저장된 영수증 사진을 불러와서 정산 금액을 자동으로 채우는 데 사용해요.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>촬영한 영수증 사진을 앨범에 저장할 때 사용해요.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
