@@ -1106,28 +1106,30 @@
   background: var(--color-surface-muted);
 }
 
+.join-place-list-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .join-place-radius-select {
   position: relative;
   flex-shrink: 0;
 }
 
 .join-place-radius-trigger {
-  height: 40px;
+  height: 28px;
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 0 12px;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  color: var(--color-ink);
+  gap: 2px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
-}
-
-.join-place-radius-trigger svg:first-child {
-  color: var(--color-primary);
 }
 
 .join-place-radius-chevron {
@@ -1444,6 +1446,7 @@
 }
 
 .join-place-meta {
+  text-align: left;
   font-size: 12.5px;
   font-weight: 500;
   color: var(--color-ink-soft);

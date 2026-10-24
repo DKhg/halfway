@@ -1094,6 +1094,54 @@ function JoinPage() {
             </div>
           )}
 
+          {!isCustomTab && !isPoolTab && (
+            <div className="join-place-list-header">
+              <div className="join-place-radius-select" ref={radiusMenuRef}>
+                <button
+                  type="button"
+                  className="join-place-radius-trigger"
+                  aria-expanded={isRadiusMenuOpen}
+                  onClick={() => setIsRadiusMenuOpen((prev) => !prev)}
+                >
+                  {PLACE_RADIUS_OPTIONS.find((option) => option.meters === placeRadius)?.label} 이내
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                    className={`join-place-radius-chevron${isRadiusMenuOpen ? ' join-place-radius-chevron--open' : ''}`}
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+
+                {isRadiusMenuOpen && (
+                  <div className="join-place-radius-panel">
+                    {PLACE_RADIUS_OPTIONS.map((option) => (
+                      <button
+                        key={option.meters}
+                        type="button"
+                        aria-pressed={option.meters === placeRadius}
+                        className="join-place-radius-option"
+                        onClick={() => {
+                          setPlaceRadius(option.meters)
+                          setIsRadiusMenuOpen(false)
+                        }}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* 확정된 곳이 지금 보고 있는 반경·탭의 목록에 안 잡힐 수 있어서(세부정보를 따로 저장 안 함),
               목록과 별개로 항상 떠 있게 고정 표시 — 확정 취소 버튼을 못 찾는 일이 없게 함 */}
           {confirmedName && !displayedOptions.some((place) => place.name === confirmedName) && (
@@ -1569,8 +1617,8 @@ function JoinPage() {
 
           {me && (isShowingPlacePicker ? (
             <>
-              <div className="join-place-top-row">
-                {includedCategoryTabs.length > 1 && (
+              {includedCategoryTabs.length > 1 && (
+                <div className="join-place-top-row">
                   <div className="join-place-main-tabs">
                     {includedCategoryTabs.map((tab) => (
                       <button
@@ -1584,58 +1632,8 @@ function JoinPage() {
                       </button>
                     ))}
                   </div>
-                )}
-
-                {!['CUSTOM', 'POOL'].includes(activeIncludedCategory === 'FOOD' ? foodSubCategory : cafeSubCategory) && (
-                  <div className="join-place-radius-select" ref={radiusMenuRef}>
-                    <button
-                      type="button"
-                      className="join-place-radius-trigger"
-                      aria-expanded={isRadiusMenuOpen}
-                      onClick={() => setIsRadiusMenuOpen((prev) => !prev)}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                        <circle cx="12" cy="12" r="8" />
-                        <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
-                      </svg>
-                      {PLACE_RADIUS_OPTIONS.find((option) => option.meters === placeRadius)?.label}
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                        className={`join-place-radius-chevron${isRadiusMenuOpen ? ' join-place-radius-chevron--open' : ''}`}
-                      >
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </button>
-
-                    {isRadiusMenuOpen && (
-                      <div className="join-place-radius-panel">
-                        {PLACE_RADIUS_OPTIONS.map((option) => (
-                          <button
-                            key={option.meters}
-                            type="button"
-                            aria-pressed={option.meters === placeRadius}
-                            className="join-place-radius-option"
-                            onClick={() => {
-                              setPlaceRadius(option.meters)
-                              setIsRadiusMenuOpen(false)
-                            }}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {activeIncludedCategory === 'FOOD'
                 ? renderPlaceCategory('FOOD', room.confirmedFoodPlaceName, foodOptions, isFoodLoading,
