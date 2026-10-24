@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { deleteRoom, getRoom, updateRoomFairness, updateRoomMeetingDate } from '../api/roomApi'
 import { joinRoom, updateMyStation } from '../api/participantApi'
@@ -79,6 +79,13 @@ const PLACE_MAIN_CATEGORY_TABS = [
   { key: 'CAFE', label: '카페', emoji: '☕' },
 ]
 
+// 음식점·카페 추천 탐색 반경 선택지. 음식점/카페 공용으로 하나만 적용됨
+const PLACE_RADIUS_OPTIONS = [
+  { meters: 300, label: '300m' },
+  { meters: 500, label: '500m' },
+  { meters: 1000, label: '1km' },
+]
+
 function JoinPage() {
   const navigate = useNavigate()
   const { code } = useParams()
@@ -119,6 +126,10 @@ function JoinPage() {
   const [isBrowsingPlaces, setIsBrowsingPlaces] = useState(false)
   const [foodSubCategory, setFoodSubCategory] = useState('KOREAN')
   const [cafeSubCategory, setCafeSubCategory] = useState('RECOMMEND')
+  // 음식점·카페 추천 탐색 반경(m), 두 카테고리 공용
+  const [placeRadius, setPlaceRadius] = useState(300)
+  const [isRadiusMenuOpen, setIsRadiusMenuOpen] = useState(false)
+  const radiusMenuRef = useRef(null)
   const [foodOptions, setFoodOptions] = useState([])
   const [cafeOptions, setCafeOptions] = useState([])
   const [placeVisibleCounts, setPlaceVisibleCounts] = useState({})
@@ -322,6 +333,27 @@ function JoinPage() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // 반경 드롭다운 바깥을 클릭하면 닫음
+  useEffect(() => {
+    if (!isRadiusMenuOpen) {
+      return undefined
+    }
+    const handleOutsideClick = (e) => {
+      if (radiusMenuRef.current && !radiusMenuRef.current.contains(e.target)) {
+        setIsRadiusMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => document.removeEventListener('mousedown', handleOutsideClick)
+  }, [isRadiusMenuOpen])
+
+  // 지금 활성화된 세부 카테고리에서 "더보기"로 펼친 개수. 카카오 API에 반경 상한까지 한번에 다 받아오지 않고
+  // 딱 이만큼(+1페이지 여유분)만 요청해서, 반경을 넓혀도 실제로 더보기를 누른 만큼만 호출이 커지게 함
+  const foodPageKey = `FOOD:${foodSubCategory}`
+  const cafePageKey = `CAFE:${cafeSubCategory}`
+  const foodVisibleCount = placeVisibleCounts[foodPageKey] ?? PLACE_PAGE_SIZE
+  const cafeVisibleCount = placeVisibleCounts[cafePageKey] ?? PLACE_PAGE_SIZE
+
   // 음식점 탭을 보고 있고 아직 안 골랐으면 선택된 세부 카테고리의 실제 장소 목록을 불러옴
   // room 전체가 아니라 필요한 값만 의존성으로 둬서, 10초 자동 조회마다 카카오 API를 다시 부르지 않게 함
   useEffect(() => {
@@ -332,12 +364,12 @@ function JoinPage() {
     const isCustomTab = foodSubCategory === 'CUSTOM'
     setIsFoodLoading(true)
     setPlacesError(null)
-    getPlaces(code, 'FOOD', isCustomTab ? null : foodSubCategory, isCustomTab)
+    getPlaces(code, 'FOOD', isCustomTab ? null : foodSubCategory, isCustomTab, placeRadius, foodVisibleCount + PLACE_PAGE_SIZE)
       .then(setFoodOptions)
       .catch(() => setPlacesError('장소 목록을 불러오지 못했어요.'))
       .finally(() => setIsFoodLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room?.status, room?.confirmedFoodPlaceName, code, foodSubCategory, activePlaceCategory, isBrowsingPlaces])
+  }, [room?.status, room?.confirmedFoodPlaceName, room?.confirmedStationName, code, foodSubCategory, activePlaceCategory, isBrowsingPlaces, placeRadius, foodVisibleCount])
 
   // 카페 탭을 보고 있고 아직 안 골랐으면 실제 장소 목록을 불러옴
   useEffect(() => {
@@ -348,12 +380,12 @@ function JoinPage() {
     const isCustomTab = cafeSubCategory === 'CUSTOM'
     setIsCafeLoading(true)
     setPlacesError(null)
-    getPlaces(code, 'CAFE', null, isCustomTab)
+    getPlaces(code, 'CAFE', null, isCustomTab, placeRadius, cafeVisibleCount + PLACE_PAGE_SIZE)
       .then(setCafeOptions)
       .catch(() => setPlacesError('장소 목록을 불러오지 못했어요.'))
       .finally(() => setIsCafeLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room?.status, room?.confirmedCafePlaceName, code, cafeSubCategory, activePlaceCategory, isBrowsingPlaces])
+  }, [room?.status, room?.confirmedCafePlaceName, room?.confirmedStationName, code, cafeSubCategory, activePlaceCategory, isBrowsingPlaces, placeRadius, cafeVisibleCount])
 
   // "다른 모임에서 추가" 탭을 보고 있으면 같은 역의 가게 풀을 불러옴 (득표·확정까지 바로 가능한 후보로 취급)
   useEffect(() => {
@@ -369,7 +401,7 @@ function JoinPage() {
       .then(setPoolSuggestions)
       .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room?.status, room?.confirmedFoodPlaceName, room?.confirmedCafePlaceName, code, foodSubCategory, cafeSubCategory, activePlaceCategory, isBrowsingPlaces])
+  }, [room?.status, room?.confirmedFoodPlaceName, room?.confirmedCafePlaceName, room?.confirmedStationName, code, foodSubCategory, cafeSubCategory, activePlaceCategory, isBrowsingPlaces])
 
   // 정산만 하기 모드는 역·장소 화면이 없어서, 참여하자마자(또는 이미 참여한 채로 재방문하면) 바로 정산 화면으로 보냄
   const settlementOnlyMeId = room?.mode === 'SETTLEMENT_ONLY'
@@ -390,14 +422,14 @@ function JoinPage() {
         return
       }
       const isCustomTab = foodSubCategory === 'CUSTOM'
-      setFoodOptions(await getPlaces(code, 'FOOD', isCustomTab ? null : foodSubCategory, isCustomTab))
+      setFoodOptions(await getPlaces(code, 'FOOD', isCustomTab ? null : foodSubCategory, isCustomTab, placeRadius, foodVisibleCount + PLACE_PAGE_SIZE))
     } else {
       if (cafeSubCategory === 'POOL') {
         setPoolSuggestions(await getPoolSuggestions(code, 'CAFE'))
         return
       }
       const isCustomTab = cafeSubCategory === 'CUSTOM'
-      setCafeOptions(await getPlaces(code, 'CAFE', null, isCustomTab))
+      setCafeOptions(await getPlaces(code, 'CAFE', null, isCustomTab, placeRadius, cafeVisibleCount + PLACE_PAGE_SIZE))
     }
   }
 
@@ -977,9 +1009,13 @@ function JoinPage() {
     const displayedOptions = isPoolTab ? poolSuggestions : options
     const pageKey = `${category}:${activeSubCategory}`
     const visibleCount = placeVisibleCounts[pageKey] ?? PLACE_PAGE_SIZE
-    const pagedOptions = displayedOptions.slice(0, visibleCount)
-    const hasMoreOptions = displayedOptions.length > visibleCount
     const maxVoteCount = Math.max(0, ...displayedOptions.map((place) => place.voteCount))
+    // 확정된 장소 > 최다 득표(동률 전부) 순으로 맨 위로 끌어올리고, 나머지는 기존(거리순) 순서 유지
+    const placeRank = (place) =>
+      (place.name === confirmedName ? 2 : 0) + (place.voteCount > 0 && place.voteCount === maxVoteCount ? 1 : 0)
+    const sortedOptions = [...displayedOptions].sort((a, b) => placeRank(b) - placeRank(a))
+    const pagedOptions = sortedOptions.slice(0, visibleCount)
+    const hasMoreOptions = sortedOptions.length > visibleCount
     return (
     <div className="join-confirmed-place-section">
       {confirmedName && !isBrowsingPlaces ? (
@@ -987,7 +1023,6 @@ function JoinPage() {
       ) : (
         <div className="join-place-picker">
           <div className="join-place-category-frame">
-            <span className="join-place-category-label">카테고리</span>
             {isBrowsingPlaces && isPlaceStillConfirmed && (
               <button
                 type="button"
@@ -1056,6 +1091,52 @@ function JoinPage() {
               {isCustomTab && '아직 직접 추가한 곳이 없어요.'}
               {isPoolTab && '같은 역에서 다른 모임이 추가한 곳이 아직 없어요.'}
               {!isCustomTab && !isPoolTab && '이 카테고리엔 아직 후보가 없어요.'}
+            </div>
+          )}
+
+          {/* 확정된 곳이 지금 보고 있는 반경·탭의 목록에 안 잡힐 수 있어서(세부정보를 따로 저장 안 함),
+              목록과 별개로 항상 떠 있게 고정 표시 — 확정 취소 버튼을 못 찾는 일이 없게 함 */}
+          {confirmedName && !displayedOptions.some((place) => place.name === confirmedName) && (
+            <div className={`join-place-card join-place-card--${category.toLowerCase()} join-place-card--top`}>
+              <div className="join-place-confirmed-ribbon">
+                <span className="join-place-confirmed-ribbon-check" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" />
+                  </svg>
+                </span>
+                확정
+              </div>
+              <div className="join-place-card-top">
+                <span className="join-place-icon" aria-hidden="true">
+                  {category === 'FOOD' ? (
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.5 1-4 3.5-4 7v3h4" />
+                    </svg>
+                  ) : (
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9zM17 11h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3" />
+                    </svg>
+                  )}
+                </span>
+                <div className="join-place-info">
+                  <div className="join-place-name-row">
+                    <span className="join-place-name">{confirmedName}</span>
+                  </div>
+                  <div className="join-place-meta">지금 보고 있는 목록에는 없지만 확정된 상태예요</div>
+                </div>
+              </div>
+              {room.owner && (
+                <div className="join-place-card-actions">
+                  <button
+                    type="button"
+                    className="join-place-choose-btn join-place-choose-btn--cancel"
+                    disabled={isClearingPlace}
+                    onClick={() => handleClearPlace(category)}
+                  >
+                    확정 취소
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -1488,21 +1569,73 @@ function JoinPage() {
 
           {me && (isShowingPlacePicker ? (
             <>
-              {includedCategoryTabs.length > 1 && (
-                <div className="join-place-main-tabs">
-                  {includedCategoryTabs.map((tab) => (
+              <div className="join-place-top-row">
+                {includedCategoryTabs.length > 1 && (
+                  <div className="join-place-main-tabs">
+                    {includedCategoryTabs.map((tab) => (
+                      <button
+                        key={tab.key}
+                        type="button"
+                        aria-pressed={tab.key === activeIncludedCategory}
+                        className="join-place-main-tab-btn"
+                        onClick={() => setActivePlaceCategory(tab.key)}
+                      >
+                        {tab.emoji} {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {!['CUSTOM', 'POOL'].includes(activeIncludedCategory === 'FOOD' ? foodSubCategory : cafeSubCategory) && (
+                  <div className="join-place-radius-select" ref={radiusMenuRef}>
                     <button
-                      key={tab.key}
                       type="button"
-                      aria-pressed={tab.key === activeIncludedCategory}
-                      className="join-place-main-tab-btn"
-                      onClick={() => setActivePlaceCategory(tab.key)}
+                      className="join-place-radius-trigger"
+                      aria-expanded={isRadiusMenuOpen}
+                      onClick={() => setIsRadiusMenuOpen((prev) => !prev)}
                     >
-                      {tab.emoji} {tab.label}
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="8" />
+                        <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
+                      </svg>
+                      {PLACE_RADIUS_OPTIONS.find((option) => option.meters === placeRadius)?.label}
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                        className={`join-place-radius-chevron${isRadiusMenuOpen ? ' join-place-radius-chevron--open' : ''}`}
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
                     </button>
-                  ))}
-                </div>
-              )}
+
+                    {isRadiusMenuOpen && (
+                      <div className="join-place-radius-panel">
+                        {PLACE_RADIUS_OPTIONS.map((option) => (
+                          <button
+                            key={option.meters}
+                            type="button"
+                            aria-pressed={option.meters === placeRadius}
+                            className="join-place-radius-option"
+                            onClick={() => {
+                              setPlaceRadius(option.meters)
+                              setIsRadiusMenuOpen(false)
+                            }}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {activeIncludedCategory === 'FOOD'
                 ? renderPlaceCategory('FOOD', room.confirmedFoodPlaceName, foodOptions, isFoodLoading,

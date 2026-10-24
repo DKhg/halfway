@@ -45,14 +45,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PlaceService {
 
-    // 역 좌표 기준 가게 추천 검색 반경(m)
-    private static final int SEARCH_RADIUS_METERS = 1000;
+    // 역 좌표 기준 가게 추천 검색 반경(m) 기본값, 참여자가 고를 수 있는 선택지
+    private static final int DEFAULT_SEARCH_RADIUS_METERS = 300;
+    private static final Set<Integer> ALLOWED_SEARCH_RADIUS_METERS = Set.of(300, 500, 1000);
 
     // 자유 키워드 직접 검색은 특정 가게를 찾는 용도라 추천보다 넓게 잡음(m)
     private static final int CUSTOM_SEARCH_RADIUS_METERS = 2000;
 
-    // 카테고리(세부 카테고리)별 추천 후보 최대 수 (프론트에서 5개씩 "더보기"로 공개, 카카오 로컬 API 한 페이지 최대치)
-    private static final int MAX_RESULTS = 15;
+    // 카테고리(세부 카테고리)별 추천 후보 최대 수 (프론트에서 5개씩 "더보기"로 공개).
+    // 반경이 넓을수록 더 많이 받아와야, 좁은 반경에서 이미 가까운 후보가 다 채워진 지역에서도
+    // "반경을 넓혔는데 결과가 똑같다"는 문제 없이 실제로 더 먼 후보까지 보여줄 수 있음
+    private static final Map<Integer, Integer> MAX_RESULTS_BY_RADIUS = Map.of(
+            300, 15,
+            500, 30,
+            1000, 45);
 
     // 자유 키워드 직접 검색 결과 최대 수 (카카오 로컬 API가 한 번에 주는 최대치)
     private static final int CUSTOM_SEARCH_MAX_RESULTS = 15;
@@ -88,6 +94,21 @@ public class PlaceService {
      */
     public List<PlaceOptionResponse> getPlaces(String code, PlaceCategory category, FoodSubCategory subCategory,
             boolean customOnly, UUID requesterId) {
+        int defaultMaxResults = MAX_RESULTS_BY_RADIUS.get(DEFAULT_SEARCH_RADIUS_METERS);
+        return getPlaces(code, category, subCategory, customOnly, DEFAULT_SEARCH_RADIUS_METERS, defaultMaxResults, requesterId);
+    }
+
+    /**
+     * 위와 동일하되, 추천 검색 반경(m)·받아올 최대 개수를 참여자가 고른 값으로 지정. customOnly=true일 땐 카카오 API를
+     * 안 불러서 두 값 다 무시됨. maxResults는 프론트에서 "더보기"로 지금까지 펼친 개수만큼만 요청해서, 반경을 넓혀도
+     * 실제로 펼쳐본 만큼만 카카오 API를 호출하게 함 — radiusMeters별 상한(MAX_RESULTS_BY_RADIUS)을 넘지는 못함
+     */
+    public List<PlaceOptionResponse> getPlaces(String code, PlaceCategory category, FoodSubCategory subCategory,
+            boolean customOnly, int radiusMeters, int maxResults, UUID requesterId) {
+        if (!ALLOWED_SEARCH_RADIUS_METERS.contains(radiusMeters)) {
+            throw new CustomException(ErrorCode.INVALID_INPUT);
+        }
+        int effectiveMaxResults = Math.max(1, Math.min(maxResults, MAX_RESULTS_BY_RADIUS.get(radiusMeters)));
         Room room = findRoomByCode(code);
         if (room.getConfirmedStationName() == null) {
             return List.of();
@@ -104,8 +125,8 @@ public class PlaceService {
                 throw new CustomException(ErrorCode.STATION_COORDINATES_NOT_READY);
             }
             List<PlaceOption> recommended = category == PlaceCategory.FOOD
-                    ? searchFood(subCategory, origin)
-                    : searchCafe(origin);
+                    ? searchFood(subCategory, origin, radiusMeters, effectiveMaxResults)
+                    : searchCafe(origin, radiusMeters, effectiveMaxResults);
             recommended.forEach(option -> optionsById.put(option.id(), option));
         }
 
@@ -305,17 +326,18 @@ public class PlaceService {
     }
 
     // 음식점 세부 카테고리 키워드로 검색
-    private List<PlaceOption> searchFood(FoodSubCategory subCategory, KakaoLocalClient.Coordinates origin) {
+    private List<PlaceOption> searchFood(FoodSubCategory subCategory, KakaoLocalClient.Coordinates origin,
+            int radiusMeters, int maxResults) {
         String keyword = FOOD_SUB_CATEGORY_KEYWORD.getOrDefault(subCategory, "맛집");
-        return kakaoLocalClient.searchPlacesByKeyword(keyword, FOOD_CATEGORY_CODE, origin, SEARCH_RADIUS_METERS, MAX_RESULTS, "distance")
+        return kakaoLocalClient.searchPlacesByKeyword(keyword, FOOD_CATEGORY_CODE, origin, radiusMeters, maxResults, "distance")
                 .stream()
                 .map(document -> toPlaceOption(document, PlaceCategory.FOOD, subCategory, false))
                 .toList();
     }
 
     // 카페 카테고리로 검색 (세부 카테고리 없음)
-    private List<PlaceOption> searchCafe(KakaoLocalClient.Coordinates origin) {
-        return kakaoLocalClient.searchPlacesByCategory(CAFE_CATEGORY_CODE, origin, SEARCH_RADIUS_METERS, MAX_RESULTS)
+    private List<PlaceOption> searchCafe(KakaoLocalClient.Coordinates origin, int radiusMeters, int maxResults) {
+        return kakaoLocalClient.searchPlacesByCategory(CAFE_CATEGORY_CODE, origin, radiusMeters, maxResults)
                 .stream()
                 .map(document -> toPlaceOption(document, PlaceCategory.CAFE, null, false))
                 .toList();

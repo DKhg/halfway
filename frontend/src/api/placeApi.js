@@ -1,7 +1,7 @@
 import api from './axios'
 
-export function getPlaces(code, category, subCategory, customOnly) {
-  return api.get(`/rooms/${code}/places`, { params: { category, subCategory, customOnly } }).then((response) => response.data)
+export function getPlaces(code, category, subCategory, customOnly, radiusMeters, maxResults) {
+  return api.get(`/rooms/${code}/places`, { params: { category, subCategory, customOnly, radiusMeters, maxResults } }).then((response) => response.data)
 }
 
 export function votePlace(code, category, placeId) {

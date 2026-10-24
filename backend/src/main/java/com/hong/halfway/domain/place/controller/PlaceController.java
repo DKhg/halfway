@@ -32,13 +32,16 @@ public class PlaceController {
     private final PlaceService placeService;
 
     /**
-     * 카테고리별 주변 장소 후보 + 득표 현황 조회. customOnly=true면 참여자가 직접 검색해서 추가한 곳만 ("직접추가" 탭)
+     * 카테고리별 주변 장소 후보 + 득표 현황 조회. customOnly=true면 참여자가 직접 검색해서 추가한 곳만 ("직접추가" 탭).
+     * radiusMeters는 참여자가 고른 추천 검색 반경(500/1000/2000만 허용), maxResults는 "더보기"로 지금까지 펼친 개수
      */
     @GetMapping
     public ResponseEntity<List<PlaceOptionResponse>> getPlaces(@PathVariable String code,
             @RequestParam PlaceCategory category, @RequestParam(required = false) FoodSubCategory subCategory,
-            @RequestParam(defaultValue = "false") boolean customOnly, @AuthenticationPrincipal UUID requesterId) {
-        return ResponseEntity.ok(placeService.getPlaces(code, category, subCategory, customOnly, requesterId));
+            @RequestParam(defaultValue = "false") boolean customOnly,
+            @RequestParam(defaultValue = "300") int radiusMeters,
+            @RequestParam(defaultValue = "15") int maxResults, @AuthenticationPrincipal UUID requesterId) {
+        return ResponseEntity.ok(placeService.getPlaces(code, category, subCategory, customOnly, radiusMeters, maxResults, requesterId));
     }
 
     /**
