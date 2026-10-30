@@ -34,7 +34,6 @@ import { getPublicOrigin } from '../utils/publicUrl'
 import ConfirmModal from '../components/common/ConfirmModal'
 import DateCalendarModal from '../components/common/DateCalendarModal'
 import Modal from '../components/common/Modal'
-import OpenInAppBanner from '../components/common/OpenInAppBanner'
 import StepIndicator from '../components/common/StepIndicator'
 import StationAutocompleteInput from '../components/common/StationAutocompleteInput'
 import { ROOM_FLOW_STEPS } from '../utils/roomSteps'
@@ -1909,7 +1908,6 @@ function JoinPage() {
 
   return (
     <div className="join-page">
-      <OpenInAppBanner code={code} />
       {renderHeader(() => navigate('/'))}
 
       <div className="join-title-block">
