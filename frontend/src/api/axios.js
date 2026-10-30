@@ -10,8 +10,10 @@ const TOKEN_RECOVERY_FLAG = 'halfway_token_recovery_attempted'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api',
-  // 네이티브 앱(Capacitor)에서 응답이 파싱된 객체가 아니라 JSON 문자열 그대로 오는 경우가 있어서,
-  // 문자열이면 한 번 더 파싱해줌 (이미 파싱된 경우는 그대로 통과)
+  // 예전에 CapacitorHttp(네이티브 HTTP 브릿지)가 응답을 파싱된 객체가 아니라 JSON 문자열째로
+  // 넘겨주는 버그가 있어서 넣은 방어 코드. capacitor.config.json에서 CapacitorHttp를 꺼서
+  // 지금은 안 터지는 경로지만, 혹시 나중에 다시 켤 경우를 대비해 남겨둠
+  // (문자열이면 한 번 더 파싱, 이미 파싱된 경우는 그대로 통과)
   transformResponse: [(data) => {
     if (typeof data === 'string') {
       try {
