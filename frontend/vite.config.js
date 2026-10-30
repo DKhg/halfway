@@ -37,7 +37,8 @@ export default defineConfig({
       },
       workbox: {
         // API 응답은 실시간 데이터(방 상태·투표 결과)라 캐싱 대상에서 제외, 정적 파일(앱 셸)만 미리 캐싱
-        navigateFallbackDenylist: [/^\/api\//],
+        // .well-known은 iOS 유니버설 링크·안드로이드 App Links 검증용 정적 파일이라 SPA 라우팅 폴백 대상에서 제외
+        navigateFallbackDenylist: [/^\/api\//, /^\/\.well-known\//],
       },
     }),
   ],
