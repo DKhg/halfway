@@ -1,10 +1,11 @@
 {
   "applinks": {
-    "apps": [],
     "details": [
       {
-        "appID": "GVK5KXFMGY.com.hong.halfway",
-        "paths": ["/rooms/*"]
+        "appIDs": ["GVK5KXFMGY.com.hong.halfway"],
+        "components": [
+          { "/": "/rooms/*" }
+        ]
       }
     ]
   }
