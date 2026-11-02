@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths-ignore:
       - "*.md" # 루트 CLAUDE.md 등 문서만 바뀐 경우엔 배포 안 돎
+      - ".github/screenshots/**" # README용 스크린샷만 바뀐 경우엔 배포 안 돎
 
 # 짧은 간격으로 두 번 push되어도 배포가 겹쳐서 꼬이지 않게, 앞 배포가 끝날 때까지 다음 배포를 큐에 둠
 concurrency:
