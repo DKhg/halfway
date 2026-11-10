@@ -195,27 +195,4 @@ infra/                   Terraform (EC2 · 보안그룹 · Elastic IP)
 
 <br/>
 
-<a id="run"></a>
-## 🖥️ 로컬 실행
-
-```bash
-# DB
-docker compose up -d
-
-# 백엔드
-cd backend && ./gradlew bootRun
-
-# 프론트엔드
-cd frontend && npm install && npm run dev
-```
-
-카카오 로컬 API, Gemini API 등 외부 연동 키는 `backend/.env.example`, `frontend/.env.example`을 참고해 `.env`로 채워야 합니다.
-
-<br/>
-
-<div align="center">
-<br/>
-
-🙋 Made solo by [kohonggeun](https://github.com/kohonggeun)
-
 </div>
